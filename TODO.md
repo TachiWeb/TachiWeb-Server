@@ -1,0 +1,4 @@
+- ~~NetworkHelper uses Context.cacheDir!~~
+- ~~CloudflareInterceptor uses Duktape-Android which uses native libraries >:(~~ (Testing needed)
+- ~~PersistentCookieStore uses shared preferences (from Context)~~
+- ~~CoverCache uses context.externalCacheDir~~
