@@ -1,6 +1,7 @@
 package xyz.nulldev.ts;
 
 import eu.kanade.tachiyomi.data.database.models.*;
+import org.jetbrains.annotations.NotNull;
 import xyz.nulldev.ts.util.OptionalUtils;
 import xyz.nulldev.ts.util.UnboxTherapy;
 
@@ -65,6 +66,7 @@ public class Library {
         return chapters;
     }
 
+    @NotNull
     public synchronized List<Chapter> getChapters(Manga manga) {
         List<Chapter> mChapters = chapters.get(manga.getId());
         if (mChapters == null) {

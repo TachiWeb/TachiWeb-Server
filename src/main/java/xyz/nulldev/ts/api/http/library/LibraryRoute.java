@@ -8,6 +8,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.util.MangaUtils;
 
 /**
  * Project: TachiServer
@@ -34,7 +35,7 @@ public class LibraryRoute implements Route {
             JSONObject mangaJson = new JSONObject();
             mangaJson.put(KEY_ID, manga.getId());
             mangaJson.put(KEY_TITLE, manga.getTitle());
-            mangaJson.put(KEY_UNREAD, manga.getUnread());
+            mangaJson.put(KEY_UNREAD, MangaUtils.getUnreadCount(manga));
             JSONArray categoriesJson = new JSONArray();
             for(Category category : library.getCategoriesForManga(manga)) {
                 categoriesJson.put(category.getName());

@@ -14,7 +14,7 @@ import java.io.IOException;
 public class TachiServer {
     public static void main(String[] args) {
         try {
-            new BackupManager().restoreFromFile(new File("/home/nulldev/tmp/tachiyomi-2016-07-09.json"));
+            new BackupManager().restoreFromFile(new File("/home/nulldev/tmp/tachiyomi-2016-07-14.json"));
         } catch (IOException e) {
             e.printStackTrace();
         }
