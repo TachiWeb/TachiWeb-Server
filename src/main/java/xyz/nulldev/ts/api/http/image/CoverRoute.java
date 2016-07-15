@@ -29,6 +29,7 @@ public class CoverRoute implements Route {
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
+        response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         if (mangaId == null) {
             return "MangaID must be specified!";
@@ -37,7 +38,6 @@ public class CoverRoute implements Route {
         if (manga == null) {
             return "The specified manga does not exist!";
         }
-        response.header("Access-Control-Allow-Origin", "*");
         String url = manga.getThumbnail_url();
         if (url == null || url.isEmpty()) {
             response.redirect("/img/no-cover.png", 302);

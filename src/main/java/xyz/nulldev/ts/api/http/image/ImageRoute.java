@@ -32,6 +32,7 @@ public class ImageRoute implements Route {
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
+        response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
         Integer page = LeniantParser.parseInteger(request.params(":page"));
@@ -80,7 +81,6 @@ public class ImageRoute implements Route {
             return "Could not find specified page!";
         }
         pageObj = source.fetchImage(pageObj).toBlocking().first();
-        response.header("Access-Control-Allow-Origin", "*");
         try {
             if (pageObj.getStatus() == Page.READY && pageObj.getImagePath() != null) {
                 response.type(Files.probeContentType(Paths.get(pageObj.getImagePath())));
