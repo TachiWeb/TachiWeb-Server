@@ -6,7 +6,9 @@ import xyz.nulldev.ts.api.http.debug.DebugLibrary;
 import xyz.nulldev.ts.api.http.image.CoverRoute;
 import xyz.nulldev.ts.api.http.image.ImageRoute;
 import xyz.nulldev.ts.api.http.library.LibraryRoute;
+import xyz.nulldev.ts.api.http.manga.ChaptersRoute;
 import xyz.nulldev.ts.api.http.manga.MangaRoute;
+import xyz.nulldev.ts.api.http.manga.PageCountRoute;
 
 /**
  * Project: TachiServer
@@ -20,6 +22,8 @@ public class HttpAPI {
     private CoverRoute coverRoute = new CoverRoute(DIReplacement.get().getLibrary());
     private LibraryRoute libraryRoute = new LibraryRoute(DIReplacement.get().getLibrary());
     private MangaRoute mangaRoute = new MangaRoute(DIReplacement.get().getLibrary());
+    private ChaptersRoute chapterRoute = new ChaptersRoute(DIReplacement.get().getLibrary());
+    private PageCountRoute pageCountRoute = new PageCountRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
@@ -32,6 +36,10 @@ public class HttpAPI {
         Spark.get(API_ROOT + "/library/", libraryRoute);
         Spark.get(API_ROOT + "/manga_info/:mangaId", mangaRoute);
         Spark.get(API_ROOT + "/manga_info/:mangaId/", mangaRoute);
+        Spark.get(API_ROOT + "/chapters/:mangaId", chapterRoute);
+        Spark.get(API_ROOT + "/chapters/:mangaId/", chapterRoute);
+        Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId", pageCountRoute);
+        Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId/", pageCountRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }
