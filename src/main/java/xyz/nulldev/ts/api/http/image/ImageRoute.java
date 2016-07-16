@@ -37,7 +37,6 @@ public class ImageRoute implements Route {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
         Integer page = LeniantParser.parseInteger(request.params(":page"));
-        Long lastReqId = LeniantParser.parseLong(request.params(":lastReqId"));
         if (mangaId == null) {
             return "MangaID must be specified!";
         } else if (chapterId == null) {
@@ -45,9 +44,6 @@ public class ImageRoute implements Route {
         }
         if (page == null || page < 0) {
             page = 0;
-        }
-        if (lastReqId != null) {
-            library.setLastReqId(lastReqId);
         }
         Manga manga = library.getManga(mangaId);
         if (manga == null) {

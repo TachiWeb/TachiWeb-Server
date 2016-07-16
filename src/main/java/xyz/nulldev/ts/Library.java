@@ -29,7 +29,6 @@ public class Library {
     private Map<Long, List<Chapter>> chapters = new HashMap<>();
     private Map<Long, List<Integer>> mangaCategories = new HashMap<>();
     private Map<Long, List<MangaSync>> mangasSync = new HashMap<>();
-    private final AtomicLong lastReqId = new AtomicLong(0);
 
     public synchronized void copyFrom(Library library) {
         synchronized (library) {
@@ -40,7 +39,6 @@ public class Library {
             this.chapters = new HashMap<>(library.chapters);
             this.mangaCategories = new HashMap<>(library.mangaCategories);
             this.mangasSync = new HashMap<>(library.mangasSync);
-            this.lastReqId.set(library.lastReqId.get());
         }
     }
 
@@ -254,14 +252,6 @@ public class Library {
         }
     }
 
-    public long getLastReqId() {
-        return lastReqId.get();
-    }
-
-    public void setLastReqId(long lastReqId) {
-        this.lastReqId.set(lastReqId);
-    }
-
     private class CategoryMapping implements Function<Category, Integer> {
         @Override
         public Integer apply(Category category) {
@@ -291,22 +281,45 @@ public class Library {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Library library = (Library) o;
+
+        if (lastIntId != library.lastIntId) return false;
+        if (lastLongId != library.lastLongId) return false;
+        if (mangas != null ? !mangas.equals(library.mangas) : library.mangas != null) return false;
+        if (categories != null ? !categories.equals(library.categories) : library.categories != null) return false;
+        if (chapters != null ? !chapters.equals(library.chapters) : library.chapters != null) return false;
+        if (mangaCategories != null ? !mangaCategories.equals(library.mangaCategories) : library.mangaCategories != null)
+            return false;
+        return mangasSync != null ? mangasSync.equals(library.mangasSync) : library.mangasSync == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = lastIntId;
+        result = 31 * result + (int) (lastLongId ^ (lastLongId >>> 32));
+        result = 31 * result + (mangas != null ? mangas.hashCode() : 0);
+        result = 31 * result + (categories != null ? categories.hashCode() : 0);
+        result = 31 * result + (chapters != null ? chapters.hashCode() : 0);
+        result = 31 * result + (mangaCategories != null ? mangaCategories.hashCode() : 0);
+        result = 31 * result + (mangasSync != null ? mangasSync.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return "Library{"
-                + "lastIntId="
-                + lastIntId
-                + ", lastLongId="
-                + lastLongId
-                + ", mangas="
-                + mangas
-                + ", categories="
-                + categories
-                + ", chapters="
-                + chapters
-                + ", mangaCategories="
-                + mangaCategories
-                + ", mangasSync="
-                + mangasSync
-                + '}';
+        return "Library{" +
+                "lastIntId=" + lastIntId +
+                ", lastLongId=" + lastLongId +
+                ", mangas=" + mangas +
+                ", categories=" + categories +
+                ", chapters=" + chapters +
+                ", mangaCategories=" + mangaCategories +
+                ", mangasSync=" + mangasSync +
+                '}';
     }
 }

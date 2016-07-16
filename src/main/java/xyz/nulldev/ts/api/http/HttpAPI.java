@@ -28,8 +28,8 @@ public class HttpAPI {
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
         Spark.staticFiles.location("/static");
-        Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page/:lastReqId", imageRoute);
-        Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page/:lastReqId/", imageRoute);
+        Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page", imageRoute);
+        Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page/", imageRoute);
         Spark.get(API_ROOT + "/cover/:mangaId", coverRoute);
         Spark.get(API_ROOT + "/cover/:mangaId/", coverRoute);
         Spark.get(API_ROOT + "/library", libraryRoute);
