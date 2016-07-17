@@ -6,6 +6,7 @@ import spark.Response;
 import spark.Route;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.LeniantParser;
 
 import java.io.*;
@@ -17,24 +18,22 @@ import java.nio.file.Paths;
  * Author: nulldev
  * Creation Date: 13/07/16
  */
-public class CoverRoute implements Route {
+public class CoverRoute extends TachiWebRoute {
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
-    private Library library;
-
     public CoverRoute(Library library) {
-        this.library = library;
+        super(library);
     }
 
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handleReq(Request request, Response response) throws Exception {
         response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         if (mangaId == null) {
             return "MangaID must be specified!";
         }
-        Manga manga = library.getManga(mangaId);
+        Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
             return "The specified manga does not exist!";
         }

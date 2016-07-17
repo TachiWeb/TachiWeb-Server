@@ -10,6 +10,7 @@ import spark.Route;
 import spark.utils.IOUtils;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.LeniantParser;
 
 import java.io.FileInputStream;
@@ -24,15 +25,14 @@ import java.util.List;
  * Creation Date: 12/07/16
  */
 //TODO Support image predownloading
-public class ImageRoute implements Route {
-    private Library library;
+public class ImageRoute extends TachiWebRoute {
 
     public ImageRoute(Library library) {
-        this.library = library;
+        super(library);
     }
 
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handleReq(Request request, Response response) throws Exception {
         response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
@@ -45,7 +45,7 @@ public class ImageRoute implements Route {
         if (page == null || page < 0) {
             page = 0;
         }
-        Manga manga = library.getManga(mangaId);
+        Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
             return "The specified manga does not exist!";
         }
@@ -58,7 +58,7 @@ public class ImageRoute implements Route {
         } catch (Exception e) {
             return "This manga's source is not loaded!";
         }
-        Chapter chapter = library.getChapter(chapterId);
+        Chapter chapter = getLibrary().getChapter(chapterId);
         if (chapter == null) {
             return "The specified chapter does not exist!";
         }

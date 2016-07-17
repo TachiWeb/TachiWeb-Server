@@ -7,6 +7,7 @@ import xyz.nulldev.ts.util.UnboxTherapy;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class Library {
     private Map<Long, List<Chapter>> chapters = new HashMap<>();
     private Map<Long, List<Integer>> mangaCategories = new HashMap<>();
     private Map<Long, List<MangaSync>> mangasSync = new HashMap<>();
+    private final AtomicReference<Object> masterLock = new AtomicReference<>(null);
 
     public synchronized void copyFrom(Library library) {
         synchronized (library) {
@@ -280,6 +282,10 @@ public class Library {
         }
     }
 
+    public AtomicReference<Object> getMasterLock() {
+        return masterLock;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -294,8 +300,8 @@ public class Library {
         if (chapters != null ? !chapters.equals(library.chapters) : library.chapters != null) return false;
         if (mangaCategories != null ? !mangaCategories.equals(library.mangaCategories) : library.mangaCategories != null)
             return false;
-        return mangasSync != null ? mangasSync.equals(library.mangasSync) : library.mangasSync == null;
-
+        if (mangasSync != null ? !mangasSync.equals(library.mangasSync) : library.mangasSync != null) return false;
+        return masterLock != null ? masterLock.equals(library.masterLock) : library.masterLock == null;
     }
 
     @Override
@@ -307,6 +313,7 @@ public class Library {
         result = 31 * result + (chapters != null ? chapters.hashCode() : 0);
         result = 31 * result + (mangaCategories != null ? mangaCategories.hashCode() : 0);
         result = 31 * result + (mangasSync != null ? mangasSync.hashCode() : 0);
+        result = 31 * result + (masterLock != null ? masterLock.hashCode() : 0);
         return result;
     }
 
@@ -320,6 +327,7 @@ public class Library {
                 ", chapters=" + chapters +
                 ", mangaCategories=" + mangaCategories +
                 ", mangasSync=" + mangasSync +
+                ", masterLock=" + masterLock +
                 '}';
     }
 }

@@ -8,6 +8,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.LeniantParser;
 
 import java.util.List;
@@ -17,31 +18,30 @@ import java.util.List;
  * Author: nulldev
  * Creation Date: 15/07/16
  */
-public class ChaptersRoute implements Route {
+public class ChaptersRoute extends TachiWebRoute {
     public static final String KEY_ID = "id";
     public static final String KEY_NAME = "name";
     public static final String KEY_DATE = "date";
     public static final String KEY_READ = "read";
     public static final String KEY_LAST_READ = "last_page_read";
     public static final String KEY_CHAPTER_NUMBER = "chapter_number";
-    private Library library;
 
     public ChaptersRoute(Library library) {
-        this.library = library;
+        super(library);
     }
 
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handleReq(Request request, Response response) throws Exception {
         response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         if (mangaId == null) {
             return "MangaID must be specified!";
         }
-        Manga manga = library.getManga(mangaId);
+        Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
             return "The specified manga does not exist!";
         }
-        List<Chapter> chapters = library.getChapters(manga);
+        List<Chapter> chapters = getLibrary().getChapters(manga);
         JSONArray array = new JSONArray();
         for(Chapter chapter : chapters) {
             JSONObject object = new JSONObject();

@@ -9,6 +9,7 @@ import spark.Response;
 import spark.Route;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.LeniantParser;
 
 import java.util.List;
@@ -18,16 +19,14 @@ import java.util.List;
  * Author: nulldev
  * Creation Date: 15/07/16
  */
-public class PageCountRoute implements Route {
-
-    private Library library;
+public class PageCountRoute extends TachiWebRoute {
 
     public PageCountRoute(Library library) {
-        this.library = library;
+        super(library);
     }
 
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handleReq(Request request, Response response) throws Exception {
         response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
@@ -36,7 +35,7 @@ public class PageCountRoute implements Route {
         } else if (chapterId == null) {
             return "ChapterID must be specified!";
         }
-        Manga manga = library.getManga(mangaId);
+        Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
             return "The specified manga does not exist!";
         }
@@ -49,7 +48,7 @@ public class PageCountRoute implements Route {
         } catch (Exception e) {
             return "This manga's source is not loaded!";
         }
-        Chapter chapter = library.getChapter(chapterId);
+        Chapter chapter = getLibrary().getChapter(chapterId);
         if (chapter == null) {
             return "The specified chapter does not exist!";
         }

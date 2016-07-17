@@ -6,6 +6,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.api.http.TachiWebRoute;
 
 import java.util.List;
 
@@ -14,19 +15,18 @@ import java.util.List;
  * Author: nulldev
  * Creation Date: 12/07/16
  */
-public class DebugLibrary implements Route {
-    Library library;
+public class DebugLibrary extends TachiWebRoute {
 
     public DebugLibrary(Library library) {
-        this.library = library;
+        super(library);
     }
 
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handleReq(Request request, Response response) throws Exception {
         StringBuilder builder = new StringBuilder();
         builder.append("<table border=\"1\"><tr><th>Manga</th><th>Chapter</th></tr>");
-        for (Manga manga : library.getMangas()) {
-            List<Chapter> chapters = library.getChapters(manga);
+        for (Manga manga : getLibrary().getMangas()) {
+            List<Chapter> chapters = getLibrary().getChapters(manga);
             if (chapters.size() > 0) {
                 Chapter first = chapters.remove(0);
                 builder.append("<tr><td rowspan=\"")
