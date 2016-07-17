@@ -1,6 +1,7 @@
 package xyz.nulldev.ts;
 
 import android.content.Context;
+import eu.kanade.tachiyomi.data.backup.BackupManager;
 import eu.kanade.tachiyomi.data.cache.ChapterCache;
 import eu.kanade.tachiyomi.data.cache.CoverCache;
 import eu.kanade.tachiyomi.data.network.NetworkHelper;
@@ -60,6 +61,11 @@ public class DIReplacement {
     private CoverCache coverCache = new CoverCache(context);
     public CoverCache injectCoverCache() {
         return coverCache;
+    }
+
+    private BackupManager backupManager = new BackupManager();
+    public BackupManager injectBackupManager() {
+        return backupManager;
     }
 
     private Library library = new Library();

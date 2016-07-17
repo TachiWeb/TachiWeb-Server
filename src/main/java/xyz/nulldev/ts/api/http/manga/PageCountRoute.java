@@ -27,7 +27,6 @@ public class PageCountRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
-        response.header("Access-Control-Allow-Origin", "*");
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
         if (mangaId == null) {

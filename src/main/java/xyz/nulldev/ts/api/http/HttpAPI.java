@@ -5,10 +5,10 @@ import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.api.http.debug.DebugLibrary;
 import xyz.nulldev.ts.api.http.image.CoverRoute;
 import xyz.nulldev.ts.api.http.image.ImageRoute;
+import xyz.nulldev.ts.api.http.library.CreateBackupRoute;
 import xyz.nulldev.ts.api.http.library.LibraryRoute;
-import xyz.nulldev.ts.api.http.manga.ChaptersRoute;
-import xyz.nulldev.ts.api.http.manga.MangaRoute;
-import xyz.nulldev.ts.api.http.manga.PageCountRoute;
+import xyz.nulldev.ts.api.http.library.RestoreFromFileRoute;
+import xyz.nulldev.ts.api.http.manga.*;
 
 /**
  * Project: TachiServer
@@ -24,6 +24,10 @@ public class HttpAPI {
     private MangaRoute mangaRoute = new MangaRoute(DIReplacement.get().getLibrary());
     private ChaptersRoute chapterRoute = new ChaptersRoute(DIReplacement.get().getLibrary());
     private PageCountRoute pageCountRoute = new PageCountRoute(DIReplacement.get().getLibrary());
+    private CreateBackupRoute createBackupRoute = new CreateBackupRoute(DIReplacement.get().getLibrary());
+    private RestoreFromFileRoute restoreFromFileRoute = new RestoreFromFileRoute(DIReplacement.get().getLibrary());
+    private FaveRoute faveRoute = new FaveRoute(DIReplacement.get().getLibrary());
+    private ReadingStatusRoute readingStatusRoute = new ReadingStatusRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
@@ -40,6 +44,14 @@ public class HttpAPI {
         Spark.get(API_ROOT + "/chapters/:mangaId/", chapterRoute);
         Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId", pageCountRoute);
         Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId/", pageCountRoute);
+        Spark.get(API_ROOT + "/backup", createBackupRoute);
+        Spark.get(API_ROOT + "/backup/", createBackupRoute);
+        Spark.post(API_ROOT + "/restore_file", restoreFromFileRoute);
+        Spark.post(API_ROOT + "/restore_file/", restoreFromFileRoute);
+        Spark.get(API_ROOT + "/fave/:mangaId", faveRoute);
+        Spark.get(API_ROOT + "/fave/:mangaId/", faveRoute);
+        Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId", readingStatusRoute);
+        Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId/", readingStatusRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }

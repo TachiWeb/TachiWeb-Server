@@ -6,20 +6,16 @@ import xyz.nulldev.ts.util.OptionalUtils;
 import xyz.nulldev.ts.util.UnboxTherapy;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 11/07/16
- */
-
-/**
+ * 
  * (Mostly) Drop-in replacement for DatabaseHelper
  */
 public class Library {
@@ -30,7 +26,7 @@ public class Library {
     private Map<Long, List<Chapter>> chapters = new HashMap<>();
     private Map<Long, List<Integer>> mangaCategories = new HashMap<>();
     private Map<Long, List<MangaSync>> mangasSync = new HashMap<>();
-    private final AtomicReference<Object> masterLock = new AtomicReference<>(null);
+    private final AtomicReference<ReentrantLock> masterLock = new AtomicReference<>(null);
 
     public synchronized void copyFrom(Library library) {
         synchronized (library) {
@@ -282,7 +278,7 @@ public class Library {
         }
     }
 
-    public AtomicReference<Object> getMasterLock() {
+    public AtomicReference<ReentrantLock> getMasterLock() {
         return masterLock;
     }
 

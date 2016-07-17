@@ -1,6 +1,7 @@
 package xyz.nulldev.ts.files;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Project: TachiServer
@@ -26,8 +27,21 @@ public class Files {
         return mkdirs(new File(getStorageDir(), "external_cache"));
     }
 
+    public static File getLibraryDir() {
+        return mkdirs(new File(getStorageDir(), "library"));
+    }
+
     private static File mkdirs(File file) {
         file.mkdirs();
         return file;
+    }
+
+    public static boolean arrayContainsFileWithName(File[] list, String file) {
+        for(File file1 : list) {
+            if(Objects.equals(file1.getName(), file)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

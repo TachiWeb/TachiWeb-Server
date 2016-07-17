@@ -27,9 +27,8 @@ public class LibraryRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
-        response.header("Access-Control-Allow-Origin", "*");
         JSONArray array = new JSONArray();
-        for(Manga manga : getLibrary().getMangas()) {
+        for(Manga manga : getLibrary().getFavoriteMangas()) {
             JSONObject mangaJson = new JSONObject();
             mangaJson.put(KEY_ID, manga.getId());
             mangaJson.put(KEY_TITLE, manga.getTitle());

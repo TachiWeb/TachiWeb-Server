@@ -5,6 +5,8 @@ import spark.Response;
 import spark.Route;
 import xyz.nulldev.ts.Library;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Project: TachiServer
  * Author: nulldev
@@ -20,10 +22,17 @@ public abstract class TachiWebRoute implements Route {
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        Object masterLock = library.getMasterLock().get();
+        response.header("Access-Control-Allow-Origin", "*");
+        ReentrantLock masterLock = library.getMasterLock().get();
         if(masterLock != null) {
-            synchronized (masterLock) {
-                return handleReq(request, response);
+            masterLock.lock();
+            try {
+                Object toReturn = handleReq(request, response);
+                masterLock.unlock();
+                return toReturn;
+            } catch (Throwable e) {
+                masterLock.unlock();
+                throw e;
             }
         } else {
             return handleReq(request, response);
