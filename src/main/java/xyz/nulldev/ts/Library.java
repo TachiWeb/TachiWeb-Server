@@ -274,6 +274,22 @@ public class Library {
         return lastLongId++;
     }
 
+    int getLastIntId() {
+        return lastIntId;
+    }
+
+    void setLastIntId(int lastIntId) {
+        this.lastIntId = lastIntId;
+    }
+
+    long getLastLongId() {
+        return lastLongId;
+    }
+
+    void setLastLongId(long lastLongId) {
+        this.lastLongId = lastLongId;
+    }
+
     public LibraryTransaction newTransaction() {
         return new LibraryTransaction();
     }

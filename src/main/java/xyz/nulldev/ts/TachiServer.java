@@ -1,5 +1,7 @@
 package xyz.nulldev.ts;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import xyz.nulldev.ts.api.http.HttpAPI;
 import xyz.nulldev.ts.files.Files;
 
@@ -15,6 +17,9 @@ import java.util.TimerTask;
  * Creation Date: 10/07/16
  */
 public class TachiServer {
+    private static final String KEY_LAST_LIBRARY_INT = "lastInt";
+    private static final String KEY_LAST_LIBRARY_LONG = "lastLong";
+
     public static int SAVE_INTERVAL = 15 * 60 * 1000; //The interval between library saves
     private static Timer timer; //Timers responsible for auto-saving the library
 
@@ -25,18 +30,21 @@ public class TachiServer {
         }
         //Schedule a timer to auto-save the library every 15 minutes (specified in SAVE_INTERVAL)
         timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                saveLibrary();
-            }
-        }, SAVE_INTERVAL, SAVE_INTERVAL);
         //Setup auto save on library close
+        timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        saveLibrary();
+                    }
+                },
+                SAVE_INTERVAL,
+                SAVE_INTERVAL);
         setupShutdownHooks();
         //Start the HTTP API
         new HttpAPI().start();
     }
-    
+
     /**
      * Setup any necessary shutdown hooks such as library persistence.
      **/
@@ -48,19 +56,44 @@ public class TachiServer {
             saveLibrary();
         }));
     }
-    
+
+    /**
+     * Setup any necessary shutdown hooks such as library persistence.
+     **/
+    public static void setupShutdownHooks() {
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread(
+                                () -> {
+                                    timer.cancel();
+                                    saveLibrary();
+                                }));
+    }
+
+    private static SharedPreferences getLibrarySharedPrefs() {
+        return DIReplacement.get()
+                .getContext()
+                .getSharedPreferences("libraryPrefs", Context.MODE_PRIVATE);
+    }
+
     /**
      * Load the last persisted library
      **/
     public static void loadLibrary() {
         try {
             DIReplacement.get().injectBackupManager().restoreFromFile(getLibraryFile());
+            //Get last int and long ids
+            SharedPreferences preferences = getLibrarySharedPrefs();
+            Library library = DIReplacement.get().getLibrary();
+            library.setLastIntId(preferences.getInt(KEY_LAST_LIBRARY_INT, library.getLastIntId()));
+            library.setLastLongId(
+                    preferences.getLong(KEY_LAST_LIBRARY_LONG, library.getLastLongId()));
         } catch (IOException e) {
             e.printStackTrace();
             //TODO Log this
         }
     }
-    
+
     /**
      * Get the file where the latest library should be stored.
      **/
@@ -78,7 +111,7 @@ public class TachiServer {
         System.out.println("Saving library...");
         File libraryFile = getLibraryFile();
         //Move library file if it already exists
-        if(libraryFile.exists()) {
+        if (libraryFile.exists()) {
             //List files in library folder
             File[] oldLibraryFiles = Files.getLibraryDir().listFiles();
             if (oldLibraryFiles == null) {
@@ -93,7 +126,10 @@ public class TachiServer {
             } while (Files.arrayContainsFileWithName(oldLibraryFiles, oldLibraryMoveTarget));
             //Actually move the file
             try {
-                java.nio.file.Files.move(libraryFile.toPath(), new File(Files.getLibraryDir(), oldLibraryMoveTarget).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                java.nio.file.Files.move(
+                        libraryFile.toPath(),
+                        new File(Files.getLibraryDir(), oldLibraryMoveTarget).toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
                 //TODO Log this
@@ -102,6 +138,13 @@ public class TachiServer {
         //Save the library to the library file
         try {
             DIReplacement.get().injectBackupManager().backupToFile(libraryFile, false);
+            //Save last int and long ids
+            Library library = DIReplacement.get().getLibrary();
+            getLibrarySharedPrefs()
+                    .edit()
+                    .putInt(KEY_LAST_LIBRARY_INT, library.getLastIntId())
+                    .putLong(KEY_LAST_LIBRARY_LONG, library.getLastLongId())
+                    .commit();
         } catch (IOException e) {
             e.printStackTrace();
             //TODO Log this
