@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 11/07/16
- * 
+ *
  * (Mostly) Drop-in replacement for DatabaseHelper
  */
 public class Library {

@@ -1,3 +1,3 @@
-data/
-target/
-.idea/workspace.xml
+/data/
+/target/
+/.idea/workspace.xml
