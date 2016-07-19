@@ -2,6 +2,8 @@ package xyz.nulldev.ts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.nulldev.ts.api.http.HttpAPI;
 import xyz.nulldev.ts.files.Files;
 
@@ -23,7 +25,10 @@ public class TachiServer {
     public static int SAVE_INTERVAL = 15 * 60 * 1000; //The interval between library saves
     private static Timer timer; //Timers responsible for auto-saving the library
 
+    private static Logger logger = LoggerFactory.getLogger(TachiServer.class);
+
     public static void main(String[] args) {
+        logger.info("Starting server...");
         //Load the previously persisted library
         if(getLibraryFile().exists()) {
             loadLibrary();
@@ -53,6 +58,7 @@ public class TachiServer {
                 .addShutdownHook(
                         new Thread(
                                 () -> {
+                                    logger.info("Server shutting down...");
                                     timer.cancel(); //Cancel the auto-save timer
                                     saveLibrary(); //Save the library
                                 }));
@@ -77,8 +83,7 @@ public class TachiServer {
             library.setLastLongId(
                     preferences.getLong(KEY_LAST_LIBRARY_LONG, library.getLastLongId()));
         } catch (IOException e) {
-            e.printStackTrace();
-            //TODO Log this
+            logger.error("Failed to load library, falling back to empty library!", e);
         }
     }
 
@@ -95,8 +100,7 @@ public class TachiServer {
      * Moves old library to 'library_old_[id].json' before saving the new library.
      **/
     public static void saveLibrary() {
-        //TODO Log instead of println
-        System.out.println("Saving library...");
+        logger.info("Saving library...");
         File libraryFile = getLibraryFile();
         //Move library file if it already exists
         if (libraryFile.exists()) {
@@ -119,8 +123,7 @@ public class TachiServer {
                         new File(Files.getLibraryDir(), oldLibraryMoveTarget).toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                e.printStackTrace();
-                //TODO Log this
+                logger.error("Failed to move old library from {} to {}!", libraryFile.getName(), oldLibraryMoveTarget, e);
             }
         }
         //Save the library to the library file
@@ -134,8 +137,7 @@ public class TachiServer {
                     .putLong(KEY_LAST_LIBRARY_LONG, library.getLastLongId())
                     .commit();
         } catch (IOException e) {
-            e.printStackTrace();
-            //TODO Log this
+            logger.error("Failed to save library!", e);
         }
     }
 }
