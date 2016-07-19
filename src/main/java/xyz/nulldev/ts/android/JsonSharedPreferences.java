@@ -47,12 +47,16 @@ public class JsonSharedPreferences implements SharedPreferences {
     public synchronized void loadFromString(String string) {
         try {
             JSONObject jsonObject = new JSONObject(string);
+            //Changes are need to be applied atomically so we temporarily store all changes in a seperate map
             Map<String, Object> tempMap = new HashMap<>();
+            //Loop through all preference objects in JSON
             for (String key : jsonObject.keySet()) {
                 JSONObject object = jsonObject.getJSONObject(key);
+                //Load the object's Java type
                 String typeString = object.getString(KEY_TYPE);
                 PrefType type = PrefType.valueOf(typeString);
                 Object res;
+                //Map the JSON object's value to it's Java value
                 switch (type) {
                     case String:
                         res = object.getString(KEY_VALUE);
@@ -82,8 +86,10 @@ public class JsonSharedPreferences implements SharedPreferences {
                         res = null;
                         break;
                 }
+                //Queue the loaded object for placement into the in-memory preference map
                 tempMap.put(key, res);
             }
+            //Apply all changes made to the in-memory preference map atomically
             prefs = tempMap;
         } catch (JSONException e) {
             throw new RuntimeException("Error parsing JSON shared preferences!");
@@ -92,13 +98,16 @@ public class JsonSharedPreferences implements SharedPreferences {
 
     public synchronized String saveToString() {
         JSONObject object = new JSONObject();
+        //Loop through every preference in the in-memory preference map
         for (Map.Entry<String, Object> entry : prefs.entrySet()) {
             JSONObject entryObj = new JSONObject();
             Object value = entry.getValue();
+            //Determin the object's type
             PrefType type = PrefType.fromObject(value);
             if (type == PrefType.Float) {
                 value = value.toString();
             }
+            //Put the preference's type and value into a JSON object
             entryObj.put(KEY_TYPE, type.name());
             entryObj.put(KEY_VALUE, value);
             object.put(entry.getKey(), entryObj);
@@ -176,13 +185,9 @@ public class JsonSharedPreferences implements SharedPreferences {
 
     private class JsonSharedPreferencesEditor implements Editor {
 
-        Map<String, Object> prefsClone = new HashMap<>();
+        Map<String, Object> prefsClone = new HashMap<>(prefs);
 
-        {
-            prefsClone.putAll(prefs);
-        }
-
-        List<String> affectedKeys = new ArrayList<>();
+        List<String> affectedKeys = new ArrayList<>(); //List of all affected keys to invoke listeners on once changes applied
 
         private void recordChange(String key) {
             if (!affectedKeys.contains(key)) {
@@ -255,9 +260,11 @@ public class JsonSharedPreferences implements SharedPreferences {
                 Map<String, Object> oldPrefs = prefs;
                 prefs = prefsClone;
                 if(file != null) {
+                    //Delete old on-disk copy of preferences
                     if(file.exists()) {
                         file.delete();
                     }
+                    //Save new preferences to disk
                     String string = saveToString();
                     try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)))) {
                         writer.print(string);
@@ -269,6 +276,7 @@ public class JsonSharedPreferences implements SharedPreferences {
                         return false;
                     }
                 }
+                //Invoke preference change listeners
                 for (String key : affectedKeys) {
                     for (OnSharedPreferenceChangeListener listener : listeners) {
                         listener.onSharedPreferenceChanged(JsonSharedPreferences.this, key);
@@ -294,7 +302,7 @@ public class JsonSharedPreferences implements SharedPreferences {
         this.file = file;
     }
 
-    /** Preference types **/
+    /** Preference types (for storing what type of object a preference is)**/
     private enum PrefType {
         String,
         StringSet,
