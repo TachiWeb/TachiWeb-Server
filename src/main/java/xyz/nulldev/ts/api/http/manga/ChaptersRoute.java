@@ -34,13 +34,14 @@ public class ChaptersRoute extends TachiWebRoute {
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         if (mangaId == null) {
-            return "MangaID must be specified!";
+            return error("MangaID must be specified!");
         }
         Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
-            return "The specified manga does not exist!";
+            return error("The specified manga does not exist!");
         }
         List<Chapter> chapters = getLibrary().getChapters(manga);
+        //TODO Return in JSON
         JSONArray array = new JSONArray();
         for(Chapter chapter : chapters) {
             JSONObject object = new JSONObject();

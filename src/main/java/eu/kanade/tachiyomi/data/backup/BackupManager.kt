@@ -54,22 +54,22 @@ class BackupManager() {
      * @throws IOException if there's any IO error.
      */
     @Throws(IOException::class)
-    fun backupToFile(file: File) {
-        val root = backupToJson()
+    fun backupToFile(file: File, favesOnly: Boolean = true) {
+        val root = backupToJson(favesOnly)
 
         FileWriter(file).use {
             gson.toJson(root, it)
         }
     }
 
-    fun backupToString(): String = gson.toJson(backupToJson())
+    fun backupToString(favesOnly: Boolean = true): String = gson.toJson(backupToJson(favesOnly))
 
     /**
      * Creates a JSON object containing the backup of the app's data.
      *
      * @return the backup as a JSON object.
      */
-    fun backupToJson(): JsonObject {
+    fun backupToJson(favesOnly: Boolean = true): JsonObject {
         val lock = ReentrantLock()
         lock.lock()
         DIReplacement.get().library.masterLock.set(lock)
@@ -80,7 +80,11 @@ class BackupManager() {
             // Backup library mangas and its dependencies
             val mangaEntries = JsonArray()
             root.add(MANGAS, mangaEntries)
-            for (manga in DIReplacement.get().library.favoriteMangas) {
+            val toBackup = if(favesOnly)
+                DIReplacement.get().library.favoriteMangas
+            else
+                DIReplacement.get().library.mangas
+            for (manga in toBackup) {
                 mangaEntries.add(backupManga(manga))
             }
 

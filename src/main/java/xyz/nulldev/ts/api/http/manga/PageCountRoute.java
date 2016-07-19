@@ -30,13 +30,13 @@ public class PageCountRoute extends TachiWebRoute {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
         if (mangaId == null) {
-            return "MangaID must be specified!";
+            return error("MangaID must be specified!");
         } else if (chapterId == null) {
-            return "ChapterID must be specified!";
+            return error("ChapterID must be specified!");
         }
         Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
-            return "The specified manga does not exist!";
+            return error("The specified manga does not exist!");
         }
         Source source;
         try {
@@ -45,11 +45,11 @@ public class PageCountRoute extends TachiWebRoute {
                 throw new IllegalArgumentException();
             }
         } catch (Exception e) {
-            return "This manga's source is not loaded!";
+            return error("This manga's source is not loaded!");
         }
         Chapter chapter = getLibrary().getChapter(chapterId);
         if (chapter == null) {
-            return "The specified chapter does not exist!";
+            return error("The specified chapter does not exist!");
         }
         List<Page> pages = null;
         try {
@@ -59,8 +59,9 @@ public class PageCountRoute extends TachiWebRoute {
             //TODO Logging
         }
         if (pages == null) {
-            return "Failed to fetch page list!";
+            return error("Failed to fetch page list!");
         }
+        //TODO Return in JSON
         return String.valueOf(pages.size());
     }
 }

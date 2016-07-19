@@ -40,18 +40,6 @@ public class FaveRoute extends TachiWebRoute {
         } else {
             return error("Parameter 'fave' is not a valid boolean!");
         }
-        return success(true).toString();
-    }
-
-    private static JSONObject success(boolean success) {
-        JSONObject object = new JSONObject();
-        object.put("success", success);
-        return object;
-    }
-
-    private static String error(String message) {
-        JSONObject object = success(false);
-        object.put("error", message);
-        return object.toString();
+        return success();
     }
 }

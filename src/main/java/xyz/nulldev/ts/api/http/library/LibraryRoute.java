@@ -27,6 +27,7 @@ public class LibraryRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
+        //TODO Return in JSON
         JSONArray array = new JSONArray();
         for(Manga manga : getLibrary().getFavoriteMangas()) {
             JSONObject mangaJson = new JSONObject();

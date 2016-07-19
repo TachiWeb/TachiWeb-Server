@@ -37,16 +37,16 @@ public class ImageRoute extends TachiWebRoute {
         Long chapterId = LeniantParser.parseLong(request.params(":chapterId"));
         Integer page = LeniantParser.parseInteger(request.params(":page"));
         if (mangaId == null) {
-            return "MangaID must be specified!";
+            return error("MangaID must be specified!");
         } else if (chapterId == null) {
-            return "ChapterID must be specified!";
+            return error("ChapterID must be specified!");
         }
         if (page == null || page < 0) {
             page = 0;
         }
         Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
-            return "The specified manga does not exist!";
+            return error("The specified manga does not exist!");
         }
         Source source;
         try {
@@ -55,11 +55,11 @@ public class ImageRoute extends TachiWebRoute {
                 throw new IllegalArgumentException();
             }
         } catch (Exception e) {
-            return "This manga's source is not loaded!";
+            return error("This manga's source is not loaded!");
         }
         Chapter chapter = getLibrary().getChapter(chapterId);
         if (chapter == null) {
-            return "The specified chapter does not exist!";
+            return error("The specified chapter does not exist!");
         }
         List<Page> pages = null;
         try{
@@ -69,7 +69,7 @@ public class ImageRoute extends TachiWebRoute {
             //TODO Logging
         }
         if (pages == null) {
-            return "Failed to fetch page list!";
+            return error("Failed to fetch page list!");
         }
         Page pageObj = null;
         for (Page toCheck : pages) {
@@ -79,7 +79,7 @@ public class ImageRoute extends TachiWebRoute {
             }
         }
         if (pageObj == null) {
-            return "Could not find specified page!";
+            return error("Could not find specified page!");
         }
         pageObj = source.fetchImage(pageObj).toBlocking().first();
         try(OutputStream outputStream = response.raw().getOutputStream()) {
@@ -94,7 +94,7 @@ public class ImageRoute extends TachiWebRoute {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Failed to download page!";
+            return error("Failed to download page!");
         }
         return null;
     }

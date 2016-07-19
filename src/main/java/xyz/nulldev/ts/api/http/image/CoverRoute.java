@@ -30,11 +30,11 @@ public class CoverRoute extends TachiWebRoute {
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         if (mangaId == null) {
-            return "MangaID must be specified!";
+            return error("MangaID must be specified!");
         }
         Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
-            return "The specified manga does not exist!";
+            return error("The specified manga does not exist!");
         }
         String url = manga.getThumbnail_url();
         if (url == null || url.isEmpty()) {
@@ -64,7 +64,7 @@ public class CoverRoute extends TachiWebRoute {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return "Failed to download cover image!";
+                return error("Failed to download cover image!");
             } finally {
                 if(httpResponse != null) {
                     httpResponse.close();
@@ -84,7 +84,7 @@ public class CoverRoute extends TachiWebRoute {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error sending cached cover!";
+            return error("Error sending cached cover!");
         }
         return null;
     }

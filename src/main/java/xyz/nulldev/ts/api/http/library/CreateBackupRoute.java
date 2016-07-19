@@ -22,6 +22,6 @@ public class CreateBackupRoute extends TachiWebRoute {
             response.header("Content-Type", "application/octet-stream");
             response.header("Content-Disposition", "attachment; filename=\"backup.json\"");
         }
-        return DIReplacement.get().injectBackupManager().backupToString();
+        return DIReplacement.get().injectBackupManager().backupToString(true);
     }
 }

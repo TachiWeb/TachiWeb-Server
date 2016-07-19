@@ -26,8 +26,8 @@ public class RestoreFromFileRoute extends TachiWebRoute {
             DIReplacement.get().injectBackupManager().restoreFromStream(is);
         } catch (Exception e) {
             e.printStackTrace();
-            return "{\"success\": false}";
+            return error("Restore failed!");
         }
-        return "{\"success\": true}";
+        return success();
     }
 }

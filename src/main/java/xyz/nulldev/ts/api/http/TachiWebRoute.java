@@ -1,5 +1,6 @@
 package xyz.nulldev.ts.api.http;
 
+import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -43,5 +44,21 @@ public abstract class TachiWebRoute implements Route {
 
     public Library getLibrary() {
         return library;
+    }
+
+    public static String error(String message) {
+        JSONObject object = success(false);
+        object.put("error", message);
+        return object.toString();
+    }
+
+    public static String success() {
+        return success(true).toString();
+    }
+
+    public static JSONObject success(boolean success) {
+        JSONObject object = new JSONObject();
+        object.put("success", success);
+        return object;
     }
 }

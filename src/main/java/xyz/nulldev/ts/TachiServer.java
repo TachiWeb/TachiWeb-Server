@@ -72,7 +72,7 @@ public class TachiServer {
             }
         }
         try {
-            DIReplacement.get().injectBackupManager().backupToFile(libraryFile);
+            DIReplacement.get().injectBackupManager().backupToFile(libraryFile, false);
         } catch (IOException e) {
             e.printStackTrace();
             //TODO Log this

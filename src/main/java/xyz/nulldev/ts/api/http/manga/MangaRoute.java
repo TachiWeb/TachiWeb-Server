@@ -39,13 +39,13 @@ public class MangaRoute extends TachiWebRoute {
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));
         if (mangaId == null) {
-            return "MangaID must be specified!";
+            return error("MangaID must be specified!");
         }
         Manga manga = getLibrary().getManga(mangaId);
         if (manga == null) {
-            return "The specified manga does not exist!";
+            return error("The specified manga does not exist!");
         }
-        JSONObject object = new JSONObject();
+        JSONObject object = success(true);
         object.put(KEY_TITLE, manga.getTitle());
         object.put(KEY_CHAPTER_COUNT, getLibrary().getChapters(manga).size());
         Source source = DIReplacement.get().injectSourceManager().get(manga.getSource());

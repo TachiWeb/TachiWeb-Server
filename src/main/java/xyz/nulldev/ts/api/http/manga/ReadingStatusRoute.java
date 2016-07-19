@@ -64,18 +64,6 @@ public class ReadingStatusRoute extends TachiWebRoute {
         if(read != null) {
             chapter.setRead(readB);
         }
-        return success(true);
-    }
-
-    private static JSONObject success(boolean success) {
-        JSONObject object = new JSONObject();
-        object.put("success", success);
-        return object;
-    }
-
-    private static String error(String message) {
-        JSONObject object = success(false);
-        object.put("error", message);
-        return object.toString();
+        return success();
     }
 }
