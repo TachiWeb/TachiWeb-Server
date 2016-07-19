@@ -28,6 +28,7 @@ public class HttpAPI {
     private RestoreFromFileRoute restoreFromFileRoute = new RestoreFromFileRoute(DIReplacement.get().getLibrary());
     private FaveRoute faveRoute = new FaveRoute(DIReplacement.get().getLibrary());
     private ReadingStatusRoute readingStatusRoute = new ReadingStatusRoute(DIReplacement.get().getLibrary());
+    private UpdateRoute updateRoute = new UpdateRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
@@ -52,6 +53,8 @@ public class HttpAPI {
         Spark.get(API_ROOT + "/fave/:mangaId/", faveRoute);
         Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId", readingStatusRoute);
         Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId/", readingStatusRoute);
+        Spark.get(API_ROOT + "/update/:mangaId/:updateType", updateRoute);
+        Spark.get(API_ROOT + "/update/:mangaId/:updateType/", updateRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }

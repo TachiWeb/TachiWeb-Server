@@ -4,6 +4,8 @@ import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.util.ChapterSourceSyncKt;
+import kotlin.Pair;
+import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
@@ -20,6 +22,10 @@ import java.util.List;
  * Creation Date: 18/07/16
  */
 public class UpdateRoute extends TachiWebRoute {
+
+    private static final String KEY_ADDED = "added";
+    private static final String KEY_REMOVED = "removed";
+
     public UpdateRoute(Library library) {
         super(library);
     }
@@ -50,22 +56,31 @@ public class UpdateRoute extends TachiWebRoute {
             return error("This manga's source is not loaded!");
         }
         if(updateType == UpdateType.INFO) {
+            //Update manga info
             try {
                 manga = source.fetchMangaDetails(manga).toBlocking().first();
                 if (manga == null) {
                     throw new NullPointerException();
                 }
+                //Update the manga in the library
                 getLibrary().insertManga(manga);
             } catch (Exception e) {
                 return error("Error updating manga!");
             }
         } else if(updateType == UpdateType.CHAPTERS) {
+            //Update manga chapters
             try {
                 List<Chapter> chapters = source.fetchChapterList(manga).toBlocking().first();
                 if(chapters == null) {
                     throw new NullPointerException();
                 }
-                ChapterSourceSyncKt.syncChaptersWithSource(getLibrary(), chapters, manga, source);
+                //Sync the library chapters with the source chapters
+                Pair<Integer, Integer> results = ChapterSourceSyncKt.syncChaptersWithSource(getLibrary(), chapters, manga, source);
+                //Return the results in JSON
+                JSONObject toReturn = success(true);
+                toReturn.put(KEY_ADDED, results.getFirst());
+                toReturn.put(KEY_REMOVED, results.getSecond());
+                return toReturn.toString();
             } catch (Exception e) {
                 return error("Error updating chapters!");
             }
@@ -75,6 +90,9 @@ public class UpdateRoute extends TachiWebRoute {
         return success();
     }
 
+    /**
+     * The type of update to perform
+     */
     private enum UpdateType {
         INFO,
         CHAPTERS
