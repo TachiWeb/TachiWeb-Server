@@ -40,6 +40,7 @@ public class CustomContext extends Context {
 
     @Override
     public String getString(int resId, Object... formatArgs) {
+        //Defer to custom R.java and format
         return String.format(getString(resId), formatArgs);
     }
 
@@ -113,6 +114,7 @@ public class CustomContext extends Context {
     @Override
     public synchronized SharedPreferences getSharedPreferences(String s, int i) {
         SharedPreferences preferences = prefs.get(s);
+        //Create new shared preferences if one does not exist
         if(preferences == null) {
             preferences = new JsonSharedPreferences(new File(Files.getPrefsDir(), s + ".json"));
             prefs.put(s, preferences);
@@ -172,6 +174,7 @@ public class CustomContext extends Context {
 
     @Override
     public File getCacheDir() {
+        //Defer to Files
         return Files.getCacheDir();
     }
 
@@ -182,11 +185,13 @@ public class CustomContext extends Context {
 
     @Override
     public File getExternalCacheDir() {
+        //Defer to Files
         return Files.getExtCacheDir();
     }
 
     @Override
     public File[] getExternalCacheDirs() {
+        //Defer to Files
         return new File[]{Files.getExtCacheDir()};
     }
 
