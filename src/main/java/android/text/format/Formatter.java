@@ -8,6 +8,8 @@ import java.text.DecimalFormat;
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 11/07/16
+ * 
+ * Custom reimplementation of some of the methods used in Android.
  */
 public class Formatter {
     private Formatter() {
