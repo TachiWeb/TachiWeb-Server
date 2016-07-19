@@ -84,6 +84,6 @@ public class CoverRoute extends TachiWebRoute {
             e.printStackTrace();
             return error("Error sending cached cover!");
         }
-        return null;
+        return "";
     }
 }

@@ -95,6 +95,6 @@ public class ImageRoute extends TachiWebRoute {
             e.printStackTrace();
             return error("Failed to download page!");
         }
-        return null;
+        return "";
     }
 }
