@@ -48,6 +48,7 @@ public class TachiServer {
             saveLibrary();
         }));
     }
+    
     /**
      * Load the last persisted library
      **/
@@ -59,12 +60,14 @@ public class TachiServer {
             //TODO Log this
         }
     }
+    
     /**
      * Get the file where the latest library should be stored.
      **/
     public static File getLibraryFile() {
         return new File(Files.getLibraryDir(), "library.json");
     }
+    
     /**
      * Save the library.
      * 
