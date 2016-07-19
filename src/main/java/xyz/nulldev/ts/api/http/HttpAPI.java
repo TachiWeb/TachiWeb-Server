@@ -2,6 +2,8 @@ package xyz.nulldev.ts.api.http;
 
 import spark.Spark;
 import xyz.nulldev.ts.DIReplacement;
+import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
+import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
 import xyz.nulldev.ts.api.http.debug.DebugLibrary;
 import xyz.nulldev.ts.api.http.image.CoverRoute;
 import xyz.nulldev.ts.api.http.image.ImageRoute;
@@ -29,6 +31,8 @@ public class HttpAPI {
     private FaveRoute faveRoute = new FaveRoute(DIReplacement.get().getLibrary());
     private ReadingStatusRoute readingStatusRoute = new ReadingStatusRoute(DIReplacement.get().getLibrary());
     private UpdateRoute updateRoute = new UpdateRoute(DIReplacement.get().getLibrary());
+    private ListSourcesRoute listSourcesRoute = new ListSourcesRoute(DIReplacement.get().getLibrary());
+    private CatalogueRoute catalogueRoute = new CatalogueRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
@@ -66,6 +70,12 @@ public class HttpAPI {
         //Update a manga/chapter
         Spark.get(API_ROOT + "/update/:mangaId/:updateType", updateRoute);
         Spark.get(API_ROOT + "/update/:mangaId/:updateType/", updateRoute);
+        //Source list
+        Spark.get(API_ROOT + "/sources", listSourcesRoute);
+        Spark.get(API_ROOT + "/sources/", listSourcesRoute);
+        //Catalogue
+        Spark.get(API_ROOT + "/catalogue/:sourceId/:page", catalogueRoute);
+        Spark.get(API_ROOT + "/catalogue/:sourceId/:page/", catalogueRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }
