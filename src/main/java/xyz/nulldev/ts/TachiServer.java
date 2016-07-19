@@ -36,12 +36,21 @@ public class TachiServer {
         //Start the HTTP API
         new HttpAPI().start();
     }
+    
+    /**
+     * Setup any necessary shutdown hooks such as library persistence.
+     **/
     public static void setupShutdownHooks() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            //Cancel the auto-save timer
             timer.cancel();
+            //Save the library
             saveLibrary();
         }));
     }
+    /**
+     * Load the last persisted library
+     **/
     public static void loadLibrary() {
         try {
             DIReplacement.get().injectBackupManager().restoreFromFile(getLibraryFile());
@@ -50,24 +59,36 @@ public class TachiServer {
             //TODO Log this
         }
     }
+    /**
+     * Get the file where the latest library should be stored.
+     **/
     public static File getLibraryFile() {
         return new File(Files.getLibraryDir(), "library.json");
     }
+    /**
+     * Save the library.
+     * 
+     * Moves old library to 'library_old_[id].json' before saving the new library.
+     **/
     public static void saveLibrary() {
         //TODO Log instead of println
         System.out.println("Saving library...");
         File libraryFile = getLibraryFile();
+        //Move library file if it already exists
         if(libraryFile.exists()) {
+            //List files in library folder
             File[] oldLibraryFiles = Files.getLibraryDir().listFiles();
             if (oldLibraryFiles == null) {
                 oldLibraryFiles = new File[0];
             }
+            //Loop through possible names for the old library file
             int lastLibraryId = 0;
             String oldLibraryMoveTarget;
             do {
                 lastLibraryId++;
                 oldLibraryMoveTarget = "library_old_" + lastLibraryId + ".json";
             } while (Files.arrayContainsFileWithName(oldLibraryFiles, oldLibraryMoveTarget));
+            //Actually move the file
             try {
                 java.nio.file.Files.move(libraryFile.toPath(), new File(Files.getLibraryDir(), oldLibraryMoveTarget).toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
@@ -75,6 +96,7 @@ public class TachiServer {
                 //TODO Log this
             }
         }
+        //Save the library to the library file
         try {
             DIReplacement.get().injectBackupManager().backupToFile(libraryFile, false);
         } catch (IOException e) {
