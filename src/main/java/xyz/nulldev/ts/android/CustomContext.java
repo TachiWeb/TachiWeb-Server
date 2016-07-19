@@ -27,11 +27,14 @@ import java.util.Map;
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 10/07/16
+ * 
+ * Custom context implementation.
  */
 public class CustomContext extends Context {
 
     @Override
     public String getString(int resId) {
+        //Defer to custom R.java
         return R.getString(resId);
     }
 
