@@ -24,12 +24,13 @@ public class JsonSharedPreferences implements SharedPreferences {
     private static final String KEY_TYPE = "t";
     private static final String KEY_VALUE = "v";
 
-    private Map<String, Object> prefs = new HashMap<>();
-    private List<OnSharedPreferenceChangeListener> listeners = new ArrayList<>();
-    private File file;
+    private Map<String, Object> prefs = new HashMap<>(); //In-memory preference values
+    private List<OnSharedPreferenceChangeListener> listeners = new ArrayList<>(); //Change listeners
+    private File file; //Where the values should be stored
 
     public JsonSharedPreferences(File file) {
         this.file = file;
+        //Load previous values if they exist
         if(file != null) {
             if(file.exists()) {
                 try {
