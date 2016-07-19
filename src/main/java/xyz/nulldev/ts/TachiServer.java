@@ -15,14 +15,15 @@ import java.util.TimerTask;
  * Creation Date: 10/07/16
  */
 public class TachiServer {
-    public static int SAVE_INTERVAL = 15 * 60 * 1000;
-    private static Timer timer;
+    public static int SAVE_INTERVAL = 15 * 60 * 1000; //The interval between library saves
+    private static Timer timer; //Timers responsible for auto-saving the library
 
     public static void main(String[] args) {
+        //Load the previously persisted library
         if(getLibraryFile().exists()) {
             loadLibrary();
         }
-        new HttpAPI().start();
+        //Schedule a timer to auto-save the library every 15 minutes (specified in SAVE_INTERVAL)
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -30,7 +31,10 @@ public class TachiServer {
                 saveLibrary();
             }
         }, SAVE_INTERVAL, SAVE_INTERVAL);
+        //Setup auto save on library close
         setupShutdownHooks();
+        //Start the HTTP API
+        new HttpAPI().start();
     }
     public static void setupShutdownHooks() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
