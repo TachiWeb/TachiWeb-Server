@@ -17,15 +17,12 @@
     <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.3.1" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.9.2" level="project" />
-    <orderEntry type="library" name="Maven: org.mozilla:rhino:1.7.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20160212" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.7" level="project" />
     <orderEntry type="library" name="Maven: com.github.salomonbrys.kotson:kotson:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: com.jakewharton:disklrucache:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.17" level="project" />
-    <orderEntry type="library" name="Maven: org.objenesis:objenesis:2.4" level="project" />
     <orderEntry type="library" name="Maven: com.sparkjava:spark-core:2.5" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.13" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.3.6.v20151106" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.3.6.v20151106" level="project" />
@@ -40,6 +37,8 @@
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-client:9.3.6.v20151106" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-servlet:9.3.6.v20151106" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-api:9.3.6.v20151106" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
+    <orderEntry type="library" name="Maven: org.mozilla:rhino:1.7.7.1" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: com.android:android:1.0">
         <CLASSES>

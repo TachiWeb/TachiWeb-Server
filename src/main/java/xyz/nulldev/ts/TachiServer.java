@@ -49,24 +49,12 @@ public class TachiServer {
      * Setup any necessary shutdown hooks such as library persistence.
      **/
     public static void setupShutdownHooks() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            //Cancel the auto-save timer
-            timer.cancel();
-            //Save the library
-            saveLibrary();
-        }));
-    }
-
-    /**
-     * Setup any necessary shutdown hooks such as library persistence.
-     **/
-    public static void setupShutdownHooks() {
         Runtime.getRuntime()
                 .addShutdownHook(
                         new Thread(
                                 () -> {
-                                    timer.cancel();
-                                    saveLibrary();
+                                    timer.cancel(); //Cancel the auto-save timer
+                                    saveLibrary(); //Save the library
                                 }));
     }
 
