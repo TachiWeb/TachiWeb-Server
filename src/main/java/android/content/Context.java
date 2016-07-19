@@ -38,6 +38,8 @@ import java.io.InputStream;
 
 /**
  * Android compat class
+ * 
+ * Allows initializing Context with an exception and overriding some originally final methods.
  */
 public abstract class Context {
     public static final String ACCESSIBILITY_SERVICE = "accessibility";
@@ -119,6 +121,7 @@ public abstract class Context {
     public static final String WIFI_SERVICE = "wifi";
     public static final String WINDOW_SERVICE = "window";
 
+    //Removed RuntimeException in constructor
     public Context() {
     }
 
@@ -145,11 +148,13 @@ public abstract class Context {
     public final CharSequence getText(int resId) {
         throw new RuntimeException("Stub!");
     }
-
+    
+    //Modified to not be final
     public String getString(int resId) {
         throw new RuntimeException("Stub!");
     }
 
+    //Modified to not be final
     public String getString(int resId, Object... formatArgs) {
         throw new RuntimeException("Stub!");
     }
