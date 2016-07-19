@@ -33,26 +33,37 @@ public class HttpAPI {
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
         Spark.staticFiles.location("/static");
+        //Get an image from a chapter
         Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page", imageRoute);
         Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page/", imageRoute);
+        //Get the cover of a manga
         Spark.get(API_ROOT + "/cover/:mangaId", coverRoute);
         Spark.get(API_ROOT + "/cover/:mangaId/", coverRoute);
+        //Get the library
         Spark.get(API_ROOT + "/library", libraryRoute);
         Spark.get(API_ROOT + "/library/", libraryRoute);
+        //Get details about a manga
         Spark.get(API_ROOT + "/manga_info/:mangaId", mangaRoute);
         Spark.get(API_ROOT + "/manga_info/:mangaId/", mangaRoute);
+        //Get the chapters of a manga
         Spark.get(API_ROOT + "/chapters/:mangaId", chapterRoute);
         Spark.get(API_ROOT + "/chapters/:mangaId/", chapterRoute);
+        //Get the page count of a chapter
         Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId", pageCountRoute);
         Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId/", pageCountRoute);
+        //Backup the library
         Spark.get(API_ROOT + "/backup", createBackupRoute);
         Spark.get(API_ROOT + "/backup/", createBackupRoute);
+        //Restore the library
         Spark.post(API_ROOT + "/restore_file", restoreFromFileRoute);
         Spark.post(API_ROOT + "/restore_file/", restoreFromFileRoute);
+        //Favorite/unfavorite a manga
         Spark.get(API_ROOT + "/fave/:mangaId", faveRoute);
         Spark.get(API_ROOT + "/fave/:mangaId/", faveRoute);
+        //Set the reading status of a chapter
         Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId", readingStatusRoute);
         Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId/", readingStatusRoute);
+        //Update a manga/chapter
         Spark.get(API_ROOT + "/update/:mangaId/:updateType", updateRoute);
         Spark.get(API_ROOT + "/update/:mangaId/:updateType/", updateRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
