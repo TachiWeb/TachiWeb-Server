@@ -1,7 +1,6 @@
 package xyz.nulldev.ts.api.http.manga;
 
 import eu.kanade.tachiyomi.data.database.models.Manga;
-import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.Library;

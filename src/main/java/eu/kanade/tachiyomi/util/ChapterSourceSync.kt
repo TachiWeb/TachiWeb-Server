@@ -20,7 +20,7 @@ import java.util.*
 fun syncChaptersWithSource(library: Library,
                            sourceChapters: List<Chapter>,
                            manga: Manga,
-                           source: Source) : Pair<Int, Int> {
+                           source: Source): Pair<Int, Int> {
 
     // Chapters from db.
     val dbChapters = library.getChapters(manga)
@@ -53,35 +53,36 @@ fun syncChaptersWithSource(library: Library,
     var readded = 0
 
     val transaction = library.newTransaction();
-        val deletedReadChapterNumbers = TreeSet<Float>()
-        if (!toDelete.isEmpty()) {
-            for (c in toDelete) {
-                if (c.read) {
-                    deletedReadChapterNumbers.add(c.chapter_number)
-                }
+    val deletedReadChapterNumbers = TreeSet<Float>()
+    if (!toDelete.isEmpty()) {
+        for (c in toDelete) {
+            if (c.read) {
+                deletedReadChapterNumbers.add(c.chapter_number)
             }
-            deleted = library.deleteChapters(toDelete)
         }
+        val deleteChapters = library.deleteChapters(toDelete)
+        deleted = deleteChapters
+    }
 
-        if (!toAdd.isEmpty()) {
-            // Set the date fetch for new items in reverse order to allow another sorting method.
-            // Sources MUST return the chapters from most to less recent, which is common.
-            var now = Date().time
+    if (!toAdd.isEmpty()) {
+        // Set the date fetch for new items in reverse order to allow another sorting method.
+        // Sources MUST return the chapters from most to less recent, which is common.
+        var now = Date().time
 
-            for (i in toAdd.indices.reversed()) {
-                val c = toAdd[i]
-                c.date_fetch = now++
-                // Try to mark already read chapters as read when the source deletes them
-                if (c.isRecognizedNumber && c.chapter_number in deletedReadChapterNumbers) {
-                    c.read = true
-                    readded++
-                }
+        for (i in toAdd.indices.reversed()) {
+            val c = toAdd[i]
+            c.date_fetch = now++
+            // Try to mark already read chapters as read when the source deletes them
+            if (c.isRecognizedNumber && c.chapter_number in deletedReadChapterNumbers) {
+                c.read = true
+                readded++
             }
-            added = library.insertChapters(toAdd)
         }
+        added = library.insertChapters(toAdd)
+    }
 
-        // Fix order in source.
-        library.fixChaptersSourceOrder(sourceChapters)
-    transaction.apply();
+    // Fix order in source.
+    library.fixChaptersSourceOrder(sourceChapters)
+    transaction.apply()
     return Pair(added - readded, deleted - readded)
 }

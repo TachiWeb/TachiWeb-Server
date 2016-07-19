@@ -3,6 +3,7 @@ package xyz.nulldev.ts.api.http.manga;
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.source.Source;
+import eu.kanade.tachiyomi.util.ChapterSourceSyncKt;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
@@ -64,14 +65,14 @@ public class UpdateRoute extends TachiWebRoute {
                 if(chapters == null) {
                     throw new NullPointerException();
                 }
-                getLibrary().insertChapters(chapters);
+                ChapterSourceSyncKt.syncChaptersWithSource(getLibrary(), chapters, manga, source);
             } catch (Exception e) {
                 return error("Error updating chapters!");
             }
         } else {
             return error("Null/unimplemented update type!");
         }
-        return null;
+        return success();
     }
 
     private enum UpdateType {

@@ -6,7 +6,6 @@ import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.model.Page;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
