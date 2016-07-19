@@ -150,8 +150,38 @@ public class Library {
         return found;
     }
 
+    public synchronized int deleteChapters(List<Chapter> chaptersToDelete) {
+        int removed = 0;
+        for(Chapter chapterToDelete : chaptersToDelete) {
+            List<Chapter> targetChapters = chapters.get(UnboxTherapy.unbox(chapterToDelete.getManga_id()));
+            if (targetChapters != null) {
+                if (removeWithIdLong(chapterToDelete, targetChapters, new ChapterIdMapping())) {
+                    removed++;
+                }
+            }
+        }
+        return removed;
+    }
+
+    public synchronized void fixChaptersSourceOrder(List<Chapter> chaptersToFix) {
+        chapters.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .forEach(
+                        chapterInDb -> {
+                            for (Chapter chapterToFix : chaptersToFix) {
+                                if (Objects.equals(chapterToFix.getUrl(), chapterInDb.getUrl())
+                                        && Objects.equals(
+                                                chapterToFix.getManga_id(),
+                                                chapterInDb.getManga_id())) {
+                                    chapterInDb.setSource_order(chapterToFix.getSource_order());
+                                }
+                            }
+                        });
+    }
+
     public synchronized int insertCategory(Category category) {
-        boolean removed = removeWithIdInt(category, categories, new CategoryMapping());
+        boolean removed = removeWithIdInt(category, categories, new CategoryIdMapping());
         categories.add(category);
         return removed ? UnboxTherapy.unbox(category.getId()) : newIntId();
     }
@@ -174,26 +204,32 @@ public class Library {
     }
 
     public synchronized long insertManga(Manga manga) {
-        boolean removed = removeWithIdLong(manga, mangas, new MangaMapping());
+        boolean removed = removeWithIdLong(manga, mangas, new MangaIdMapping());
         mangas.add(manga);
         return removed ? UnboxTherapy.unbox(manga.getId()) : newLongId();
     }
 
-    public synchronized void insertChapters(List<Chapter> toInsert) {
+    public synchronized int insertChapters(List<Chapter> toInsert) {
+        int inserted = 0;
         for (Chapter chapter1 : toInsert) {
-            chapter1.setId(insertChapter(chapter1));
+            LongInsertionResult result = insertChapter(chapter1);
+            chapter1.setId(result.getNewId());
+            if(result.wasInserted()) {
+                inserted++;
+            }
         }
+        return inserted;
     }
 
-    public synchronized long insertChapter(Chapter chapter) {
+    public synchronized LongInsertionResult insertChapter(Chapter chapter) {
         List<Chapter> found = chapters.get(chapter.getManga_id());
         if (found == null) {
             found = new ArrayList<>();
             chapters.put(chapter.getManga_id(), found);
         }
-        boolean removed = removeWithIdLong(chapter, found, new ChapterMapping());
+        boolean removed = removeWithIdLong(chapter, found, new ChapterIdMapping());
         found.add(chapter);
-        return removed ? UnboxTherapy.unbox(chapter.getId()) : newLongId();
+        return new LongInsertionResult(!removed, removed ? UnboxTherapy.unbox(chapter.getId()) : newLongId());
     }
 
     public synchronized void insertMangasSync(List<MangaSync> mangaSyncs) {
@@ -208,7 +244,7 @@ public class Library {
             found = new ArrayList<>();
             mangasSync.put(mangaSync.getManga_id(), found);
         }
-        boolean removed = removeWithIdLong(mangaSync, found, new MangasSyncMapping());
+        boolean removed = removeWithIdLong(mangaSync, found, new MangasSyncIdMapping());
         found.add(mangaSync);
         return removed ? UnboxTherapy.unbox(mangaSync.getId()) : newLongId();
     }
@@ -224,6 +260,10 @@ public class Library {
     public synchronized Manga getManga(long id) {
         return OptionalUtils.getOrNull(
                 mangas.stream().filter(manga -> Objects.equals(manga.getId(), id)).findFirst());
+    }
+
+    public AtomicReference<ReentrantLock> getMasterLock() {
+        return masterLock;
     }
 
     public int newIntId() {
@@ -250,36 +290,71 @@ public class Library {
         }
     }
 
-    private class CategoryMapping implements Function<Category, Integer> {
+    private class CategoryIdMapping implements Function<Category, Integer> {
         @Override
         public Integer apply(Category category) {
             return UnboxTherapy.unbox(category.getId());
         }
-    }
 
-    private class MangaMapping implements Function<Manga, Long> {
+    }
+    private class MangaIdMapping implements Function<Manga, Long> {
         @Override
         public Long apply(Manga manga) {
             return UnboxTherapy.unbox(manga.getId());
         }
-    }
 
-    private class ChapterMapping implements Function<Chapter, Long> {
+    }
+    private class ChapterIdMapping implements Function<Chapter, Long> {
         @Override
         public Long apply(Chapter chapter) {
             return UnboxTherapy.unbox(chapter.getId());
         }
-    }
 
-    private class MangasSyncMapping implements Function<MangaSync, Long> {
+    }
+    private class MangasSyncIdMapping implements Function<MangaSync, Long> {
         @Override
         public Long apply(MangaSync mangaSync) {
             return UnboxTherapy.unbox(mangaSync.getId());
         }
+
     }
 
-    public AtomicReference<ReentrantLock> getMasterLock() {
-        return masterLock;
+    public class IntInsertionResult extends InsertionResult {
+        private final int newId;
+
+        public IntInsertionResult(boolean inserted, int newId) {
+            super(inserted);
+            this.newId = newId;
+        }
+
+        public int getNewId() {
+            return newId;
+        }
+    }
+
+    public class LongInsertionResult extends InsertionResult {
+        private final long newId;
+
+        public LongInsertionResult(boolean inserted, long newId) {
+            super(inserted);
+            this.newId = newId;
+        }
+
+        public long getNewId() {
+            return newId;
+        }
+    }
+
+    public class InsertionResult {
+        private final boolean inserted;
+
+        public InsertionResult(boolean inserted) {
+            this.inserted = inserted;
+        }
+
+        public boolean wasInserted() {
+            return inserted;
+        }
     }
 
     @Override
@@ -292,12 +367,20 @@ public class Library {
         if (lastIntId != library.lastIntId) return false;
         if (lastLongId != library.lastLongId) return false;
         if (mangas != null ? !mangas.equals(library.mangas) : library.mangas != null) return false;
-        if (categories != null ? !categories.equals(library.categories) : library.categories != null) return false;
-        if (chapters != null ? !chapters.equals(library.chapters) : library.chapters != null) return false;
-        if (mangaCategories != null ? !mangaCategories.equals(library.mangaCategories) : library.mangaCategories != null)
+        if (categories != null
+                ? !categories.equals(library.categories)
+                : library.categories != null) return false;
+        if (chapters != null ? !chapters.equals(library.chapters) : library.chapters != null)
             return false;
-        if (mangasSync != null ? !mangasSync.equals(library.mangasSync) : library.mangasSync != null) return false;
-        return masterLock != null ? masterLock.equals(library.masterLock) : library.masterLock == null;
+        if (mangaCategories != null
+                ? !mangaCategories.equals(library.mangaCategories)
+                : library.mangaCategories != null) return false;
+        if (mangasSync != null
+                ? !mangasSync.equals(library.mangasSync)
+                : library.mangasSync != null) return false;
+        return masterLock != null
+                ? masterLock.equals(library.masterLock)
+                : library.masterLock == null;
     }
 
     @Override
@@ -315,15 +398,23 @@ public class Library {
 
     @Override
     public String toString() {
-        return "Library{" +
-                "lastIntId=" + lastIntId +
-                ", lastLongId=" + lastLongId +
-                ", mangas=" + mangas +
-                ", categories=" + categories +
-                ", chapters=" + chapters +
-                ", mangaCategories=" + mangaCategories +
-                ", mangasSync=" + mangasSync +
-                ", masterLock=" + masterLock +
-                '}';
+        return "Library{"
+                + "lastIntId="
+                + lastIntId
+                + ", lastLongId="
+                + lastLongId
+                + ", mangas="
+                + mangas
+                + ", categories="
+                + categories
+                + ", chapters="
+                + chapters
+                + ", mangaCategories="
+                + mangaCategories
+                + ", mangasSync="
+                + mangasSync
+                + ", masterLock="
+                + masterLock
+                + '}';
     }
 }

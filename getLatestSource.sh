@@ -109,6 +109,7 @@ pushd "$UTILS_PACKAGE"
 wget "https://raw.githubusercontent.com/inorichi/tachiyomi/master/app/src/main/java/eu/kanade/tachiyomi/util/JsoupExtensions.kt" -O "JsoupExtensions.kt"
 wget "https://raw.githubusercontent.com/inorichi/tachiyomi/master/app/src/main/java/eu/kanade/tachiyomi/util/UrlUtil.java" -O "UrlUtil.java"
 wget "https://raw.githubusercontent.com/inorichi/tachiyomi/master/app/src/main/java/eu/kanade/tachiyomi/util/DiskUtils.java" -O "DiskUtils.java"
+wget "https://raw.githubusercontent.com/inorichi/tachiyomi/master/app/src/main/java/eu/kanade/tachiyomi/util/ChapterRecognition.kt" -O "ChapterRecognition.kt"
 popd
 
 echo "Done!"
