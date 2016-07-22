@@ -32,51 +32,60 @@ public class CatalogueRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
-        Integer sourceId = LeniantParser.parseInteger(request.params(":sourceId"));
-        Integer page = LeniantParser.parseInteger(request.params(":page"));
-        String lastUrl = request.queryParams("lurl");
-        String query = request.queryParams("query");
-        if (sourceId == null) {
-            return error("SourceID must be specified!");
-        } else if (page == null) {
-            return error("Page must be specified!");
-        } else if (page > 1 && lastUrl == null) {
-            return error("Is not first page but lastURL not specified!");
-        }
-        OnlineSource onlineSource;
         try {
-            onlineSource = (OnlineSource) DIReplacement.get().injectSourceManager().get(sourceId);
-        } catch (ClassCastException e) {
-            return error("The specified source is not an OnlineSource!");
+            Integer sourceId = LeniantParser.parseInteger(request.params(":sourceId"));
+            Integer page = LeniantParser.parseInteger(request.params(":page"));
+            String lastUrl = request.queryParams("lurl");
+            String query = request.queryParams("query");
+            if (sourceId == null) {
+                return error("SourceID must be specified!");
+            } else if (page == null) {
+                return error("Page must be specified!");
+            } else if (page > 1 && lastUrl == null) {
+                return error("Is not first page but lastURL not specified!");
+            }
+            OnlineSource onlineSource;
+            try {
+                onlineSource = (OnlineSource) DIReplacement.get().injectSourceManager().get(sourceId);
+            } catch (ClassCastException e) {
+                return error("The specified source is not an OnlineSource!");
+            }
+            if (onlineSource == null) {
+                return error("The specified source does not exist!");
+            }
+            MangasPage pageObj = new MangasPage(page);
+            if(lastUrl != null) {
+                pageObj.setUrl(lastUrl);
+            } else if(page != 1) {
+                return error("Page is not '1' but no last URL provided!");
+            }
+            Observable<MangasPage> observable;
+            if (StringUtils.notNullOrEmpty(query)) {
+                observable = onlineSource.fetchSearchManga(pageObj, query);
+            } else {
+                observable = onlineSource.fetchPopularManga(pageObj);
+            }
+            List<Manga> result =
+                    observable
+                            .flatMap(mangasPage -> Observable.from(mangasPage.getMangas()))
+                            .map(this::networkToLocalManga)
+                            .toList()
+                            .toBlocking()
+                            .first();
+            JSONObject toReturn = success(true);
+            JSONArray content = new JSONArray();
+            for (Manga manga : result) {
+                JSONObject mangaJson = new JSONObject();
+                mangaJson.put(KEY_ID, manga.getId());
+                mangaJson.put(KEY_TITLE, manga.getTitle());
+                content.put(mangaJson);
+            }
+            toReturn.put(KEY_CONTENT, content);
+            return toReturn;
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-        if (onlineSource == null) {
-            return error("The specified source does not exist!");
-        }
-        MangasPage pageObj = new MangasPage(page);
-        pageObj.setUrl(lastUrl);
-        Observable<MangasPage> observable;
-        if (StringUtils.notNullOrEmpty(query)) {
-            observable = onlineSource.fetchSearchManga(pageObj, query);
-        } else {
-            observable = onlineSource.fetchPopularManga(pageObj);
-        }
-        List<Manga> result =
-                observable
-                        .flatMap(mangasPage -> Observable.from(mangasPage.getMangas()))
-                        .map(this::networkToLocalManga)
-                        .toList()
-                        .toBlocking()
-                        .first();
-        JSONObject toReturn = success(true);
-        JSONArray content = new JSONArray();
-        for(Manga manga : result) {
-            JSONObject mangaJson = new JSONObject();
-            mangaJson.put(KEY_ID, manga.getId());
-            mangaJson.put(KEY_TITLE, manga.getTitle());
-            content.put(mangaJson);
-        }
-        toReturn.put(KEY_CONTENT, content);
-        return toReturn;
     }
 
     private Manga networkToLocalManga(Manga networkManga) {
