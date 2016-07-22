@@ -1,12 +1,16 @@
 package xyz.nulldev.ts.api.http.image;
 
 import eu.kanade.tachiyomi.data.database.models.Manga;
+import eu.kanade.tachiyomi.data.source.Source;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.LeniantParser;
+import xyz.nulldev.ts.util.StringUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,6 +23,8 @@ import java.nio.file.Files;
 public class CoverRoute extends TachiWebRoute {
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+    private static Logger logger = LoggerFactory.getLogger(CoverRoute.class);
 
     public CoverRoute(Library library) {
         super(library);
@@ -35,6 +41,33 @@ public class CoverRoute extends TachiWebRoute {
             return error("The specified manga does not exist!");
         }
         String url = manga.getThumbnail_url();
+        try {
+            if (url == null || url.isEmpty()) {
+                Long originalId = manga.getId();
+                String originalTitle = manga.getTitle();
+                Source source;
+                source = DIReplacement.get().injectSourceManager().get(manga.getSource());
+                if (source == null) {
+                    throw new IllegalArgumentException("Source not found!");
+                }
+                manga = source.fetchMangaDetails(manga).toBlocking().first();
+                if (manga == null) {
+                    throw new IllegalStateException("Manga is null!");
+                }
+                manga.setId(originalId);
+                //TODO WHY THE HECK IS THE TITLE NOT SET AFTER THE MANGA IS UPDATED!
+                try {
+                    manga.getTitle();
+                } catch (Exception ignored) {
+                    manga.setTitle(originalTitle);
+                }
+                //Update the manga in the library
+                getLibrary().insertManga(manga);
+            }
+            url = manga.getThumbnail_url();
+        } catch (Exception e) {
+            logger.info("Failed to update manga (No thumbnail)!");
+        }
         if (url == null || url.isEmpty()) {
             response.redirect("/img/no-cover.png", 302);
             return null;
@@ -44,7 +77,7 @@ public class CoverRoute extends TachiWebRoute {
         //Make cache dirs
         parentFile.mkdirs();
         //Download image if it does not exist
-        if(!cacheFile.exists()) {
+        if (!cacheFile.exists()) {
             okhttp3.Response httpResponse = null;
             InputStream stream = null;
             try (FileOutputStream outputStream = new FileOutputStream(cacheFile)) {
@@ -64,17 +97,18 @@ public class CoverRoute extends TachiWebRoute {
                 e.printStackTrace();
                 return error("Failed to download cover image!");
             } finally {
-                if(httpResponse != null) {
+                if (httpResponse != null) {
                     httpResponse.close();
                 }
-                if(stream != null) {
+                if (stream != null) {
                     stream.close();
                 }
             }
         }
         //Send cached image
         response.type(Files.probeContentType(cacheFile.toPath()));
-        try(FileInputStream stream = new FileInputStream(cacheFile); OutputStream os = response.raw().getOutputStream()) {
+        try (FileInputStream stream = new FileInputStream(cacheFile);
+                OutputStream os = response.raw().getOutputStream()) {
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
             int n;
             while (-1 != (n = stream.read(buffer))) {

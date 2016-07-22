@@ -1,6 +1,8 @@
 package xyz.nulldev.ts.api.http;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -17,26 +19,33 @@ public abstract class TachiWebRoute implements Route {
 
     private Library library;
 
+    private static Logger logger = LoggerFactory.getLogger(TachiWebRoute.class);
+
     public TachiWebRoute(Library library) {
         this.library = library;
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        response.header("Access-Control-Allow-Origin", "*");
-        ReentrantLock masterLock = library.getMasterLock().get();
-        if(masterLock != null) {
-            masterLock.lock();
-            try {
-                Object toReturn = handleReq(request, response);
-                masterLock.unlock();
-                return toReturn;
-            } catch (Throwable e) {
-                masterLock.unlock();
-                throw e;
+        try {
+            response.header("Access-Control-Allow-Origin", "*");
+            ReentrantLock masterLock = library.getMasterLock().get();
+            if (masterLock != null) {
+                masterLock.lock();
+                try {
+                    Object toReturn = handleReq(request, response);
+                    masterLock.unlock();
+                    return toReturn;
+                } catch (Throwable e) {
+                    masterLock.unlock();
+                    throw e;
+                }
+            } else {
+                return handleReq(request, response);
             }
-        } else {
-            return handleReq(request, response);
+        } catch (Exception e) {
+            logger.error("Exception handling route!", e);
+            throw e;
         }
     }
 

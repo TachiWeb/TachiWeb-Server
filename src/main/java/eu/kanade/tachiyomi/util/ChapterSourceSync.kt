@@ -52,7 +52,8 @@ fun syncChaptersWithSource(library: Library,
     // Amount of chapters readded (different url but the same chapter number).
     var readded = 0
 
-    val transaction = library.newTransaction();
+    val transaction = library.newTransaction()
+    var transLibrary = transaction.library
     val deletedReadChapterNumbers = TreeSet<Float>()
     if (!toDelete.isEmpty()) {
         for (c in toDelete) {
@@ -60,7 +61,7 @@ fun syncChaptersWithSource(library: Library,
                 deletedReadChapterNumbers.add(c.chapter_number)
             }
         }
-        val deleteChapters = library.deleteChapters(toDelete)
+        val deleteChapters = transLibrary.deleteChapters(toDelete)
         deleted = deleteChapters
     }
 
@@ -78,11 +79,11 @@ fun syncChaptersWithSource(library: Library,
                 readded++
             }
         }
-        added = library.insertChapters(toAdd)
+        added = transLibrary.insertChapters(toAdd)
     }
 
     // Fix order in source.
-    library.fixChaptersSourceOrder(sourceChapters)
+    transLibrary.fixChaptersSourceOrder(sourceChapters)
     transaction.apply()
     return Pair(added - readded, deleted - readded)
 }

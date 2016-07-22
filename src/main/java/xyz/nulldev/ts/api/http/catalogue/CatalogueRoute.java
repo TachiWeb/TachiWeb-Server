@@ -5,6 +5,8 @@ import eu.kanade.tachiyomi.data.source.model.MangasPage;
 import eu.kanade.tachiyomi.data.source.online.OnlineSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import spark.Request;
 import spark.Response;
@@ -25,6 +27,8 @@ public class CatalogueRoute extends TachiWebRoute {
     public static final String KEY_CONTENT = "content";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ID = "id";
+
+    private static Logger logger = LoggerFactory.getLogger(CatalogueRoute.class);
 
     public CatalogueRoute(Library library) {
         super(library);
