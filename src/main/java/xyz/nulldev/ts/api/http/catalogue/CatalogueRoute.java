@@ -27,6 +27,7 @@ public class CatalogueRoute extends TachiWebRoute {
     public static final String KEY_CONTENT = "content";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ID = "id";
+    public static final String KEY_NEXT_URL = "lurl";
 
     private static Logger logger = LoggerFactory.getLogger(CatalogueRoute.class);
 
@@ -85,6 +86,10 @@ public class CatalogueRoute extends TachiWebRoute {
                 content.put(mangaJson);
             }
             toReturn.put(KEY_CONTENT, content);
+            String nextUrl = pageObj.getNextPageUrl();
+            if(StringUtils.notNullOrEmpty(nextUrl)) {
+                toReturn.put(KEY_NEXT_URL, nextUrl);
+            }
             return toReturn;
         } catch(Exception e) {
             e.printStackTrace();

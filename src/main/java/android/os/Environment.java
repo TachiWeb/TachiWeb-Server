@@ -96,4 +96,8 @@ public class Environment {
     public static boolean isExternalStorageEmulated(File path) {
         return false;
     }
+
+    public static File getLegacyExternalStorageDirectory() {
+        return getHomeFolder();
+    }
 }
