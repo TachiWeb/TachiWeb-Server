@@ -11,6 +11,8 @@ import xyz.nulldev.ts.api.http.library.CreateBackupRoute;
 import xyz.nulldev.ts.api.http.library.LibraryRoute;
 import xyz.nulldev.ts.api.http.library.RestoreFromFileRoute;
 import xyz.nulldev.ts.api.http.manga.*;
+import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute;
+import xyz.nulldev.ts.api.http.settings.SourceLoginRoute;
 
 /**
  * Project: TachiServer
@@ -33,6 +35,8 @@ public class HttpAPI {
     private UpdateRoute updateRoute = new UpdateRoute(DIReplacement.get().getLibrary());
     private ListSourcesRoute listSourcesRoute = new ListSourcesRoute(DIReplacement.get().getLibrary());
     private CatalogueRoute catalogueRoute = new CatalogueRoute(DIReplacement.get().getLibrary());
+    private ListLoginSourceRoute listLoginSourceRoute = new ListLoginSourceRoute(DIReplacement.get().getLibrary());
+    private SourceLoginRoute sourceLoginRoute = new SourceLoginRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         //Get an image from a chapter
@@ -74,6 +78,12 @@ public class HttpAPI {
         //Catalogue
         Spark.get(API_ROOT + "/catalogue/:sourceId/:page", catalogueRoute);
         Spark.get(API_ROOT + "/catalogue/:sourceId/:page/", catalogueRoute);
+        //Login source list route
+        Spark.get(API_ROOT + "/list_login_sources", listSourcesRoute);
+        Spark.get(API_ROOT + "/list_login_sources/", listSourcesRoute);
+        //Login route
+        Spark.get(API_ROOT + "/source_login/:sourceId", sourceLoginRoute);
+        Spark.get(API_ROOT + "/source_login/:sourceId/", sourceLoginRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }
