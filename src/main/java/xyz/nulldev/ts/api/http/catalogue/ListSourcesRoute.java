@@ -1,5 +1,6 @@
 package xyz.nulldev.ts.api.http.catalogue;
 
+import eu.kanade.tachiyomi.data.source.online.LoginSource;
 import eu.kanade.tachiyomi.data.source.online.OnlineSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ public class ListSourcesRoute extends TachiWebRoute {
     public static final String KEY_CONTENT = "content";
     public static final String KEY_NAME = "name";
     public static final String KEY_ID = "id";
+    public static final String KEY_LOGGED_IN = "logged_in";
 
     public ListSourcesRoute(Library library) {
         super(library);
@@ -34,6 +36,9 @@ public class ListSourcesRoute extends TachiWebRoute {
             JSONObject sourceObj = new JSONObject();
             sourceObj.put(KEY_ID, source.getId());
             sourceObj.put(KEY_NAME, source.getName());
+            if(LoginSource.class.isAssignableFrom(source.getClass())) {
+                sourceObj.put(KEY_LOGGED_IN, ((LoginSource) source).isLogged());
+            }
             contentArray.put(sourceObj);
         }
         rootObject.put(KEY_CONTENT, contentArray);
