@@ -81,6 +81,12 @@
             <artifactId>rhino</artifactId>
             <version>1.7.7.1</version>
         </dependency>
+        <!-- Archives old library files -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.12</version>
+        </dependency>
         <!-- Mock Android Jar (SDK 23)-->
         <dependency>
             <groupId>com.android</groupId>
