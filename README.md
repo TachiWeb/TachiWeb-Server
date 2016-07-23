@@ -2,7 +2,7 @@
 TachiWeb-Server is the server component of TachiWeb.
 
 # About
-*TachiWeb-Server is component of TachiWeb, an attempt to port [Tachiyomi](https://github.com/inorichi/tachiyomi) to the desktop.*
+*TachiWeb-Server is a component of TachiWeb, an attempt to port [Tachiyomi](https://github.com/inorichi/tachiyomi) to the desktop.*
 
 TachiWeb-Server provides a consistent and flexible API for programs using the Tachiyomi backend.
 TachiWeb-Server allows multiple programs to use the same Tachiyomi library at the same time and provides a foundation for alternative frontends to build on.
