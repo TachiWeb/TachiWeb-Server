@@ -9,6 +9,11 @@ TachiWeb-Server allows multiple programs to use the same Tachiyomi library at th
 
 TachiWeb is not officially supported by Tachiyomi or it's contributors.
 
+# Live demo
+A live demo is available here: [http://45.62.240.130:4567/](http://45.62.240.130:4567/)
+**NOTE**: Kissmanga is very unstable and Batoto is not usable at the project's current state.
+Be nice and don't do bad things on it...
+
 # Motivation
 There is currently no Manga reader that can be easily synced between the desktop and mobile.
 TachiWeb-Server is full compatible with Tachiyomi's data structures and backups, allowing easy migration between the two.
