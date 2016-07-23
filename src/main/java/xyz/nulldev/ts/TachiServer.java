@@ -60,6 +60,8 @@ public class TachiServer {
                 SAVE_INTERVAL,
                 SAVE_INTERVAL);
         setupShutdownHooks();
+        //Start UI server
+        new TachiWebUIServer().start();
         //Start the HTTP API
         new HttpAPI().start();
     }

@@ -35,8 +35,6 @@ public class HttpAPI {
     private CatalogueRoute catalogueRoute = new CatalogueRoute(DIReplacement.get().getLibrary());
 
     public void start() {
-        Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
-        Spark.staticFiles.location("/static");
         //Get an image from a chapter
         Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page", imageRoute);
         Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page/", imageRoute);
