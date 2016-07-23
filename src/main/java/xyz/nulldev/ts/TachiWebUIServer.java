@@ -10,6 +10,6 @@ import spark.Spark;
 public class TachiWebUIServer {
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
-        Spark.staticFiles.location("tachiweb-ui");
+        Spark.staticFiles.location("/tachiweb-ui");
     }
 }
