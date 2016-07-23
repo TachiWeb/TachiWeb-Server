@@ -2,6 +2,7 @@ package xyz.nulldev.ts.api.http.image;
 
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.source.Source;
+import eu.kanade.tachiyomi.data.source.online.OnlineSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -40,16 +41,20 @@ public class CoverRoute extends TachiWebRoute {
         if (manga == null) {
             return error("The specified manga does not exist!");
         }
+        Source source;
+        try {
+            source = DIReplacement.get().injectSourceManager().get(manga.getSource());
+            if (source == null) {
+                throw new IllegalArgumentException();
+            }
+        } catch (Exception e) {
+            return error("This manga's source is not loaded!");
+        }
         String url = manga.getThumbnail_url();
         try {
             if (url == null || url.isEmpty()) {
                 Long originalId = manga.getId();
                 String originalTitle = manga.getTitle();
-                Source source;
-                source = DIReplacement.get().injectSourceManager().get(manga.getSource());
-                if (source == null) {
-                    throw new IllegalArgumentException("Source not found!");
-                }
                 manga = source.fetchMangaDetails(manga).toBlocking().first();
                 if (manga == null) {
                     throw new IllegalStateException("Manga is null!");
@@ -78,14 +83,24 @@ public class CoverRoute extends TachiWebRoute {
         parentFile.mkdirs();
         //Download image if it does not exist
         if (!cacheFile.exists()) {
+            OnlineSource onlineSource;
+            if (OnlineSource.class.isAssignableFrom(source.getClass())) {
+                onlineSource = (OnlineSource) source;
+            } else {
+                response.redirect("/img/no-cover.png", 302);
+                return null;
+            }
             okhttp3.Response httpResponse = null;
             InputStream stream = null;
             try (FileOutputStream outputStream = new FileOutputStream(cacheFile)) {
                 httpResponse =
-                        DIReplacement.get()
-                                .injectNetworkHelper()
+                        onlineSource
                                 .getClient()
-                                .newCall(new okhttp3.Request.Builder().url(url).build())
+                                .newCall(
+                                        new okhttp3.Request.Builder()
+                                                .headers(onlineSource.getHeaders())
+                                                .url(url)
+                                                .build())
                                 .execute();
                 stream = httpResponse.body().byteStream();
                 byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
