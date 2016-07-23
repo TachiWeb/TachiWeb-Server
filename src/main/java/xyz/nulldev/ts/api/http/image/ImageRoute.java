@@ -4,6 +4,8 @@ import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.model.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.utils.IOUtils;
@@ -25,6 +27,8 @@ import java.util.List;
  */
 //TODO Support image predownloading
 public class ImageRoute extends TachiWebRoute {
+
+    private static Logger logger = LoggerFactory.getLogger(CoverRoute.class);
 
     public ImageRoute(Library library) {
         super(library);
@@ -64,8 +68,7 @@ public class ImageRoute extends TachiWebRoute {
         try{
             pages = source.fetchPageList(chapter).toBlocking().first();
         } catch (Exception e) {
-            e.printStackTrace();
-            //TODO Logging
+            logger.error("Failed to fetch page list!", e);
         }
         if (pages == null) {
             return error("Failed to fetch page list!");
