@@ -35,7 +35,7 @@ public class SourceLoginRoute extends TachiWebRoute {
         LoginSource source;
         try {
             Source tmpSource = DIReplacement.get().injectSourceManager().get(sourceID);
-            if (tmpSource == null || LoginSource.class.isAssignableFrom(tmpSource.getClass())) {
+            if (tmpSource == null || !LoginSource.class.isAssignableFrom(tmpSource.getClass())) {
                 throw new IllegalArgumentException();
             }
             source = (LoginSource) tmpSource;
