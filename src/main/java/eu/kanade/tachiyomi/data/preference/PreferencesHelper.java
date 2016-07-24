@@ -23,11 +23,23 @@ public class PreferencesHelper {
 
     private SharedPreferences loginPrefs;
 
+    public String getSourceUsernameKey(LoginSource source) {
+        return source.getId() + "_username";
+    }
+
+    public String getSourcePasswordKey(LoginSource source) {
+        return source.getId() + "_password";
+    }
+
+    public void storeLoginCreds(LoginSource source, String username, String password) {
+        loginPrefs.edit().putString(getSourceUsernameKey(source), username).putString(getSourcePasswordKey(source), password).commit();
+    }
+
     public String sourceUsername(LoginSource source) {
-        return loginPrefs.getString(source.getId() + "_username", "");
+        return loginPrefs.getString(getSourceUsernameKey(source), "");
     }
 
     public String sourcePassword(LoginSource source) {
-        return loginPrefs.getString(source.getId() + "_password", "");
+        return loginPrefs.getString(getSourcePasswordKey(source), "");
     }
 }

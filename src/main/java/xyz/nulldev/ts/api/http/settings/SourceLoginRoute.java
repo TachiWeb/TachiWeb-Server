@@ -2,7 +2,6 @@ package xyz.nulldev.ts.api.http.settings;
 
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.online.LoginSource;
-import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
@@ -48,6 +47,10 @@ public class SourceLoginRoute extends TachiWebRoute {
             success = false;
         } else {
             success = successObj;
+        }
+        //Store login credentials on success
+        if(success) {
+            DIReplacement.get().injectPreferencesHelper().storeLoginCreds(source, username, password);
         }
         return success ? success() : error("Username/password incorrect!");
     }
