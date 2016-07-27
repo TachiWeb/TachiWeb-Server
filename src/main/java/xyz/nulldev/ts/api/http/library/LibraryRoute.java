@@ -41,6 +41,6 @@ public class LibraryRoute extends TachiWebRoute {
             mangaJson.put(KEY_CATEGORIES, categoriesJson);
             array.put(mangaJson);
         }
-        return success().put(KEY_CONTENT, array.toString());
+        return success().put(KEY_CONTENT, array);
     }
 }
