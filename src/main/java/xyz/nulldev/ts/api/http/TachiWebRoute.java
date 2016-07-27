@@ -61,8 +61,8 @@ public abstract class TachiWebRoute implements Route {
         return object.toString();
     }
 
-    public static String success() {
-        return success(true).toString();
+    public static JSONObject success() {
+        return success(true);
     }
 
     public static JSONObject success(boolean success) {

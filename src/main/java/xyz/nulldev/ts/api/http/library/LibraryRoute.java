@@ -20,6 +20,7 @@ public class LibraryRoute extends TachiWebRoute {
     public static final String KEY_ID = "id";
     public static final String KEY_UNREAD = "unread";
     public static final String KEY_CATEGORIES = "categories";
+    public static final String KEY_CONTENT = "content";
 
     public LibraryRoute(Library library) {
         super(library);
@@ -27,7 +28,6 @@ public class LibraryRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
-        //TODO Return in JSON
         JSONArray array = new JSONArray();
         for(Manga manga : getLibrary().getFavoriteMangas()) {
             JSONObject mangaJson = new JSONObject();
@@ -41,6 +41,6 @@ public class LibraryRoute extends TachiWebRoute {
             mangaJson.put(KEY_CATEGORIES, categoriesJson);
             array.put(mangaJson);
         }
-        return array.toString();
+        return success().put(KEY_CONTENT, array.toString());
     }
 }
