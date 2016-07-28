@@ -77,7 +77,7 @@ public class CatalogueRoute extends TachiWebRoute {
                             .toList()
                             .toBlocking()
                             .first();
-            JSONObject toReturn = success(true);
+            JSONObject toReturn = success();
             JSONArray content = new JSONArray();
             for (Manga manga : result) {
                 JSONObject mangaJson = new JSONObject();

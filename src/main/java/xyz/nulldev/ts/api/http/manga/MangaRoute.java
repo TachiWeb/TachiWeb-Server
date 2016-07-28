@@ -44,7 +44,7 @@ public class MangaRoute extends TachiWebRoute {
         if (manga == null) {
             return error("The specified manga does not exist!");
         }
-        JSONObject object = success(true);
+        JSONObject object = success();
         object.put(KEY_TITLE, manga.getTitle());
         object.put(KEY_CHAPTER_COUNT, getLibrary().getChapters(manga).size());
         Source source = DIReplacement.get().injectSourceManager().get(manga.getSource());

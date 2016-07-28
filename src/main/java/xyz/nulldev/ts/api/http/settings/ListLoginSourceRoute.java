@@ -28,7 +28,7 @@ public class ListLoginSourceRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
-        JSONObject object = success(true);
+        JSONObject object = success();
         JSONArray content = new JSONArray();
         for (LoginSource source :
                 DIReplacement.get()

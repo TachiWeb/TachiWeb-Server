@@ -30,7 +30,7 @@ public class ListSourcesRoute extends TachiWebRoute {
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         List<OnlineSource> sources = DIReplacement.get().injectSourceManager().getOnlineSources();
-        JSONObject rootObject = success(true);
+        JSONObject rootObject = success();
         JSONArray contentArray = new JSONArray();
         for(OnlineSource source : sources) {
             JSONObject sourceObj = new JSONObject();

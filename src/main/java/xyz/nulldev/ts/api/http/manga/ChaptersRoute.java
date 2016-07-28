@@ -24,6 +24,7 @@ public class ChaptersRoute extends TachiWebRoute {
     public static final String KEY_READ = "read";
     public static final String KEY_LAST_READ = "last_page_read";
     public static final String KEY_CHAPTER_NUMBER = "chapter_number";
+    public static final String KEY_CONTENT = "content";
 
     public ChaptersRoute(Library library) {
         super(library);
@@ -40,7 +41,6 @@ public class ChaptersRoute extends TachiWebRoute {
             return error("The specified manga does not exist!");
         }
         List<Chapter> chapters = getLibrary().getChapters(manga);
-        //TODO Return in JSON
         JSONArray array = new JSONArray();
         for(Chapter chapter : chapters) {
             JSONObject object = new JSONObject();
@@ -52,6 +52,6 @@ public class ChaptersRoute extends TachiWebRoute {
             object.put(KEY_CHAPTER_NUMBER, chapter.getChapter_number());
             array.put(object);
         }
-        return array;
+        return success().put(KEY_CONTENT, array);
     }
 }

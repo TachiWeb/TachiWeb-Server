@@ -86,7 +86,7 @@ public class UpdateRoute extends TachiWebRoute {
                 //Sync the library chapters with the source chapters
                 Pair<Integer, Integer> results = ChapterSourceSyncKt.syncChaptersWithSource(getLibrary(), chapters, manga, source);
                 //Return the results in JSON
-                JSONObject toReturn = success(true);
+                JSONObject toReturn = success();
                 toReturn.put(KEY_ADDED, results.getFirst());
                 toReturn.put(KEY_REMOVED, results.getSecond());
                 return toReturn.toString();

@@ -4,6 +4,8 @@ import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.model.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
@@ -19,6 +21,10 @@ import java.util.List;
  * Creation Date: 15/07/16
  */
 public class PageCountRoute extends TachiWebRoute {
+
+    private static final String KEY_PAGE_COUNT = "page_count";
+
+    private static Logger logger = LoggerFactory.getLogger(PageCountRoute.class);
 
     public PageCountRoute(Library library) {
         super(library);
@@ -54,13 +60,11 @@ public class PageCountRoute extends TachiWebRoute {
         try {
             pages = source.fetchPageList(chapter).toBlocking().first();
         } catch (Exception e) {
-            e.printStackTrace();
-            //TODO Logging
+            logger.error("Error fetching page list!", e);
         }
         if (pages == null) {
             return error("Failed to fetch page list!");
         }
-        //TODO Return in JSON
-        return String.valueOf(pages.size());
+        return success().put(KEY_PAGE_COUNT, pages.size());
     }
 }
