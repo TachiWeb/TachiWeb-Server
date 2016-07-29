@@ -5,6 +5,9 @@ import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
 import xyz.nulldev.ts.api.http.debug.DebugLibrary;
+import xyz.nulldev.ts.api.http.download.DownloadChapterRoute;
+import xyz.nulldev.ts.api.http.download.DownloadsOperationRoute;
+import xyz.nulldev.ts.api.http.download.GetDownloadStatusRoute;
 import xyz.nulldev.ts.api.http.image.CoverRoute;
 import xyz.nulldev.ts.api.http.image.ImageRoute;
 import xyz.nulldev.ts.api.http.library.CreateBackupRoute;
@@ -37,6 +40,9 @@ public class HttpAPI {
     private CatalogueRoute catalogueRoute = new CatalogueRoute(DIReplacement.get().getLibrary());
     private ListLoginSourceRoute listLoginSourceRoute = new ListLoginSourceRoute(DIReplacement.get().getLibrary());
     private SourceLoginRoute sourceLoginRoute = new SourceLoginRoute(DIReplacement.get().getLibrary());
+    private DownloadChapterRoute downloadChapterRoute = new DownloadChapterRoute(DIReplacement.get().getLibrary());
+    private DownloadsOperationRoute downloadsOperationRoute = new DownloadsOperationRoute(DIReplacement.get().getLibrary());
+    private GetDownloadStatusRoute getDownloadStatusRoute = new GetDownloadStatusRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         //Get an image from a chapter
@@ -78,12 +84,21 @@ public class HttpAPI {
         //Catalogue
         Spark.get(API_ROOT + "/catalogue/:sourceId/:page", catalogueRoute);
         Spark.get(API_ROOT + "/catalogue/:sourceId/:page/", catalogueRoute);
-        //Login source list route
+        //Login source list
         Spark.get(API_ROOT + "/list_login_sources", listSourcesRoute);
         Spark.get(API_ROOT + "/list_login_sources/", listSourcesRoute);
         //Login route
         Spark.get(API_ROOT + "/source_login/:sourceId", sourceLoginRoute);
         Spark.get(API_ROOT + "/source_login/:sourceId/", sourceLoginRoute);
+        //Download
+        Spark.get(API_ROOT + "/download/:mangaId/:chapterId", downloadChapterRoute);
+        Spark.get(API_ROOT + "/download/:mangaId/:chapterId/", downloadChapterRoute);
+        //Downloads operation
+        Spark.get(API_ROOT + "/downloads_op/:operation", downloadsOperationRoute);
+        Spark.get(API_ROOT + "/downloads_op/:operation/", downloadsOperationRoute);
+        //Get downloads
+        Spark.get(API_ROOT + "/get_downloads", getDownloadStatusRoute);
+        Spark.get(API_ROOT + "/get_downloads/", getDownloadStatusRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }

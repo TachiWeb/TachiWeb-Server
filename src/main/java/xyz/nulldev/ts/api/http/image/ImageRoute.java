@@ -2,8 +2,10 @@ package xyz.nulldev.ts.api.http.image;
 
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
+import eu.kanade.tachiyomi.data.download.DownloadManager;
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.model.Page;
+import eu.kanade.tachiyomi.data.source.online.OnlineSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -12,8 +14,10 @@ import spark.utils.IOUtils;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
+import xyz.nulldev.ts.util.ChapterUtils;
 import xyz.nulldev.ts.util.LeniantParser;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -25,10 +29,11 @@ import java.util.List;
  * Author: nulldev
  * Creation Date: 12/07/16
  */
-//TODO Support image predownloading
 public class ImageRoute extends TachiWebRoute {
 
-    private static Logger logger = LoggerFactory.getLogger(CoverRoute.class);
+    private static Logger logger = LoggerFactory.getLogger(ImageRoute.class);
+
+    private DownloadManager downloadManager = DIReplacement.get().injectDownloadManager();
 
     public ImageRoute(Library library) {
         super(library);
@@ -64,12 +69,7 @@ public class ImageRoute extends TachiWebRoute {
         if (chapter == null) {
             return error("The specified chapter does not exist!");
         }
-        List<Page> pages = null;
-        try{
-            pages = source.fetchPageList(chapter).toBlocking().first();
-        } catch (Exception e) {
-            logger.error("Failed to fetch page list!", e);
-        }
+        List<Page> pages = ChapterUtils.getPageList(downloadManager, source, manga, chapter);
         if (pages == null) {
             return error("Failed to fetch page list!");
         }
@@ -83,7 +83,15 @@ public class ImageRoute extends TachiWebRoute {
         if (pageObj == null) {
             return error("Could not find specified page!");
         }
-        pageObj = source.fetchImage(pageObj).toBlocking().first();
+        //Get downloaded image if downloaded
+        if(downloadManager.isChapterDownloaded(source, manga, chapter)) {
+            File downloadDir = downloadManager.getAbsoluteChapterDirectory(source, manga, chapter);
+            pageObj = downloadManager.getDownloadedImage(pageObj, downloadDir).toBlocking().first();
+        }
+        //Download image if not downloaded
+        if(pageObj.getStatus() != Page.READY) {
+            pageObj = source.fetchImage(pageObj).toBlocking().first();
+        }
         try(OutputStream outputStream = response.raw().getOutputStream()) {
             if (pageObj.getStatus() == Page.READY && pageObj.getImagePath() != null) {
                 response.status(200);

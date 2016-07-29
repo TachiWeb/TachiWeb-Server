@@ -23,11 +23,13 @@ import java.util.List;
  * Author: nulldev
  * Creation Date: 19/07/16
  */
+//TODO Return favorite status for mangas also
 public class CatalogueRoute extends TachiWebRoute {
     public static final String KEY_CONTENT = "content";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ID = "id";
     public static final String KEY_NEXT_URL = "lurl";
+    public static final String KEY_FAVORITE = "favorite";
 
     private static Logger logger = LoggerFactory.getLogger(CatalogueRoute.class);
 
@@ -83,6 +85,7 @@ public class CatalogueRoute extends TachiWebRoute {
                 JSONObject mangaJson = new JSONObject();
                 mangaJson.put(KEY_ID, manga.getId());
                 mangaJson.put(KEY_TITLE, manga.getTitle());
+                mangaJson.put(KEY_FAVORITE, manga.getFavorite());
                 content.put(mangaJson);
             }
             toReturn.put(KEY_CONTENT, content);

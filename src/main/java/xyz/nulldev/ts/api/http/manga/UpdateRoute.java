@@ -102,7 +102,7 @@ public class UpdateRoute extends TachiWebRoute {
     /**
      * The type of update to perform
      */
-    private enum UpdateType {
+    public enum UpdateType {
         INFO,
         CHAPTERS
     }

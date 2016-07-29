@@ -31,6 +31,10 @@ public class Files {
         return mkdirs(new File(getStorageDir(), "library"));
     }
 
+    public static File getDefaultDownloadsDir() {
+        return mkdirs(new File(getStorageDir(), "downloads"));
+    }
+
     private static File mkdirs(File file) {
         file.mkdirs();
         return file;

@@ -3,6 +3,9 @@ package eu.kanade.tachiyomi.data.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 import eu.kanade.tachiyomi.data.source.online.LoginSource;
+import xyz.nulldev.ts.files.Files;
+
+import java.io.File;
 
 /**
  * Project: TachiServer
@@ -41,5 +44,13 @@ public class PreferencesHelper {
 
     public String sourcePassword(LoginSource source) {
         return loginPrefs.getString(getSourcePasswordKey(source), "");
+    }
+
+    public int downloadThreads() {
+        return 3; //TODO Implement in new settings framework
+    }
+
+    public File downloadsDirectory() {
+        return Files.getDefaultDownloadsDir(); //TODO Implement in new settings framework
     }
 }

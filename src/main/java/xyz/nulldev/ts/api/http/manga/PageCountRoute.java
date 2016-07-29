@@ -2,6 +2,7 @@ package xyz.nulldev.ts.api.http.manga;
 
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
+import eu.kanade.tachiyomi.data.download.DownloadManager;
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.model.Page;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
+import xyz.nulldev.ts.util.ChapterUtils;
 import xyz.nulldev.ts.util.LeniantParser;
 
 import java.util.List;
@@ -25,6 +27,8 @@ public class PageCountRoute extends TachiWebRoute {
     private static final String KEY_PAGE_COUNT = "page_count";
 
     private static Logger logger = LoggerFactory.getLogger(PageCountRoute.class);
+
+    private DownloadManager downloadManager = DIReplacement.get().injectDownloadManager();
 
     public PageCountRoute(Library library) {
         super(library);
@@ -56,12 +60,7 @@ public class PageCountRoute extends TachiWebRoute {
         if (chapter == null) {
             return error("The specified chapter does not exist!");
         }
-        List<Page> pages = null;
-        try {
-            pages = source.fetchPageList(chapter).toBlocking().first();
-        } catch (Exception e) {
-            logger.error("Error fetching page list!", e);
-        }
+        List<Page> pages = ChapterUtils.getPageList(downloadManager, source, manga, chapter);
         if (pages == null) {
             return error("Failed to fetch page list!");
         }

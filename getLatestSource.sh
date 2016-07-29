@@ -143,6 +143,14 @@ download "JsoupExtensions.kt"
 download "UrlUtil.java"
 download "DiskUtils.java"
 download "ChapterRecognition.kt"
+download "DynamicConcurrentMergeOperator.java"
+download "RetryWithDelay.kt"
+leavePackage
+
+# Download stuff
+enterPackage "data.download.model"
+download "Download.kt"
+download "DownloadQueue.kt"
 leavePackage
 
 echo -e "${UNDERLINE}${BOLD}${GRAY_BCK}${GREEN}Done!${NORMAL}"

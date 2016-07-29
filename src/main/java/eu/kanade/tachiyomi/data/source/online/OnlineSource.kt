@@ -288,7 +288,7 @@ abstract class OnlineSource(context: Context) : Source {
     /**
      * Returns the key for the page list to be stored in [ChapterCache].
      */
-    private fun getChapterCacheKey(chapter: Chapter) = "$id${chapter.url}"
+    fun getChapterCacheKey(chapter: Chapter) = "$id${chapter.url}"
 
     /**
      * Returns an observable with the page containing the source url of the image. If there's any

@@ -4,6 +4,7 @@ import android.content.Context;
 import eu.kanade.tachiyomi.data.backup.BackupManager;
 import eu.kanade.tachiyomi.data.cache.ChapterCache;
 import eu.kanade.tachiyomi.data.cache.CoverCache;
+import eu.kanade.tachiyomi.data.download.DownloadManager;
 import eu.kanade.tachiyomi.data.network.NetworkHelper;
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper;
 import eu.kanade.tachiyomi.data.source.SourceManager;
@@ -19,6 +20,7 @@ public class DIReplacement {
     private static final DIReplacement instance = new DIReplacement();
     static {
         instance.setupSourceManager();
+        instance.setupDownloadManager();
     }
 
     public static DIReplacement get() {
@@ -66,6 +68,14 @@ public class DIReplacement {
     private BackupManager backupManager = new BackupManager();
     public BackupManager injectBackupManager() {
         return backupManager;
+    }
+
+    private DownloadManager downloadManager;
+    private void setupDownloadManager() {
+        downloadManager = new DownloadManager(context, sourceManager, preferencesHelper);
+    }
+    public DownloadManager injectDownloadManager() {
+        return downloadManager;
     }
 
     private Library library = new Library();
