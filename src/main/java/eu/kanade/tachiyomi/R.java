@@ -1,15 +1,13 @@
 package eu.kanade.tachiyomi;
 
-/**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 12/07/16
- */
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Project: TachiServer
+ * Author: nulldev
+ * Creation Date: 12/07/16
+ *
  * Android compat class
  */
 public class R {
