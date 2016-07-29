@@ -29,6 +29,7 @@ public class MangaRoute extends TachiWebRoute {
     public static final String KEY_GENRES = "genres";
     public static final String KEY_STATUS = "status";
     public static final String KEY_FAVORITE = "favorite";
+    public static final String KEY_FLAGS = "flags";
 
     public MangaRoute(Library library) {
         super(library);
@@ -71,6 +72,12 @@ public class MangaRoute extends TachiWebRoute {
         }
         object.put(KEY_STATUS, statusToString(manga.getStatus()));
         object.put(KEY_FAVORITE, manga.getFavorite());
+        //Send flags
+        JSONObject flagObject = new JSONObject();
+        for(MangaFlag flag : MangaFlag.values()) {
+            flagObject.put(flag.name(), flag.get(manga).getName());
+        }
+        object.put(KEY_FLAGS, flagObject);
         return object;
     }
     private static String statusToString(int i) {

@@ -43,6 +43,7 @@ public class HttpAPI {
     private DownloadChapterRoute downloadChapterRoute = new DownloadChapterRoute(DIReplacement.get().getLibrary());
     private DownloadsOperationRoute downloadsOperationRoute = new DownloadsOperationRoute(DIReplacement.get().getLibrary());
     private GetDownloadStatusRoute getDownloadStatusRoute = new GetDownloadStatusRoute(DIReplacement.get().getLibrary());
+    private SetFlagRoute setFlagRoute = new SetFlagRoute(DIReplacement.get().getLibrary());
 
     public void start() {
         //Get an image from a chapter
@@ -99,6 +100,9 @@ public class HttpAPI {
         //Get downloads
         Spark.get(API_ROOT + "/get_downloads", getDownloadStatusRoute);
         Spark.get(API_ROOT + "/get_downloads/", getDownloadStatusRoute);
+        //Set flags
+        Spark.get(API_ROOT + "/set_flag/:mangaId/:flag/:state", setFlagRoute);
+        Spark.get(API_ROOT + "/set_flag/:mangaId/:flag/:state/", setFlagRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }
