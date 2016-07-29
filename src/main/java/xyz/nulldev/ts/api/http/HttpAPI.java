@@ -85,8 +85,8 @@ public class HttpAPI {
         Spark.get(API_ROOT + "/catalogue/:sourceId/:page", catalogueRoute);
         Spark.get(API_ROOT + "/catalogue/:sourceId/:page/", catalogueRoute);
         //Login source list
-        Spark.get(API_ROOT + "/list_login_sources", listSourcesRoute);
-        Spark.get(API_ROOT + "/list_login_sources/", listSourcesRoute);
+        Spark.get(API_ROOT + "/list_login_sources", listLoginSourceRoute);
+        Spark.get(API_ROOT + "/list_login_sources/", listLoginSourceRoute);
         //Login route
         Spark.get(API_ROOT + "/source_login/:sourceId", sourceLoginRoute);
         Spark.get(API_ROOT + "/source_login/:sourceId/", sourceLoginRoute);
