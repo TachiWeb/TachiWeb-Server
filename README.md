@@ -20,6 +20,13 @@ There is currently no Manga reader that can be easily synced between the desktop
 TachiWeb-Server is full compatible with Tachiyomi's data structures and backups, allowing easy migration between the two.
 **Seamless sync between the two programs is a goal and planned feature.**
 
+# Installation
+Make sure you have `maven` and `bower` installed before starting.
+1. Clone the repository by executing: `git clone https://github.com/TachiWeb/TachiWeb-Server`
+2. Enter the repository folder by executing: `cd TachiWeb-Server`
+3. Build TachiWeb-Server and TachiWeb-UI by executing: `./build.sh`
+4. Now you can launch TachiWeb by running `cd target && java -jar TachiServer-[Whatever version]-jar-with-dependencies.jar`. Open the UI by going to: http://localhost:4567/ in a web browser.
+
 # Architecture
 TachiWeb-Server shares a large portion of it's backend with Tachiyomi.
 In fact, almost the entire backend was copied directly from Tachiyomi without any modification.

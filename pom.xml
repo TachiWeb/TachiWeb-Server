@@ -5,12 +5,21 @@
     <groupId>xyz.nulldev.ts</groupId>
     <artifactId>TachiServer</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.version>1.0.3</kotlin.version>
     </properties>
+
+    <!-- Local repo -->
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${basedir}/local-repo</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Tachiyomi dependencies -->
@@ -89,11 +98,9 @@
         </dependency>
         <!-- Mock Android Jar (SDK 23)-->
         <dependency>
-            <groupId>com.android</groupId>
+            <groupId>android</groupId>
             <artifactId>android</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/mock/android.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -119,6 +126,30 @@
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>${project.build.finalName}.lib/</classpathPrefix>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
