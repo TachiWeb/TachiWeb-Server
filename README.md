@@ -22,6 +22,7 @@ TachiWeb-Server is full compatible with Tachiyomi's data structures and backups,
 
 # Installation
 Make sure you have `maven` and `bower` installed before starting.
+
 1. Clone the repository by executing: `git clone https://github.com/TachiWeb/TachiWeb-Server`
 2. Enter the repository folder by executing: `cd TachiWeb-Server`
 3. Build TachiWeb-Server and TachiWeb-UI by executing: `./build.sh`
