@@ -97,6 +97,10 @@ public class JsonSharedPreferences implements SharedPreferences {
     }
 
     public synchronized String saveToString() {
+        return saveToJSONObject().toString();
+    }
+
+    public synchronized JSONObject saveToJSONObject() {
         JSONObject object = new JSONObject();
         //Loop through every preference in the in-memory preference map
         for (Map.Entry<String, Object> entry : prefs.entrySet()) {
@@ -112,7 +116,7 @@ public class JsonSharedPreferences implements SharedPreferences {
             entryObj.put(KEY_VALUE, value);
             object.put(entry.getKey(), entryObj);
         }
-        return object.toString();
+        return object;
     }
 
     @Override
