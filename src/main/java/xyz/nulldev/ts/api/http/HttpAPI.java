@@ -1,7 +1,9 @@
 package xyz.nulldev.ts.api.http;
 
+import android.content.Context;
 import spark.Spark;
 import xyz.nulldev.ts.DIReplacement;
+import xyz.nulldev.ts.Library;
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
 import xyz.nulldev.ts.api.http.debug.DebugLibrary;
@@ -25,25 +27,27 @@ import xyz.nulldev.ts.api.http.settings.SourceLoginRoute;
 public class HttpAPI {
     public static final String API_ROOT = "/api";
 
-    private ImageRoute imageRoute = new ImageRoute(DIReplacement.get().getLibrary());
-    private CoverRoute coverRoute = new CoverRoute(DIReplacement.get().getLibrary());
-    private LibraryRoute libraryRoute = new LibraryRoute(DIReplacement.get().getLibrary());
-    private MangaRoute mangaRoute = new MangaRoute(DIReplacement.get().getLibrary());
-    private ChaptersRoute chapterRoute = new ChaptersRoute(DIReplacement.get().getLibrary());
-    private PageCountRoute pageCountRoute = new PageCountRoute(DIReplacement.get().getLibrary());
-    private CreateBackupRoute createBackupRoute = new CreateBackupRoute(DIReplacement.get().getLibrary());
-    private RestoreFromFileRoute restoreFromFileRoute = new RestoreFromFileRoute(DIReplacement.get().getLibrary());
-    private FaveRoute faveRoute = new FaveRoute(DIReplacement.get().getLibrary());
-    private ReadingStatusRoute readingStatusRoute = new ReadingStatusRoute(DIReplacement.get().getLibrary());
-    private UpdateRoute updateRoute = new UpdateRoute(DIReplacement.get().getLibrary());
-    private ListSourcesRoute listSourcesRoute = new ListSourcesRoute(DIReplacement.get().getLibrary());
-    private CatalogueRoute catalogueRoute = new CatalogueRoute(DIReplacement.get().getLibrary());
-    private ListLoginSourceRoute listLoginSourceRoute = new ListLoginSourceRoute(DIReplacement.get().getLibrary());
-    private SourceLoginRoute sourceLoginRoute = new SourceLoginRoute(DIReplacement.get().getLibrary());
-    private DownloadChapterRoute downloadChapterRoute = new DownloadChapterRoute(DIReplacement.get().getLibrary());
-    private DownloadsOperationRoute downloadsOperationRoute = new DownloadsOperationRoute(DIReplacement.get().getLibrary());
-    private GetDownloadStatusRoute getDownloadStatusRoute = new GetDownloadStatusRoute(DIReplacement.get().getLibrary());
-    private SetFlagRoute setFlagRoute = new SetFlagRoute(DIReplacement.get().getLibrary());
+    private Context context = DIReplacement.get().getContext();
+    private Library library = DIReplacement.get().getLibrary();
+    private ImageRoute imageRoute = new ImageRoute(library);
+    private CoverRoute coverRoute = new CoverRoute(library);
+    private LibraryRoute libraryRoute = new LibraryRoute(library);
+    private MangaRoute mangaRoute = new MangaRoute(library);
+    private ChaptersRoute chapterRoute = new ChaptersRoute(library);
+    private PageCountRoute pageCountRoute = new PageCountRoute(library);
+    private CreateBackupRoute createBackupRoute = new CreateBackupRoute(library);
+    private RestoreFromFileRoute restoreFromFileRoute = new RestoreFromFileRoute(library);
+    private FaveRoute faveRoute = new FaveRoute(library);
+    private ReadingStatusRoute readingStatusRoute = new ReadingStatusRoute(library);
+    private UpdateRoute updateRoute = new UpdateRoute(library);
+    private ListSourcesRoute listSourcesRoute = new ListSourcesRoute(library);
+    private CatalogueRoute catalogueRoute = new CatalogueRoute(library);
+    private ListLoginSourceRoute listLoginSourceRoute = new ListLoginSourceRoute(library);
+    private SourceLoginRoute sourceLoginRoute = new SourceLoginRoute(library);
+    private DownloadChapterRoute downloadChapterRoute = new DownloadChapterRoute(library);
+    private DownloadsOperationRoute downloadsOperationRoute = new DownloadsOperationRoute(library);
+    private GetDownloadStatusRoute getDownloadStatusRoute = new GetDownloadStatusRoute(library);
+    private SetFlagRoute setFlagRoute = new SetFlagRoute(library);
 
     public void start() {
         //Get an image from a chapter
