@@ -102,7 +102,7 @@ public class JsonSharedPreferences implements SharedPreferences {
         for (Map.Entry<String, Object> entry : prefs.entrySet()) {
             JSONObject entryObj = new JSONObject();
             Object value = entry.getValue();
-            //Determin the object's type
+            //Determine the object's type
             PrefType type = PrefType.fromObject(value);
             if (type == PrefType.Float) {
                 value = value.toString();
