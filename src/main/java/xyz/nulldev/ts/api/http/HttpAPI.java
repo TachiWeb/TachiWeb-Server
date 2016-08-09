@@ -18,6 +18,7 @@ import xyz.nulldev.ts.api.http.library.RestoreFromFileRoute;
 import xyz.nulldev.ts.api.http.manga.*;
 import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute;
 import xyz.nulldev.ts.api.http.settings.PreferencesRoute;
+import xyz.nulldev.ts.api.http.settings.SetPreferenceRoute;
 import xyz.nulldev.ts.api.http.settings.SourceLoginRoute;
 
 /**
@@ -50,6 +51,7 @@ public class HttpAPI {
     private GetDownloadStatusRoute getDownloadStatusRoute = new GetDownloadStatusRoute(library);
     private SetFlagRoute setFlagRoute = new SetFlagRoute(library);
     private PreferencesRoute preferencesRoute = new PreferencesRoute(context, library);
+    private SetPreferenceRoute setPreferenceRoute = new SetPreferenceRoute(library, context);
 
     public void start() {
         //Get an image from a chapter
@@ -112,6 +114,9 @@ public class HttpAPI {
         //Preferences route
         Spark.get(API_ROOT + "/prefs", preferencesRoute);
         Spark.get(API_ROOT + "/prefs/", preferencesRoute);
+        //Set preferences route
+        Spark.get(API_ROOT + "/set_pref/:key/:type", setPreferenceRoute);
+        Spark.get(API_ROOT + "/set_pref/:key/:type/", setPreferenceRoute);
         Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }

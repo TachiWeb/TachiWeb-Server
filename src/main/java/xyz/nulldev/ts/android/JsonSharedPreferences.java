@@ -14,9 +14,7 @@ import java.util.*;
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 10/07/16
- */
-
-/**
+ *
  * JSON implementation of Android's SharedPreferences.
  */
 public class JsonSharedPreferences implements SharedPreferences {
@@ -47,7 +45,7 @@ public class JsonSharedPreferences implements SharedPreferences {
     public synchronized void loadFromString(String string) {
         try {
             JSONObject jsonObject = new JSONObject(string);
-            //Changes are need to be applied atomically so we temporarily store all changes in a seperate map
+            //Changes are need to be applied atomically so we temporarily store all changes in a separate map
             Map<String, Object> tempMap = new HashMap<>();
             //Loop through all preference objects in JSON
             for (String key : jsonObject.keySet()) {
