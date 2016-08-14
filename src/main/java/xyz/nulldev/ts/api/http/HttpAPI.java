@@ -16,10 +16,7 @@ import xyz.nulldev.ts.api.http.library.CreateBackupRoute;
 import xyz.nulldev.ts.api.http.library.LibraryRoute;
 import xyz.nulldev.ts.api.http.library.RestoreFromFileRoute;
 import xyz.nulldev.ts.api.http.manga.*;
-import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute;
-import xyz.nulldev.ts.api.http.settings.PreferencesRoute;
-import xyz.nulldev.ts.api.http.settings.SetPreferenceRoute;
-import xyz.nulldev.ts.api.http.settings.SourceLoginRoute;
+import xyz.nulldev.ts.api.http.settings.*;
 
 /**
  * Project: TachiServer
