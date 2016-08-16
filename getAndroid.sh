@@ -40,6 +40,7 @@ zip --delete android.jar android/net/Uri.class
 zip --delete android.jar 'android/net/Uri$Builder.class'
 zip --delete android.jar android/os/Environment.class
 zip --delete android.jar android/text/format/Formatter.class
+zip --delete android.jar android/text/Html.class
 
 echo "Installing to local repo..."
 popd
