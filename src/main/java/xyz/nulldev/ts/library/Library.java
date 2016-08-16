@@ -1,4 +1,4 @@
-package xyz.nulldev.ts;
+package xyz.nulldev.ts.library;
 
 import eu.kanade.tachiyomi.data.database.models.*;
 import org.jetbrains.annotations.NotNull;
@@ -274,19 +274,19 @@ public class Library {
         return lastLongId++;
     }
 
-    int getLastIntId() {
+    public int getLastIntId() {
         return lastIntId;
     }
 
-    void setLastIntId(int lastIntId) {
+    public void setLastIntId(int lastIntId) {
         this.lastIntId = lastIntId;
     }
 
-    long getLastLongId() {
+    public long getLastLongId() {
         return lastLongId;
     }
 
-    void setLastLongId(long lastLongId) {
+    public void setLastLongId(long lastLongId) {
         this.lastLongId = lastLongId;
     }
 

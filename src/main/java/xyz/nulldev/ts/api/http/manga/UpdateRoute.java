@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.L;
 import xyz.nulldev.ts.util.LeniantParser;

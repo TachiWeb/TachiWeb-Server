@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 
 import java.util.concurrent.locks.ReentrantLock;
 

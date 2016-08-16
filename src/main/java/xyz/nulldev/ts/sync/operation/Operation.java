@@ -1,6 +1,6 @@
 package xyz.nulldev.ts.sync.operation;
 
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.sync.conflict.Conflict;
 
 /**

@@ -3,15 +3,14 @@ package xyz.nulldev.ts;
 import android.content.Context;
 import android.content.SharedPreferences;
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
-import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.nulldev.ts.api.http.HttpAPI;
 import xyz.nulldev.ts.files.Files;
+import xyz.nulldev.ts.library.Library;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,8 +20,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
 
 /**
  * Project: TachiServer
@@ -91,7 +88,7 @@ public class TachiServer {
      **/
     public static void loadLibrary() {
         try {
-            DIReplacement.get().injectBackupManager().restoreFromFile(getLibraryFile());
+            DIReplacement.get().injectBackupManager().restoreFromFile(getLibraryFile(), DIReplacement.get().getLibrary());
             //Get last int and long ids
             SharedPreferences preferences = getLibrarySharedPrefs();
             Library library = DIReplacement.get().getLibrary();
@@ -150,7 +147,7 @@ public class TachiServer {
         cleanupLibraryFolder();
         //Save the library to the library file
         try {
-            DIReplacement.get().injectBackupManager().backupToFile(libraryFile, false);
+            DIReplacement.get().injectBackupManager().backupToFile(libraryFile, DIReplacement.get().getLibrary(), false);
             //Save last int and long ids
             Library library = DIReplacement.get().getLibrary();
             getLibrarySharedPrefs()

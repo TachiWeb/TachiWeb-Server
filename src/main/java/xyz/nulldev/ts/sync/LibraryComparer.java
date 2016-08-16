@@ -3,7 +3,7 @@ package xyz.nulldev.ts.sync;
 import eu.kanade.tachiyomi.data.database.models.Category;
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.sync.operation.Operation;
 import xyz.nulldev.ts.sync.operation.UpdateLibraryOperation;
 import xyz.nulldev.ts.sync.operation.category.AddCategoryOperation;

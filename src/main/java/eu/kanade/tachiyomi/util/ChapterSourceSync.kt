@@ -4,7 +4,7 @@ import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.source.Source
 import eu.kanade.tachiyomi.data.source.online.OnlineSource
-import xyz.nulldev.ts.Library
+import xyz.nulldev.ts.library.Library
 import java.util.*
 
 /**

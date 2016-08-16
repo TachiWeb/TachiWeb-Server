@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.data.backup.serializer.IdExclusion
 import eu.kanade.tachiyomi.data.backup.serializer.IntegerSerializer
 import eu.kanade.tachiyomi.data.database.models.*
 import xyz.nulldev.ts.DIReplacement
-import xyz.nulldev.ts.Library
+import xyz.nulldev.ts.library.Library
 import java.io.*
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -54,25 +54,25 @@ class BackupManager() {
      * @throws IOException if there's any IO error.
      */
     @Throws(IOException::class)
-    fun backupToFile(file: File, favesOnly: Boolean = true) {
-        val root = backupToJson(favesOnly)
+    fun backupToFile(file: File, library: Library, favesOnly: Boolean = true) {
+        val root = backupToJson(favesOnly, library)
 
         FileWriter(file).use {
             gson.toJson(root, it)
         }
     }
 
-    fun backupToString(favesOnly: Boolean = true): String = gson.toJson(backupToJson(favesOnly))
+    fun backupToString(favesOnly: Boolean = true, library: Library): String = gson.toJson(backupToJson(favesOnly, library))
 
     /**
      * Creates a JSON object containing the backup of the app's data.
      *
      * @return the backup as a JSON object.
      */
-    fun backupToJson(favesOnly: Boolean = true): JsonObject {
+    fun backupToJson(favesOnly: Boolean = true, library: Library): JsonObject {
         val lock = ReentrantLock()
         lock.lock()
-        DIReplacement.get().library.masterLock.set(lock)
+        library.masterLock.set(lock)
         val root : JsonObject
         try {
             root = JsonObject()
@@ -81,25 +81,25 @@ class BackupManager() {
             val mangaEntries = JsonArray()
             root.add(MANGAS, mangaEntries)
             val toBackup = if(favesOnly)
-                DIReplacement.get().library.favoriteMangas
+                library.favoriteMangas
             else
-                DIReplacement.get().library.mangas
+                library.mangas
             for (manga in toBackup) {
-                mangaEntries.add(backupManga(manga))
+                mangaEntries.add(backupManga(manga, library))
             }
 
             // Backup categories
             val categoryEntries = JsonArray()
             root.add(CATEGORIES, categoryEntries)
-            for (category in DIReplacement.get().library.categories) {
+            for (category in library.categories) {
                 categoryEntries.add(backupCategory(category))
             }
         } catch(e: Throwable) {
-            DIReplacement.get().library.masterLock.set(null)
+            library.masterLock.set(null)
             lock.unlock()
             throw e
         }
-        DIReplacement.get().library.masterLock.set(null)
+        library.masterLock.set(null)
         lock.unlock()
 
         return root
@@ -111,7 +111,7 @@ class BackupManager() {
      * @param manga the manga to backup.
      * @return a JSON object containing all the data of the manga.
      */
-    private fun backupManga(manga: Manga): JsonObject {
+    private fun backupManga(manga: Manga, library: Library): JsonObject {
         // Entry for this manga
         val entry = JsonObject()
 
@@ -119,19 +119,19 @@ class BackupManager() {
         entry.add(MANGA, gson.toJsonTree(manga))
 
         // Backup all the chapters
-        val chapters = DIReplacement.get().library.getChapters(manga)
+        val chapters = library.getChapters(manga)
         if (!chapters.isEmpty()) {
             entry.add(CHAPTERS, gson.toJsonTree(chapters))
         }
 
         // Backup manga sync
-        val mangaSync = DIReplacement.get().library.getMangasSync(manga)
+        val mangaSync = library.getMangasSync(manga)
         if (!mangaSync.isEmpty()) {
             entry.add(MANGA_SYNC, gson.toJsonTree(mangaSync))
         }
 
         // Backup categories for this manga
-        val categoriesForManga = DIReplacement.get().library.getCategoriesForManga(manga)
+        val categoriesForManga = library.getCategoriesForManga(manga)
         if (!categoriesForManga.isEmpty()) {
             val categoriesNames = ArrayList<String>()
             for (category in categoriesForManga) {
@@ -160,10 +160,10 @@ class BackupManager() {
      * @throws IOException if there's any IO error.
      */
     @Throws(IOException::class)
-    fun restoreFromFile(file: File) {
+    fun restoreFromFile(file: File, library: Library) {
         JsonReader(FileReader(file)).use {
             val root = JsonParser().parse(it).asJsonObject
-            restoreFromJson(root)
+            restoreFromJson(root, library)
         }
     }
 
@@ -174,10 +174,10 @@ class BackupManager() {
      * @throws IOException if there's any IO error.
      */
     @Throws(IOException::class)
-    fun restoreFromStream(stream: InputStream) {
+    fun restoreFromStream(stream: InputStream, library: Library) {
         JsonReader(InputStreamReader(stream)).use {
             val root = JsonParser().parse(it).asJsonObject
-            restoreFromJson(root)
+            restoreFromJson(root, library)
         }
     }
 
@@ -187,12 +187,12 @@ class BackupManager() {
      *
      * @param root the root of the JSON.
      */
-    fun restoreFromJson(root: JsonObject) {
+    fun restoreFromJson(root: JsonObject, library: Library) {
         val lock = ReentrantLock()
         lock.lock()
-        DIReplacement.get().library.masterLock.set(lock)
+        library.masterLock.set(lock)
         try {
-            val trans = DIReplacement.get().library.newTransaction()
+            val trans = library.newTransaction()
             // Restore categories
             root.get(CATEGORIES)?.let {
                 restoreCategories(it.asJsonArray, trans.library)
@@ -204,11 +204,11 @@ class BackupManager() {
             }
             trans.apply()
         } catch(e: Throwable) {
-            DIReplacement.get().library.masterLock.set(null)
+            library.masterLock.set(null)
             lock.unlock()
             throw e
         }
-        DIReplacement.get().library.masterLock.set(null)
+        library.masterLock.set(null)
         lock.unlock()
     }
 

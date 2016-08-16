@@ -4,7 +4,7 @@ import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import spark.Request;
 import spark.Response;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package xyz.nulldev.ts.sync.operation.chapter;
 
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.sync.conflict.Conflict;
 import xyz.nulldev.ts.util.OptionalUtils;
 

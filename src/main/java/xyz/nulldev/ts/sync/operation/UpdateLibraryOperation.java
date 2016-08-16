@@ -1,6 +1,8 @@
 package xyz.nulldev.ts.sync.operation;
 
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.DIReplacement;
+import xyz.nulldev.ts.library.Library;
+import xyz.nulldev.ts.library.LibraryUpdater;
 import xyz.nulldev.ts.sync.conflict.Conflict;
 
 /**
@@ -11,6 +13,12 @@ import xyz.nulldev.ts.sync.conflict.Conflict;
 public class UpdateLibraryOperation extends Operation {
     public static final String NAME = "Update Library";
 
+    private LibraryUpdater updater;
+
+    public UpdateLibraryOperation() {
+        this.updater = new LibraryUpdater(DIReplacement.get().injectSourceManager());
+    }
+
     @Override
     public String getName() {
         return NAME;
@@ -18,7 +26,7 @@ public class UpdateLibraryOperation extends Operation {
 
     @Override
     public Conflict tryApply(Library library) {
-        //TODO Server side library update code
+        updater.updateLibrary(library, true);
         return null;
     }
 

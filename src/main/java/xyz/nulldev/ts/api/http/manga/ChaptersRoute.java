@@ -3,22 +3,18 @@ package xyz.nulldev.ts.api.http.manga;
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.download.DownloadManager;
-import eu.kanade.tachiyomi.data.download.model.Download;
 import eu.kanade.tachiyomi.data.source.Source;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import xyz.nulldev.ts.DIReplacement;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.util.ChapterUtils;
 import xyz.nulldev.ts.util.LeniantParser;
-import xyz.nulldev.ts.util.OptionalUtils;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 /**
  * Project: TachiServer

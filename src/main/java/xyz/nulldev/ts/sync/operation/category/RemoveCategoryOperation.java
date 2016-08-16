@@ -1,7 +1,7 @@
 package xyz.nulldev.ts.sync.operation.category;
 
 import eu.kanade.tachiyomi.data.database.models.Category;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.sync.conflict.Conflict;
 import xyz.nulldev.ts.sync.operation.Operation;
 

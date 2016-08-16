@@ -3,7 +3,7 @@ package xyz.nulldev.ts.api.http;
 import android.content.Context;
 import spark.Spark;
 import xyz.nulldev.ts.DIReplacement;
-import xyz.nulldev.ts.Library;
+import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
 import xyz.nulldev.ts.api.http.debug.DebugLibrary;
