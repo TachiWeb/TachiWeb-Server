@@ -35,6 +35,10 @@ public class Files {
         return mkdirs(new File(getStorageDir(), "downloads"));
     }
 
+    public static File getSyncDir() {
+        return mkdirs(new File(getStorageDir(), "sync"));
+    }
+
     private static File mkdirs(File file) {
         file.mkdirs();
         return file;
