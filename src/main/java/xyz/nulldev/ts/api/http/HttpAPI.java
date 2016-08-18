@@ -6,7 +6,6 @@ import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
-import xyz.nulldev.ts.api.http.debug.DebugLibrary;
 import xyz.nulldev.ts.api.http.download.DownloadChapterRoute;
 import xyz.nulldev.ts.api.http.download.DownloadsOperationRoute;
 import xyz.nulldev.ts.api.http.download.GetDownloadStatusRoute;
@@ -114,6 +113,5 @@ public class HttpAPI {
         //Set preferences route
         Spark.get(API_ROOT + "/set_pref/:key/:type", setPreferenceRoute);
         Spark.get(API_ROOT + "/set_pref/:key/:type/", setPreferenceRoute);
-        Spark.get("/", new DebugLibrary(DIReplacement.get().getLibrary()));
     }
 }
