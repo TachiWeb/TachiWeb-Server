@@ -32,4 +32,16 @@ public abstract class ChangeMangaOperation extends Operation {
     }
 
     public abstract Conflict tryMangaApply(Manga manga, Library library);
+
+    public String getMangaTitle() {
+        return mangaTitle;
+    }
+
+    public String getMangaUrl() {
+        return mangaUrl;
+    }
+
+    public int getMangaSource() {
+        return mangaSource;
+    }
 }

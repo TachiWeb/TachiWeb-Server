@@ -5,16 +5,12 @@ import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
 import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.sync.operation.Operation;
-import xyz.nulldev.ts.sync.operation.UpdateLibraryOperation;
 import xyz.nulldev.ts.sync.operation.category.AddCategoryOperation;
 import xyz.nulldev.ts.sync.operation.category.AddMangaToCategoryOperation;
 import xyz.nulldev.ts.sync.operation.category.RemoveCategoryOperation;
 import xyz.nulldev.ts.sync.operation.category.RemoveMangaFromCategoryOperation;
 import xyz.nulldev.ts.sync.operation.chapter.ChangeChapterReadingStatusOperation;
-import xyz.nulldev.ts.sync.operation.manga.AddMangaOperation;
-import xyz.nulldev.ts.sync.operation.manga.ChangeMangaChapterFlagsOperation;
-import xyz.nulldev.ts.sync.operation.manga.ChangeMangaFavoriteStatusOperation;
-import xyz.nulldev.ts.sync.operation.manga.ChangeMangaViewerOperation;
+import xyz.nulldev.ts.sync.operation.manga.*;
 import xyz.nulldev.ts.util.OptionalUtils;
 
 import java.util.ArrayList;
@@ -28,6 +24,7 @@ import java.util.List;
 public class LibraryComparer {
     public static List<Operation> compareLibraries(Library oldLibrary, Library newLibrary) {
         List<Operation> mangaOperationList = new ArrayList<>();
+        List<Operation> mangaUpdateOperationList = new ArrayList<>();
         List<Operation> chapterOperationList = new ArrayList<>();
         List<Operation> categoryOperationList = new ArrayList<>();
         //Compare categories (add and remove categories)
@@ -54,15 +51,16 @@ public class LibraryComparer {
             categoryOperationList.add(new RemoveCategoryOperation(notConsideredCategory.getName()));
         }
 
-
         //Compare mangas
         for (Manga manga : newLibrary.getMangas()) {
+            boolean shouldUpdate = false;
             //Check if manga in old library
             Manga mangaInOldLibrary = oldLibrary.getManga(manga.getUrl(), manga.getSource());
             //Manga is not in old library, add it
             if (mangaInOldLibrary == null) {
                 mangaOperationList.add(
                         new AddMangaOperation(manga.getTitle(), manga.getUrl(), manga.getSource()));
+                shouldUpdate = true;
             }
             //Compare manga contents now
             //Compare chapter flags
@@ -121,6 +119,7 @@ public class LibraryComparer {
                                     chapter.getChapter_number(),
                                     chapter.getRead(),
                                     chapter.getLast_page_read()));
+                    shouldUpdate = true;
                 }
             }
             //Compare categories (add and remove manga from categories)
@@ -163,12 +162,16 @@ public class LibraryComparer {
                                 manga.getSource(),
                                 notConsideredCategory.getName()));
             }
+            //Update the manga if we are modifying it's chapter statuses or if it is new
+            if(shouldUpdate) {
+                mangaUpdateOperationList.add(new UpdateMangaOperation(manga.getTitle(), manga.getUrl(), manga.getSource()));
+            }
         }
 
         //Generate final operation
         List<Operation> operationList = new ArrayList<>();
         operationList.addAll(mangaOperationList);
-        operationList.add(new UpdateLibraryOperation());
+        operationList.addAll(mangaUpdateOperationList);
         operationList.addAll(chapterOperationList);
         operationList.addAll(categoryOperationList);
         return operationList;

@@ -28,43 +28,47 @@ public class LibraryUpdater {
 
     public void updateLibrary(Library library, boolean updateAll) {
         for(Manga manga : new ArrayList<>(updateAll ? library.getMangas() : library.getFavoriteMangas())) {
-            Source source = sourceManager.get(manga.getSource());
-            if(source == null) {
-                logger.info("Manga #{} is missing it's source!", manga.getId());
-                continue;
+            updateManga(library, manga);
+        }
+    }
+
+    public void updateManga(Library library, Manga manga) {
+        Source source = sourceManager.get(manga.getSource());
+        if(source == null) {
+            logger.info("Manga #{} is missing it's source!", manga.getId());
+            return;
+        }
+        //Update manga info
+        try {
+            Long originalId = manga.getId();
+            String originalTitle = manga.getTitle();
+            manga = source.fetchMangaDetails(manga).toBlocking().first();
+            if (manga == null) {
+                throw new NullPointerException();
             }
-            //Update manga info
+            manga.setId(originalId);
+            //TODO WHY THE HECK IS THE TITLE NOT SET AFTER THE MANGA IS UPDATED!
             try {
-                Long originalId = manga.getId();
-                String originalTitle = manga.getTitle();
-                manga = source.fetchMangaDetails(manga).toBlocking().first();
-                if (manga == null) {
-                    throw new NullPointerException();
-                }
-                manga.setId(originalId);
-                //TODO WHY THE HECK IS THE TITLE NOT SET AFTER THE MANGA IS UPDATED!
-                try {
-                    manga.getTitle();
-                } catch (Exception ignored) {
-                    manga.setTitle(originalTitle);
-                }
-                //Update the manga in the library
-                library.insertManga(manga);
-            } catch (Exception e) {
-                logger.error("Error updating manga!", e);
-                continue;
+                manga.getTitle();
+            } catch (Exception ignored) {
+                manga.setTitle(originalTitle);
             }
-            //Update manga chapters
-            try {
-                List<Chapter> chapters = source.fetchChapterList(manga).toBlocking().first();
-                if(chapters == null) {
-                    throw new NullPointerException();
-                }
-                //Sync the library chapters with the source chapters
-                ChapterSourceSyncKt.syncChaptersWithSource(library, chapters, manga, source);
-            } catch (Exception e) {
-                logger.error("Error updating chapters!", e);
+            //Update the manga in the library
+            library.insertManga(manga);
+        } catch (Exception e) {
+            logger.error("Error updating manga!", e);
+            return;
+        }
+        //Update manga chapters
+        try {
+            List<Chapter> chapters = source.fetchChapterList(manga).toBlocking().first();
+            if(chapters == null) {
+                throw new NullPointerException();
             }
+            //Sync the library chapters with the source chapters
+            ChapterSourceSyncKt.syncChaptersWithSource(library, chapters, manga, source);
+        } catch (Exception e) {
+            logger.error("Error updating chapters!", e);
         }
     }
 }
