@@ -6,7 +6,6 @@ import com.google.gson.stream.JsonReader
 import eu.kanade.tachiyomi.data.backup.serializer.IdExclusion
 import eu.kanade.tachiyomi.data.backup.serializer.IntegerSerializer
 import eu.kanade.tachiyomi.data.database.models.*
-import xyz.nulldev.ts.DIReplacement
 import xyz.nulldev.ts.library.Library
 import java.io.*
 import java.util.*

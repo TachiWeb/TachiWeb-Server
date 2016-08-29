@@ -1,8 +1,12 @@
 package xyz.nulldev.ts.api.http;
 
 import android.content.Context;
+import eu.kanade.tachiyomi.data.backup.BackupManager;
 import spark.Spark;
 import xyz.nulldev.ts.DIReplacement;
+import xyz.nulldev.ts.api.http.sync.SyncRoute;
+import xyz.nulldev.ts.api.http.task.TaskStatusRoute;
+import xyz.nulldev.ts.api.task.TaskManager;
 import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
@@ -27,6 +31,8 @@ public class HttpAPI {
 
     private Context context = DIReplacement.get().getContext();
     private Library library = DIReplacement.get().getLibrary();
+    private TaskManager taskManager = DIReplacement.get().getTaskManager();
+    private BackupManager backupManager = DIReplacement.get().injectBackupManager();
     private ImageRoute imageRoute = new ImageRoute(library);
     private CoverRoute coverRoute = new CoverRoute(library);
     private LibraryRoute libraryRoute = new LibraryRoute(library);
@@ -48,6 +54,8 @@ public class HttpAPI {
     private SetFlagRoute setFlagRoute = new SetFlagRoute(library);
     private PreferencesRoute preferencesRoute = new PreferencesRoute(context, library);
     private SetPreferenceRoute setPreferenceRoute = new SetPreferenceRoute(library, context);
+    private SyncRoute syncRoute = new SyncRoute(library, backupManager, taskManager);
+    private TaskStatusRoute taskStatusRoute = new TaskStatusRoute(library, taskManager);
 
     public void start() {
         //Get an image from a chapter
@@ -113,5 +121,11 @@ public class HttpAPI {
         //Set preferences route
         Spark.get(API_ROOT + "/set_pref/:key/:type", setPreferenceRoute);
         Spark.get(API_ROOT + "/set_pref/:key/:type/", setPreferenceRoute);
+        //Sync route
+        Spark.post(API_ROOT + "/sync", syncRoute);
+        Spark.post(API_ROOT + "/sync/", syncRoute);
+        //Task status route
+        Spark.get(API_ROOT + "/task/:taskId", taskStatusRoute);
+        Spark.get(API_ROOT + "/task/:taskId/", taskStatusRoute);
     }
 }

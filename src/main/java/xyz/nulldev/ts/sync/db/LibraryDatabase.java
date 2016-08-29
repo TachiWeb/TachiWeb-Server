@@ -1,7 +1,6 @@
 package xyz.nulldev.ts.sync.db;
 
 import eu.kanade.tachiyomi.data.backup.BackupManager;
-import xyz.nulldev.ts.files.Files;
 import xyz.nulldev.ts.sync.operation.Operation;
 import xyz.nulldev.ts.sync.operation.manga.UpdateMangaOperation;
 
@@ -10,19 +9,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 17/08/16
+ *
+ * This was originally written for the history based synchronization system
+ *
+ * The current synchronization system only syncs the latest updated device so storage of devices and databases is not needed
  */
+@Deprecated
 public class LibraryDatabase {
-    private File rootDirectory = Files.getSyncDir();
+    //TODO Keep a master DB
+    private File rootDirectory;
     private BackupManager backupManager = new BackupManager();
-
-    public LibraryDatabase(BackupManager backupManager) {
-        this.backupManager = backupManager;
-    }
 
     public LibraryDatabase(File rootDirectory, BackupManager backupManager) {
         this.rootDirectory = rootDirectory;
@@ -38,16 +40,18 @@ public class LibraryDatabase {
         return fileList;
     }
 
+    private Stream<File> getDeviceFilesStream() {
+        return safeListFiles(rootDirectory).stream().filter(File::isDirectory);
+    }
+
     public List<String> getDeviceNames() {
-        return safeListFiles(rootDirectory)
-                .stream()
+        return getDeviceFilesStream()
                 .map(File::getName)
                 .collect(Collectors.toList());
     }
 
     public List<Device> getDevices() {
-        return safeListFiles(rootDirectory)
-                .stream()
+        return getDeviceFilesStream()
                 .map(f -> new Device(backupManager, LibraryDatabase.this, f))
                 .collect(Collectors.toList());
     }
@@ -71,7 +75,7 @@ public class LibraryDatabase {
                     if(targetOperation instanceof UpdateMangaOperation) {
                         UpdateMangaOperation castedTargetOperation = (UpdateMangaOperation) targetOperation;
                         //Check if URL and source is the same
-                        if(casted.getName().equals(castedTargetOperation.getMangaUrl())
+                        if(casted.getMangaUrl().equals(castedTargetOperation.getMangaUrl())
                                 && casted.getMangaSource() == castedTargetOperation.getMangaSource()) {
                             operations.remove(a);
                         }
@@ -80,5 +84,29 @@ public class LibraryDatabase {
             }
         }
         return operations;
+    }
+
+    public void stripOldLibraries() {
+        //Get oldest last uploaded library
+        LibraryOnDisk oldestLastUploadedLibrary = null;
+        for(Device device : getDevices()) {
+            LibraryOnDisk lastUploadedLibrary = device.getLastUploadedLibrary();
+            if(lastUploadedLibrary == null) {
+                continue;
+            }
+            if(oldestLastUploadedLibrary == null
+                    || lastUploadedLibrary.getSaveTime().isBefore(oldestLastUploadedLibrary.getSaveTime())) {
+                oldestLastUploadedLibrary = lastUploadedLibrary;
+            }
+        }
+        //TODO Permanently apply all changes of these libraries to the master database and delete the local copies
+    }
+
+    public File getRootDirectory() {
+        return rootDirectory;
+    }
+
+    public BackupManager getBackupManager() {
+        return backupManager;
     }
 }

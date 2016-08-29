@@ -13,7 +13,12 @@ import java.time.ZoneOffset;
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 17/08/16
+ *
+ * This was originally written for the history based synchronization system
+ *
+ * The current synchronization system only syncs the latest updated device so storage of devices and databases is not needed
  */
+@Deprecated
 public class LibraryOnDisk {
     private BackupManager backupManager;
     private Device device;
@@ -53,5 +58,13 @@ public class LibraryOnDisk {
         Library library = new Library();
         backupManager.restoreFromFile(libraryFile, library);
         return library;
+    }
+
+    public BackupManager getBackupManager() {
+        return backupManager;
+    }
+
+    public Device getDevice() {
+        return device;
     }
 }

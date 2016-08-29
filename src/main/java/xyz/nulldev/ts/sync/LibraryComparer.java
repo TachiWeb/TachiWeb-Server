@@ -14,6 +14,7 @@ import xyz.nulldev.ts.sync.operation.manga.*;
 import xyz.nulldev.ts.util.OptionalUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,6 +52,7 @@ public class LibraryComparer {
             categoryOperationList.add(new RemoveCategoryOperation(notConsideredCategory.getName()));
         }
 
+        List<Manga> deletedMangas = oldLibrary.getMangas();
         //Compare mangas
         for (Manga manga : newLibrary.getMangas()) {
             boolean shouldUpdate = false;
@@ -61,6 +63,8 @@ public class LibraryComparer {
                 mangaOperationList.add(
                         new AddMangaOperation(manga.getTitle(), manga.getUrl(), manga.getSource()));
                 shouldUpdate = true;
+            } else {
+                deletedMangas.remove(mangaInOldLibrary);
             }
             //Compare manga contents now
             //Compare chapter flags
@@ -96,7 +100,7 @@ public class LibraryComparer {
                                 manga.getViewer()));
             }
             //Compare chapters
-            List<Chapter> chaptersInOldLibrary = oldLibrary.getChapters(manga);
+            List<Chapter> chaptersInOldLibrary = mangaInOldLibrary != null ? oldLibrary.getChapters(mangaInOldLibrary) : Collections.emptyList();
             for (Chapter chapter : newLibrary.getChapters(manga)) {
                 Chapter matchingOldChapter =
                         OptionalUtils.getOrNull(
@@ -104,8 +108,7 @@ public class LibraryComparer {
                                         .stream()
                                         .filter(
                                                 oldChapter ->
-                                                        oldChapter.getChapter_number()
-                                                                == chapter.getChapter_number())
+                                                        oldChapter.getUrl().equals(chapter.getUrl()))
                                         .findFirst());
                 //Set reading status if old chapter does not exist or reading status different
                 if (matchingOldChapter == null
@@ -166,6 +169,14 @@ public class LibraryComparer {
             if(shouldUpdate) {
                 mangaUpdateOperationList.add(new UpdateMangaOperation(manga.getTitle(), manga.getUrl(), manga.getSource()));
             }
+        }
+        //Unfavorite deleted mangas
+        for(Manga manga : deletedMangas) {
+            mangaOperationList.add(new ChangeMangaFavoriteStatusOperation(
+                    manga.getTitle(),
+                    manga.getUrl(),
+                    manga.getSource(),
+                    false));
         }
 
         //Generate final operation

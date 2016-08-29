@@ -27,7 +27,7 @@ public class LibraryComparerTest extends TestCase {
         for(Operation operation : operationList) {
             Conflict conflict = operation.tryApply(emptyLibrary);
             if(conflict != null) {
-                System.out.println("CONFLICT: " + conflict.getDescription());
+                System.out.println("CONFLICTS: " + conflict.getDescription());
             }
         }
         System.out.println(emptyLibrary);

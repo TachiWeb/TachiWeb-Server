@@ -53,7 +53,7 @@ fun syncChaptersWithSource(library: Library,
     var readded = 0
 
     val transaction = library.newTransaction()
-    var transLibrary = transaction.library
+    val transLibrary = transaction.library
     val deletedReadChapterNumbers = TreeSet<Float>()
     if (!toDelete.isEmpty()) {
         for (c in toDelete) {

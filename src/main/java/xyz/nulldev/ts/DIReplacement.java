@@ -9,7 +9,10 @@ import eu.kanade.tachiyomi.data.network.NetworkHelper;
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper;
 import eu.kanade.tachiyomi.data.source.SourceManager;
 import xyz.nulldev.ts.android.CustomContext;
+import xyz.nulldev.ts.api.task.TaskManager;
+import xyz.nulldev.ts.files.Files;
 import xyz.nulldev.ts.library.Library;
+import xyz.nulldev.ts.sync.db.LibraryDatabase;
 
 /**
  * Project: TachiServer
@@ -77,6 +80,18 @@ public class DIReplacement {
     }
     public DownloadManager injectDownloadManager() {
         return downloadManager;
+    }
+
+    private LibraryDatabase libraryDatabase = new LibraryDatabase(Files.getSyncDir(), backupManager);
+
+    public LibraryDatabase getLibraryDatabase() {
+        return libraryDatabase;
+    }
+
+    private TaskManager taskManager = new TaskManager();
+
+    public TaskManager getTaskManager() {
+        return taskManager;
     }
 
     private Library library = new Library();

@@ -22,10 +22,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
+        <module name="SyncClient" />
         <module name="TachiServer" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
+      <module name="SyncClient" target="1.8" />
       <module name="TachiServer" target="1.8" />
     </bytecodeTargetLevel>
   </component>

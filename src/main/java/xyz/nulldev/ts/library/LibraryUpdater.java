@@ -40,19 +40,7 @@ public class LibraryUpdater {
         }
         //Update manga info
         try {
-            Long originalId = manga.getId();
-            String originalTitle = manga.getTitle();
-            manga = source.fetchMangaDetails(manga).toBlocking().first();
-            if (manga == null) {
-                throw new NullPointerException();
-            }
-            manga.setId(originalId);
-            //TODO WHY THE HECK IS THE TITLE NOT SET AFTER THE MANGA IS UPDATED!
-            try {
-                manga.getTitle();
-            } catch (Exception ignored) {
-                manga.setTitle(originalTitle);
-            }
+            manga.copyFrom(source.fetchMangaDetails(manga).toBlocking().first());
             //Update the manga in the library
             library.insertManga(manga);
         } catch (Exception e) {
