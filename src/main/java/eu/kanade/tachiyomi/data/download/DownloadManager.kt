@@ -10,6 +10,7 @@ import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.download.model.DownloadQueue
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.data.preference.getOrDefault
 import eu.kanade.tachiyomi.data.source.Source
 import eu.kanade.tachiyomi.data.source.SourceManager
 import eu.kanade.tachiyomi.data.source.model.Page
@@ -55,7 +56,7 @@ class DownloadManager(
 
         downloadsSubscription?.unsubscribe()
 
-        threadsSubscription = Observable.just(preferences.downloadThreads())
+        threadsSubscription = preferences.downloadThreads().asObservable()
                 .subscribe {
                     threadsSubject.onNext(it)
                 }
@@ -241,7 +242,7 @@ class DownloadManager(
                     val file = File(directory, filename)
                     try {
                         file.parentFile.mkdirs()
-                        it.body().source().saveImageTo(file.outputStream(), preferences.reencodeImage())
+                        it.body().source().saveImageTo(file.outputStream(), preferences.reencodeImage().getOrDefault())
                     } catch (e: Exception) {
                         it.close()
                         file.delete()
@@ -360,7 +361,7 @@ class DownloadManager(
                 File.separator +
                 manga.title.replace("[^\\sa-zA-Z0-9.-]".toRegex(), "_")
 
-        return File(preferences.downloadsDirectory(), mangaRelativePath)
+        return File(preferences.downloadsDirectory().getOrDefault(), mangaRelativePath)
     }
 
     // Get the absolute path to the chapter directory

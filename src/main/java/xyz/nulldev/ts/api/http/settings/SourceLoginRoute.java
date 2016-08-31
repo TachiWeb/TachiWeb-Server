@@ -50,7 +50,7 @@ public class SourceLoginRoute extends TachiWebRoute {
         }
         //Store login credentials on success
         if(success) {
-            DIReplacement.get().injectPreferencesHelper().storeLoginCreds(source, username, password);
+            DIReplacement.get().injectPreferencesHelper().setSourceCredentials(source, username, password);
         }
         return success ? success() : error("Username/password incorrect!");
     }

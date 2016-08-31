@@ -9,6 +9,7 @@ import eu.kanade.tachiyomi.data.network.NetworkHelper
 import eu.kanade.tachiyomi.data.network.asObservable
 import eu.kanade.tachiyomi.data.network.newCallWithProgress
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.data.preference.getOrDefault
 import eu.kanade.tachiyomi.data.source.Language
 import eu.kanade.tachiyomi.data.source.Source
 import eu.kanade.tachiyomi.data.source.model.MangasPage
@@ -394,7 +395,7 @@ abstract class OnlineSource(context: Context) : Source {
     private fun cacheImage(page: Page): Observable<Page> {
         page.status = Page.DOWNLOAD_IMAGE
         return imageResponse(page)
-                .doOnNext { chapterCache.putImageToCache(page.imageUrl!!, it, preferences.reencodeImage()) }
+                .doOnNext { chapterCache.putImageToCache(page.imageUrl!!, it, preferences.reencodeImage().getOrDefault()) }
                 .map { page }
     }
 
