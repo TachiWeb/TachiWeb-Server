@@ -90,7 +90,7 @@ public class JsonSharedPreferences implements SharedPreferences {
             //Apply all changes made to the in-memory preference map atomically
             prefs = tempMap;
         } catch (JSONException e) {
-            throw new RuntimeException("Error parsing JSON shared preferences!");
+            throw new RuntimeException("Error parsing JSON shared preferences!", e);
         }
     }
 
@@ -174,7 +174,7 @@ public class JsonSharedPreferences implements SharedPreferences {
     @Override
     public synchronized void registerOnSharedPreferenceChangeListener(
             OnSharedPreferenceChangeListener onSharedPreferenceChangeListener) {
-        if (listeners.contains(onSharedPreferenceChangeListener)) {
+        if (!listeners.contains(onSharedPreferenceChangeListener)) {
             listeners.add(onSharedPreferenceChangeListener);
         }
     }
