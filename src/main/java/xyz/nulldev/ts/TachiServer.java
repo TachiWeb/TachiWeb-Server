@@ -2,13 +2,16 @@ package xyz.nulldev.ts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Spark;
 import xyz.nulldev.ts.api.http.HttpAPI;
+import xyz.nulldev.ts.config.Configuration;
 import xyz.nulldev.ts.files.Files;
 import xyz.nulldev.ts.library.Library;
 
@@ -38,8 +41,23 @@ public class TachiServer {
 
     private static Logger logger = LoggerFactory.getLogger(TachiServer.class);
 
+    private static Configuration configuration;
+
     public static void main(String[] args) {
         logger.info("Starting server...");
+        //Load config
+        try {
+            configuration = Configuration.fromArgs(args);
+            if(configuration == null) {
+                return;
+            }
+            Spark.ipAddress(configuration.getIp());
+            Spark.port(configuration.getPort());
+        } catch (ParseException e) {
+            System.out.println("Error parsing CLI args: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
         //Load the previously persisted library
         if (getLibraryFile().exists()) {
             loadLibrary();
