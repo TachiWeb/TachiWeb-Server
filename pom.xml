@@ -11,6 +11,11 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.version>1.0.3</kotlin.version>
+        <!-- Spark Properties -->
+        <jetty.version>9.3.6.v20151106</jetty.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <powermock.version>1.6.4</powermock.version>
+        <mockito.version>1.10.19</mockito.version>
     </properties>
 
     <!-- Local repo -->
@@ -22,6 +27,27 @@
     </repositories>
 
     <dependencies>
+        <!-- Spark dependencies -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-servlet</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
         <!-- Tachiyomi dependencies -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -78,7 +104,7 @@
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
-            <version>2.5</version>
+            <version>2.6-SNAPSHOT</version> <!-- FROM LOCAL REPO -->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

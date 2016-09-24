@@ -10,6 +10,7 @@ import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
+import spark.servlet.SparkFilter;
 import xyz.nulldev.ts.api.http.HttpAPI;
 import xyz.nulldev.ts.config.Configuration;
 import xyz.nulldev.ts.files.Files;

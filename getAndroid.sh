@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
+echo "Checking if local repo initialized..."
+if [ ! -d "local-repo" ]; then
+    echo "Local repo not initialized!"
+    exit 1
+fi
 echo "Getting required Android.jar..."
-rm -rf "local-repo"
-mkdir -p "local-repo"
 rm -rf "tmp"
 mkdir -p "tmp"
 pushd "tmp"
-curl "https://chromium.googlesource.com/android_tools/+/master/sdk/platforms/android-23/android.jar?format=TEXT" | base64 -d > android.jar
+curl "https://chromium.googlesource.com/android_tools/+/ff2bf0560cbe6671ba4160423af196feafee4bf9/sdk/platforms/android-24/android.jar?format=TEXT" | base64 -d > android.jar
 
 # We need to remove any stub classes that we might use
 echo "Patching JAR..."
