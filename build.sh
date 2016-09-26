@@ -14,5 +14,7 @@ chmod 777 getAndroid.sh
 # Get Spark
 chmod 777 getSpark.sh
 ./getSpark.sh
+# Remove old build
+rm -rf target
 # Build and package server into JAR
 mvn clean package -U
