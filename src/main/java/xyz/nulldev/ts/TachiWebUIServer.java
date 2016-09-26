@@ -1,5 +1,6 @@
 package xyz.nulldev.ts;
 
+import spark.Redirect;
 import spark.Spark;
 
 /**
@@ -11,7 +12,7 @@ public class TachiWebUIServer {
     public void start() {
         Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
         Spark.staticFiles.location("/tachiweb-ui");
-        Spark.redirect.get("/", "/index.html");
-        Spark.redirect.get("", "/index.html");
+        Spark.redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT);
+        Spark.redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT);
     }
 }
