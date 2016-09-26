@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Update submodules (UI components)
+echo "Downloading web components..."
 git submodule update --init --recursive
 # Build UI components
-pushd src/main/resources/tachiweb-ui
-bower install
-popd
+chmod 777 buildWeb.sh
+./buildWeb.sh
 # Init local repo
 rm -rf "local-repo"
 mkdir -p "local-repo"

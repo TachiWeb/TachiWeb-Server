@@ -15,7 +15,7 @@ echo "Reverting repo to known state..."
 git reset --hard 4a6a3888d89c0070268d827d060f660209bdc07b
 
 echo "Building Spark..."
-mvn clean package -U
+mvn clean package -DskipTests -U
 popd
 popd
 echo "Installing to local repo..."

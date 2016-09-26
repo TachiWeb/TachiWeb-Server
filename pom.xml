@@ -10,7 +10,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <kotlin.version>1.0.3</kotlin.version>
+        <kotlin.version>1.0.4</kotlin.version>
         <!-- Spark Properties -->
         <jetty.version>9.3.6.v20151106</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
