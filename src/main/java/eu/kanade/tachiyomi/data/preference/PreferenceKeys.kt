@@ -10,4 +10,5 @@ class PreferenceKeys {
     val downloadsDirectory = "pref_download_directory_key"
     val downloadThreads = "pref_download_slots_key"
     val reencodeImage = "pref_reencode_image_key"
+    val authPassword = "pref_server_password"
 }

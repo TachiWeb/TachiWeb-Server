@@ -4,6 +4,8 @@ import android.content.Context;
 import eu.kanade.tachiyomi.data.backup.BackupManager;
 import spark.Spark;
 import xyz.nulldev.ts.DIReplacement;
+import xyz.nulldev.ts.api.http.auth.CheckSessionRoute;
+import xyz.nulldev.ts.api.http.auth.ClearSessionsRoute;
 import xyz.nulldev.ts.api.http.sync.SyncRoute;
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute;
 import xyz.nulldev.ts.api.task.TaskManager;
@@ -56,6 +58,8 @@ public class HttpAPI {
     private SetPreferenceRoute setPreferenceRoute = new SetPreferenceRoute(library, context);
     private SyncRoute syncRoute = new SyncRoute(library, backupManager, taskManager);
     private TaskStatusRoute taskStatusRoute = new TaskStatusRoute(library, taskManager);
+    private CheckSessionRoute checkSessionRoute = new CheckSessionRoute(library);
+    private ClearSessionsRoute clearSessionsRoute = new ClearSessionsRoute(library);
 
     public void start() {
         //Get an image from a chapter
@@ -127,5 +131,11 @@ public class HttpAPI {
         //Task status route
         Spark.get(API_ROOT + "/task/:taskId", taskStatusRoute);
         Spark.get(API_ROOT + "/task/:taskId/", taskStatusRoute);
+        //Check session
+        Spark.get(API_ROOT + "/auth", checkSessionRoute);
+        Spark.get(API_ROOT + "/auth/", checkSessionRoute);
+        //Clear sessions
+        Spark.get(API_ROOT + "/clear_sessions", clearSessionsRoute);
+        Spark.get(API_ROOT + "/clear_sessions/", clearSessionsRoute);
     }
 }

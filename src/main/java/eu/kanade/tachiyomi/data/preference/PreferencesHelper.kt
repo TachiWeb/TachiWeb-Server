@@ -68,4 +68,6 @@ class PreferencesHelper(context: Context) {
     }
 
     fun reencodeImage() = rxPrefs.getBoolean(keys.reencodeImage, false)
+
+    fun authPassword() = rxPrefs.getString(keys.authPassword, "")
 }

@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import xyz.nulldev.ts.DIReplacement;
+import xyz.nulldev.ts.api.http.auth.SessionManager;
 import xyz.nulldev.ts.library.Library;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -18,31 +20,55 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class TachiWebRoute implements Route {
 
     private Library library;
+    private boolean requiresAuth = true;
 
     private static Logger logger = LoggerFactory.getLogger(TachiWebRoute.class);
 
+    private static SessionManager sessionManager = new SessionManager();
+
     public TachiWebRoute(Library library) {
         this.library = library;
+    }
+
+    public TachiWebRoute(Library library, boolean requiresAuth) {
+        this.library = library;
+        this.requiresAuth = requiresAuth;
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
         try {
             response.header("Access-Control-Allow-Origin", "*");
-            response.header("Content-Encoding", "gzip");
-            ReentrantLock masterLock = library.getMasterLock().get();
-            if (masterLock != null) {
-                masterLock.lock();
-                try {
-                    Object toReturn = handleReq(request, response);
-                    masterLock.unlock();
-                    return toReturn;
-                } catch (Throwable e) {
-                    masterLock.unlock();
-                    throw e;
-                }
+            response.header("Access-Control-Allow-Credentials", "true");
+            String session = request.cookie("session");
+            if(session == null || session.trim().isEmpty()) {
+                session = sessionManager.newSession();
+                response.removeCookie("session");
+                response.cookie("session", session);
+            }
+            request.attribute("session", session);
+            //Auth all sessions if auth not enabled
+            if(!SessionManager.authEnabled()) {
+                sessionManager.authenticateSession(session);
+            }
+            if(!sessionManager.isAuthenticated(session) && requiresAuth) {
+                //Not authenticated!
+                return error("Not authenticated!");
             } else {
-                return handleReq(request, response);
+                ReentrantLock masterLock = library.getMasterLock().get();
+                if (masterLock != null) {
+                    masterLock.lock();
+                    try {
+                        Object toReturn = handleReq(request, response);
+                        masterLock.unlock();
+                        return toReturn;
+                    } catch (Throwable e) {
+                        masterLock.unlock();
+                        throw e;
+                    }
+                } else {
+                    return handleReq(request, response);
+                }
             }
         } catch (Exception e) {
             logger.error("Exception handling route!", e);
@@ -70,5 +96,9 @@ public abstract class TachiWebRoute implements Route {
         JSONObject object = new JSONObject();
         object.put("success", success);
         return object;
+    }
+
+    public static SessionManager getSessionManager() {
+        return sessionManager;
     }
 }
