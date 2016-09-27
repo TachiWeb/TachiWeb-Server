@@ -29,6 +29,7 @@ public abstract class TachiWebRoute implements Route {
     public Object handle(Request request, Response response) throws Exception {
         try {
             response.header("Access-Control-Allow-Origin", "*");
+            response.header("Content-Encoding", "gzip");
             ReentrantLock masterLock = library.getMasterLock().get();
             if (masterLock != null) {
                 masterLock.lock();
