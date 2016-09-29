@@ -20,12 +20,21 @@ TachiWeb-Server is full compatible with Tachiyomi's data structures and backups,
 **Seamless sync between the two programs is a goal and planned feature.**
 
 # Installation
+
+## Local installation
 Make sure you have `maven` and `bower` installed before starting.
 
 1. Clone the repository by executing: `git clone https://github.com/TachiWeb/TachiWeb-Server`
 2. Enter the repository folder by executing: `cd TachiWeb-Server`
 3. Build TachiWeb-Server and TachiWeb-UI by executing: `./build.sh`
 4. Now you can launch TachiWeb by running `cd target && java -jar TachiServer-[Whatever version]-jar-with-dependencies.jar`. Open the UI by going to: [http://localhost:4567/](http://localhost:4567/) in a web browser.
+
+## Cloud installation
+TachiServer has been designed with easy deployment to servers in mind.
+### Openshift
+A pre-built Openshift cartridge is provided here: https://github.com/TachiWeb/tw-openshift
+
+[![RUN NOW ON OpenShift](http://launch-shifter.rhcloud.com/launch/RUN NOW ON.svg)](https://openshift.redhat.com/app/console/application_type/custom?&cartridges[]=diy-0.1&initial_git_url=https://github.com/TachiWeb/tw-openshift.git&name=tachiweb)
 
 # Architecture
 TachiWeb-Server shares a large portion of it's backend with Tachiyomi.
