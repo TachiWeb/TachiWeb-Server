@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
 import spark.servlet.SparkFilter;
+import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.api.http.HttpAPI;
 import xyz.nulldev.ts.config.Configuration;
 import xyz.nulldev.ts.files.Files;
@@ -59,6 +60,8 @@ public class TachiServer {
             e.printStackTrace();
             return;
         }
+        //Prepare dependency injection
+        InjektKt.getInjekt().importModule(new ServerModule());
         //Load the previously persisted library
         if (getLibraryFile().exists()) {
             loadLibrary();

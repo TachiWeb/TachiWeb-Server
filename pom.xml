@@ -126,6 +126,11 @@
             <artifactId>commons-cli</artifactId>
             <version>1.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>uy.kohesive.injekt</groupId>
+            <artifactId>injekt-core</artifactId>
+            <version>[1.16.0,1.17.0)</version>
+        </dependency>
         <!-- Archives old library files -->
         <dependency>
             <groupId>org.apache.commons</groupId>

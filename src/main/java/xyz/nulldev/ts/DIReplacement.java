@@ -8,6 +8,8 @@ import eu.kanade.tachiyomi.data.download.DownloadManager;
 import eu.kanade.tachiyomi.data.network.NetworkHelper;
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper;
 import eu.kanade.tachiyomi.data.source.SourceManager;
+import uy.kohesive.injekt.InjektKt;
+import uy.kohesive.injekt.api.InjektRegistrar;
 import xyz.nulldev.ts.android.CustomContext;
 import xyz.nulldev.ts.api.task.TaskManager;
 import xyz.nulldev.ts.files.Files;
@@ -22,81 +24,52 @@ import xyz.nulldev.ts.sync.db.LibraryDatabase;
 public class DIReplacement {
 
     private static final DIReplacement instance = new DIReplacement();
-    static {
-        instance.setupSourceManager();
-        instance.setupDownloadManager();
-    }
 
     public static DIReplacement get() {
         return instance;
     }
 
-    private Context context = new CustomContext();
+    private InjektRegistrar registrar() {
+        return InjektKt.getInjekt().getRegistrar();
+    }
 
     public Context getContext() {
-        return context;
+        return registrar().getInstance(CustomContext.class);
     }
-
-    private NetworkHelper networkHelper = new NetworkHelper(context);
 
     public NetworkHelper injectNetworkHelper() {
-        return networkHelper;
+        return registrar().getInstance(NetworkHelper.class);
     }
-
-    private ChapterCache chapterCache = new ChapterCache(context);
 
     public ChapterCache injectChapterCache() {
-        return chapterCache;
+        return registrar().getInstance(ChapterCache.class);
     }
-
-    private PreferencesHelper preferencesHelper = new PreferencesHelper(context);
 
     public PreferencesHelper injectPreferencesHelper() {
-        return preferencesHelper;
+        return registrar().getInstance(PreferencesHelper.class);
     }
 
-    private SourceManager sourceManager;
-
-    private void setupSourceManager() {
-        sourceManager = new SourceManager(context);
-    }
     public SourceManager injectSourceManager() {
-        return sourceManager;
+        return registrar().getInstance(SourceManager.class);
     }
 
-    private CoverCache coverCache = new CoverCache(context);
     public CoverCache injectCoverCache() {
-        return coverCache;
+        return registrar().getInstance(CoverCache.class);
     }
 
-    private BackupManager backupManager = new BackupManager();
     public BackupManager injectBackupManager() {
-        return backupManager;
+        return registrar().getInstance(BackupManager.class);
     }
 
-    private DownloadManager downloadManager;
-    private void setupDownloadManager() {
-        downloadManager = new DownloadManager(context, sourceManager, preferencesHelper);
-    }
     public DownloadManager injectDownloadManager() {
-        return downloadManager;
+        return registrar().getInstance(DownloadManager.class);
     }
-
-    private LibraryDatabase libraryDatabase = new LibraryDatabase(Files.getSyncDir(), backupManager);
-
-    public LibraryDatabase getLibraryDatabase() {
-        return libraryDatabase;
-    }
-
-    private TaskManager taskManager = new TaskManager();
 
     public TaskManager getTaskManager() {
-        return taskManager;
+        return registrar().getInstance(TaskManager.class);
     }
 
-    private Library library = new Library();
-
     public Library getLibrary() {
-        return library;
+        return registrar().getInstance(Library.class);
     }
 }
