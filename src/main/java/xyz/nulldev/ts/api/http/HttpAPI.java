@@ -16,16 +16,12 @@
 
 package xyz.nulldev.ts.api.http;
 
-import android.content.Context;
-import eu.kanade.tachiyomi.data.backup.BackupManager;
+import spark.Route;
 import spark.Spark;
-import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.api.http.auth.CheckSessionRoute;
 import xyz.nulldev.ts.api.http.auth.ClearSessionsRoute;
 import xyz.nulldev.ts.api.http.sync.SyncRoute;
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute;
-import xyz.nulldev.ts.api.task.TaskManager;
-import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute;
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute;
 import xyz.nulldev.ts.api.http.download.DownloadChapterRoute;
@@ -75,79 +71,70 @@ public class HttpAPI {
 
     public void start() {
         //Get an image from a chapter
-        Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page", imageRoute);
-        Spark.get(API_ROOT + "/img/:mangaId/:chapterId/:page/", imageRoute);
+        getAPIRoute("/img/:mangaId/:chapterId/:page", imageRoute);
         //Get the cover of a manga
-        Spark.get(API_ROOT + "/cover/:mangaId", coverRoute);
-        Spark.get(API_ROOT + "/cover/:mangaId/", coverRoute);
+        getAPIRoute("/cover/:mangaId", coverRoute);
         //Get the library
-        Spark.get(API_ROOT + "/library", libraryRoute);
-        Spark.get(API_ROOT + "/library/", libraryRoute);
+        getAPIRoute("/library", libraryRoute);
         //Get details about a manga
-        Spark.get(API_ROOT + "/manga_info/:mangaId", mangaRoute);
-        Spark.get(API_ROOT + "/manga_info/:mangaId/", mangaRoute);
+        getAPIRoute("/manga_info/:mangaId", mangaRoute);
         //Get the chapters of a manga
-        Spark.get(API_ROOT + "/chapters/:mangaId", chapterRoute);
-        Spark.get(API_ROOT + "/chapters/:mangaId/", chapterRoute);
+        getAPIRoute("/chapters/:mangaId", chapterRoute);
         //Get the page count of a chapter
-        Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId", pageCountRoute);
-        Spark.get(API_ROOT + "/page_count/:mangaId/:chapterId/", pageCountRoute);
+        getAPIRoute("/page_count/:mangaId/:chapterId", pageCountRoute);
         //Backup the library
-        Spark.get(API_ROOT + "/backup", createBackupRoute);
-        Spark.get(API_ROOT + "/backup/", createBackupRoute);
+        getAPIRoute("/backup", createBackupRoute);
         //Restore the library
-        Spark.post(API_ROOT + "/restore_file", restoreFromFileRoute);
-        Spark.post(API_ROOT + "/restore_file/", restoreFromFileRoute);
+        postAPIRoute("/restore_file", restoreFromFileRoute);
         //Favorite/unfavorite a manga
-        Spark.get(API_ROOT + "/fave/:mangaId", faveRoute);
-        Spark.get(API_ROOT + "/fave/:mangaId/", faveRoute);
+        getAPIRoute("/fave/:mangaId", faveRoute);
         //Set the reading status of a chapter
-        Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId", readingStatusRoute);
-        Spark.get(API_ROOT + "/reading_status/:mangaId/:chapterId/", readingStatusRoute);
+        getAPIRoute("/reading_status/:mangaId/:chapterId", readingStatusRoute);
         //Update a manga/chapter
-        Spark.get(API_ROOT + "/update/:mangaId/:updateType", updateRoute);
-        Spark.get(API_ROOT + "/update/:mangaId/:updateType/", updateRoute);
+        getAPIRoute("/update/:mangaId/:updateType", updateRoute);
         //Source list
-        Spark.get(API_ROOT + "/sources", listSourcesRoute);
-        Spark.get(API_ROOT + "/sources/", listSourcesRoute);
+        getAPIRoute("/sources", listSourcesRoute);
         //Catalogue
-        Spark.get(API_ROOT + "/catalogue/:sourceId/:page", catalogueRoute);
-        Spark.get(API_ROOT + "/catalogue/:sourceId/:page/", catalogueRoute);
+        getAPIRoute("/catalogue/:sourceId/:page", catalogueRoute);
         //Login source list
-        Spark.get(API_ROOT + "/list_login_sources", listLoginSourceRoute);
-        Spark.get(API_ROOT + "/list_login_sources/", listLoginSourceRoute);
+        getAPIRoute("/list_login_sources", listLoginSourceRoute);
         //Login route
-        Spark.get(API_ROOT + "/source_login/:sourceId", sourceLoginRoute);
-        Spark.get(API_ROOT + "/source_login/:sourceId/", sourceLoginRoute);
+        getAPIRoute("/source_login/:sourceId", sourceLoginRoute);
         //Download
-        Spark.get(API_ROOT + "/download/:mangaId/:chapterId", downloadChapterRoute);
-        Spark.get(API_ROOT + "/download/:mangaId/:chapterId/", downloadChapterRoute);
+        getAPIRoute("/download/:mangaId/:chapterId", downloadChapterRoute);
         //Downloads operation
-        Spark.get(API_ROOT + "/downloads_op/:operation", downloadsOperationRoute);
-        Spark.get(API_ROOT + "/downloads_op/:operation/", downloadsOperationRoute);
+        getAPIRoute("/downloads_op/:operation", downloadsOperationRoute);
         //Get downloads
-        Spark.get(API_ROOT + "/get_downloads", getDownloadStatusRoute);
-        Spark.get(API_ROOT + "/get_downloads/", getDownloadStatusRoute);
+        getAPIRoute("/get_downloads", getDownloadStatusRoute);
         //Set flags
-        Spark.get(API_ROOT + "/set_flag/:mangaId/:flag/:state", setFlagRoute);
-        Spark.get(API_ROOT + "/set_flag/:mangaId/:flag/:state/", setFlagRoute);
+        getAPIRoute("/set_flag/:mangaId/:flag/:state", setFlagRoute);
         //Preferences route
-        Spark.get(API_ROOT + "/prefs", preferencesRoute);
-        Spark.get(API_ROOT + "/prefs/", preferencesRoute);
+        getAPIRoute("/prefs", preferencesRoute);
         //Set preferences route
-        Spark.get(API_ROOT + "/set_pref/:key/:type", setPreferenceRoute);
-        Spark.get(API_ROOT + "/set_pref/:key/:type/", setPreferenceRoute);
+        getAPIRoute("/set_pref/:key/:type", setPreferenceRoute);
         //Sync route
-        Spark.post(API_ROOT + "/sync", syncRoute);
-        Spark.post(API_ROOT + "/sync/", syncRoute);
+        postAPIRoute("/sync", syncRoute);
         //Task status route
-        Spark.get(API_ROOT + "/task/:taskId", taskStatusRoute);
-        Spark.get(API_ROOT + "/task/:taskId/", taskStatusRoute);
+        getAPIRoute("/task/:taskId", taskStatusRoute);
         //Check session
-        Spark.get(API_ROOT + "/auth", checkSessionRoute);
-        Spark.get(API_ROOT + "/auth/", checkSessionRoute);
+        getAPIRoute("/auth", checkSessionRoute);
         //Clear sessions
-        Spark.get(API_ROOT + "/clear_sessions", clearSessionsRoute);
-        Spark.get(API_ROOT + "/clear_sessions/", clearSessionsRoute);
+        getAPIRoute("/clear_sessions", clearSessionsRoute);
+    }
+
+    private String buildAPIPath(String path) {
+        return API_ROOT + path;
+    }
+
+    private void getAPIRoute(String path, Route route) {
+        String builtPath = buildAPIPath(path);
+        Spark.get(builtPath, route);
+        Spark.get(builtPath + "/", route);
+    }
+
+    private void postAPIRoute(String path, Route route) {
+        String builtPath = buildAPIPath(path);
+        Spark.post(builtPath, route);
+        Spark.post(builtPath + "/", route);
     }
 }
