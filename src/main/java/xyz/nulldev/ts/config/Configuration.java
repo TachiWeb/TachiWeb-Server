@@ -28,6 +28,7 @@ public class Configuration {
 
     private String ip = "0.0.0.0";
     private int port = 4567;
+    private boolean demoMode = false;
 
     public static Configuration fromArgs(String[] args) throws ParseException {
         DefaultParser parser = new DefaultParser();
@@ -49,6 +50,9 @@ public class Configuration {
                 throw new ParseException("Invalid port (not a number)!");
             }
         }
+        if(commandLine.hasOption("demo-mode")) {
+            configuration.demoMode = true;
+        }
         return configuration;
     }
 
@@ -57,6 +61,7 @@ public class Configuration {
         options.addOption("help", "Show this help text.");
         options.addOption("ip", true, "The IP to bind the server to.");
         options.addOption("port", true, "The port to bind the server to.");
+        options.addOption("demo-mode", "Disable changes to the server settings.");
         return options;
     }
 
@@ -66,5 +71,9 @@ public class Configuration {
 
     public int getPort() {
         return port;
+    }
+
+    public boolean isDemoMode() {
+        return demoMode;
     }
 }

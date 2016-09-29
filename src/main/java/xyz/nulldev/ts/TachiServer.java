@@ -26,7 +26,6 @@ import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
-import spark.servlet.SparkFilter;
 import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.api.http.HttpAPI;
 import xyz.nulldev.ts.config.Configuration;
@@ -99,6 +98,10 @@ public class TachiServer {
         new TachiWebUIServer().start();
         //Start the HTTP API
         new HttpAPI().start();
+    }
+
+    public static Configuration getConfiguration() {
+        return configuration;
     }
 
     /**

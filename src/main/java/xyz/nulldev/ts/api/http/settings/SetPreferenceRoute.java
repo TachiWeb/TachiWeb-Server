@@ -22,7 +22,7 @@ import org.json.JSONArray;
 import spark.Request;
 import spark.Response;
 import uy.kohesive.injekt.InjektKt;
-import xyz.nulldev.ts.library.Library;
+import xyz.nulldev.ts.TachiServer;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.settings.Preferences;
 
@@ -39,6 +39,10 @@ public class SetPreferenceRoute extends TachiWebRoute {
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
+        //Do not allow changing configuration in demo mode
+        if(TachiServer.getConfiguration().isDemoMode()) {
+            return error("The configuration cannot be changed in demo mode!");
+        }
         String type = request.params(":type");
         String key = request.params(":key");
         String value = request.queryParams("value");
