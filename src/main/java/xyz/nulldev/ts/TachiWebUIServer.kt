@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package xyz.nulldev.ts;
+package xyz.nulldev.ts
 
-import spark.Redirect;
-import spark.Spark;
+import spark.Redirect
+import spark.Spark.*
 
 /**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 22/07/16
+ * UI Server
  */
-public class TachiWebUIServer {
-    public void start() {
-        Spark.staticFiles.header("Access-Control-Allow-Origin", "*");
-        Spark.staticFiles.location("/tachiweb-ui");
-        Spark.redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT);
-        Spark.redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT);
+class TachiWebUIServer {
+    fun start() {
+        staticFiles.header("Access-Control-Allow-Origin", "*")
+        staticFiles.location("/tachiweb-ui")
+        redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
+        redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
     }
 }

@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package xyz.nulldev.ts.api.http.auth;
+package xyz.nulldev.ts.api.http.auth
 
-import spark.Request;
-import spark.Response;
-import xyz.nulldev.ts.api.http.TachiWebRoute;
-import xyz.nulldev.ts.library.Library;
+import spark.Request
+import spark.Response
+import xyz.nulldev.ts.api.http.TachiWebRoute
 
 /**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 27/09/16
+ * Logs out all users except the user who issued this request.
  */
-public class ClearSessionsRoute extends TachiWebRoute {
-    @Override
-    public Object handleReq(Request request, Response response) throws Exception {
-        getSessionManager().deauthAllSessions();
-        getSessionManager().authenticateSession(request.attribute("session"));
-        return success();
+class ClearSessionsRoute : TachiWebRoute() {
+    override fun handleReq(request: Request, response: Response): Any {
+        TachiWebRoute.getSessionManager().deauthAllSessions()
+        TachiWebRoute.getSessionManager().authenticateSession(request.attribute<String>("session"))
+        return success()
     }
 }
