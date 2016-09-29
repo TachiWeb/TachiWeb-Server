@@ -30,10 +30,6 @@ public class GetDownloadStatusRoute extends TachiWebRoute {
 
     private DownloadManager downloadManager = DIReplacement.get().injectDownloadManager();
 
-    public GetDownloadStatusRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         JSONObject object = success();

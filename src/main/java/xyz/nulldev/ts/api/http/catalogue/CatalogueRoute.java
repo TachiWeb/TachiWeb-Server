@@ -33,10 +33,6 @@ public class CatalogueRoute extends TachiWebRoute {
 
     private static Logger logger = LoggerFactory.getLogger(CatalogueRoute.class);
 
-    public CatalogueRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         try {

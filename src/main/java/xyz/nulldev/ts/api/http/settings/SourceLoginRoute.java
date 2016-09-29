@@ -15,9 +15,6 @@ import xyz.nulldev.ts.util.LeniantParser;
  * Creation Date: 23/07/16
  */
 public class SourceLoginRoute extends TachiWebRoute {
-    public SourceLoginRoute(Library library) {
-        super(library);
-    }
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {

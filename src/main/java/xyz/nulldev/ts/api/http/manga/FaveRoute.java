@@ -14,10 +14,6 @@ import xyz.nulldev.ts.util.LeniantParser;
  */
 public class FaveRoute extends TachiWebRoute {
 
-    public FaveRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));

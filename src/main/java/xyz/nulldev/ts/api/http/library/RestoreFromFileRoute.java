@@ -15,10 +15,6 @@ import java.io.InputStream;
  * Creation Date: 17/07/16
  */
 public class RestoreFromFileRoute extends TachiWebRoute {
-    public RestoreFromFileRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));

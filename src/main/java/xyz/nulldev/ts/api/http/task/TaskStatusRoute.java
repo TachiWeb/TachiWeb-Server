@@ -3,6 +3,7 @@ package xyz.nulldev.ts.api.http.task;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
+import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.api.task.Task;
 import xyz.nulldev.ts.api.task.TaskManager;
@@ -19,12 +20,7 @@ public class TaskStatusRoute extends TachiWebRoute {
     public static final String KEY_COMPELTE = "complete";
     public static final String KEY_DETAILS = "details";
 
-    private TaskManager taskManager;
-
-    public TaskStatusRoute(Library library, TaskManager taskManager) {
-        super(library);
-        this.taskManager = taskManager;
-    }
+    private TaskManager taskManager = InjektKt.getInjekt().getInstance(TaskManager.class);
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {

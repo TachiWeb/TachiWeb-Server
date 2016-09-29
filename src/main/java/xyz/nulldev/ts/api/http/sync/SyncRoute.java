@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
 import xyz.nulldev.ts.api.task.Task;
 import xyz.nulldev.ts.api.task.TaskManager;
@@ -53,14 +54,8 @@ public class SyncRoute extends TachiWebRoute {
 
     private static Logger logger = LoggerFactory.getLogger(SyncRoute.class);
 
-    private BackupManager backupManager;
-    private TaskManager taskManager;
-
-    public SyncRoute(Library library, BackupManager backupManager, TaskManager taskManager) {
-        super(library);
-        this.backupManager = backupManager;
-        this.taskManager = taskManager;
-    }
+    private BackupManager backupManager = InjektKt.getInjekt().getInstance(BackupManager.class);
+    private TaskManager taskManager = InjektKt.getInjekt().getInstance(TaskManager.class);
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {

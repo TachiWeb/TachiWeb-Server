@@ -11,8 +11,8 @@ import xyz.nulldev.ts.library.Library;
  * Creation Date: 26/09/16
  */
 public class CheckSessionRoute extends TachiWebRoute {
-    public CheckSessionRoute(Library library) {
-        super(library, false); //No auth on this route
+    public CheckSessionRoute() {
+        super(false); //No auth on this route
     }
 
     @Override

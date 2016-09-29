@@ -14,10 +14,6 @@ import xyz.nulldev.ts.util.LeniantParser;
  * Creation Date: 29/07/16
  */
 public class SetFlagRoute extends TachiWebRoute {
-    public SetFlagRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));

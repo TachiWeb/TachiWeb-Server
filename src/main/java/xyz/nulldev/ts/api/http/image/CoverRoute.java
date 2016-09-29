@@ -26,10 +26,6 @@ public class CoverRoute extends TachiWebRoute {
 
     private static Logger logger = LoggerFactory.getLogger(CoverRoute.class);
 
-    public CoverRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));

@@ -22,10 +22,6 @@ public class ListLoginSourceRoute extends TachiWebRoute {
     public static final String KEY_ID = "id";
     public static final String KEY_LOGGED_IN = "logged_in";
 
-    public ListLoginSourceRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         JSONObject object = success();

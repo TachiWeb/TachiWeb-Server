@@ -31,10 +31,6 @@ public class MangaRoute extends TachiWebRoute {
     public static final String KEY_FAVORITE = "favorite";
     public static final String KEY_FLAGS = "flags";
 
-    public MangaRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));

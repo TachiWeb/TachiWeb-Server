@@ -37,10 +37,6 @@ public class ChaptersRoute extends TachiWebRoute {
 
     private DownloadManager downloadManager = DIReplacement.get().injectDownloadManager();
 
-    public ChaptersRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));

@@ -23,10 +23,6 @@ public class ListSourcesRoute extends TachiWebRoute {
     public static final String KEY_ID = "id";
     public static final String KEY_LOGGED_IN = "logged_in";
 
-    public ListSourcesRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         List<OnlineSource> sources = DIReplacement.get().injectSourceManager().getOnlineSources();

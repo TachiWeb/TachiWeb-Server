@@ -11,10 +11,6 @@ import xyz.nulldev.ts.library.Library;
  * Creation Date: 27/09/16
  */
 public class ClearSessionsRoute extends TachiWebRoute {
-    public ClearSessionsRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         getSessionManager().deauthAllSessions();

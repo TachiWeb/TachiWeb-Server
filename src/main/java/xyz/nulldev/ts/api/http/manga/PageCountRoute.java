@@ -30,10 +30,6 @@ public class PageCountRoute extends TachiWebRoute {
 
     private DownloadManager downloadManager = DIReplacement.get().injectDownloadManager();
 
-    public PageCountRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         Long mangaId = LeniantParser.parseLong(request.params(":mangaId"));

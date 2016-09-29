@@ -33,10 +33,6 @@ public class LibraryRoute extends TachiWebRoute {
     private DownloadManager downloadManager = DIReplacement.get().injectDownloadManager();
     private SourceManager sourceManager = DIReplacement.get().injectSourceManager();
 
-    public LibraryRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         JSONArray array = new JSONArray();

@@ -1,11 +1,13 @@
 package xyz.nulldev.ts.api.http;
 
+import kotlin.reflect.jvm.internal.impl.javax.inject.Inject;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.api.http.auth.SessionManager;
 import xyz.nulldev.ts.library.Library;
@@ -19,19 +21,16 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class TachiWebRoute implements Route {
 
-    private Library library;
     private boolean requiresAuth = true;
 
     private static Logger logger = LoggerFactory.getLogger(TachiWebRoute.class);
 
     private static SessionManager sessionManager = new SessionManager();
 
-    public TachiWebRoute(Library library) {
-        this.library = library;
+    public TachiWebRoute() {
     }
 
-    public TachiWebRoute(Library library, boolean requiresAuth) {
-        this.library = library;
+    public TachiWebRoute(boolean requiresAuth) {
         this.requiresAuth = requiresAuth;
     }
 
@@ -55,7 +54,7 @@ public abstract class TachiWebRoute implements Route {
                 //Not authenticated!
                 return error("Not authenticated!");
             } else {
-                ReentrantLock masterLock = library.getMasterLock().get();
+                ReentrantLock masterLock = getLibrary().getMasterLock().get();
                 if (masterLock != null) {
                     masterLock.lock();
                     try {
@@ -79,7 +78,7 @@ public abstract class TachiWebRoute implements Route {
     public abstract Object handleReq(Request request, Response response) throws Exception;
 
     public Library getLibrary() {
-        return library;
+        return InjektKt.getInjekt().getInstance(Library.class);
     }
 
     public static String error(String message) {

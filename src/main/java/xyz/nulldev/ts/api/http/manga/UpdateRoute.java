@@ -26,10 +26,6 @@ public class UpdateRoute extends TachiWebRoute {
     private static final String KEY_ADDED = "added";
     private static final String KEY_REMOVED = "removed";
 
-    public UpdateRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         UpdateType updateType;

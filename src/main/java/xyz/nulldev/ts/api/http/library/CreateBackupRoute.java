@@ -12,10 +12,6 @@ import xyz.nulldev.ts.api.http.TachiWebRoute;
  * Creation Date: 17/07/16
  */
 public class CreateBackupRoute extends TachiWebRoute {
-    public CreateBackupRoute(Library library) {
-        super(library);
-    }
-
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
         if("true".equalsIgnoreCase(request.queryParams("force-download"))) {

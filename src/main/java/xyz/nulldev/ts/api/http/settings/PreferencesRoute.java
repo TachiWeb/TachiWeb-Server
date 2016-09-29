@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
+import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.android.JsonSharedPreferences;
 import xyz.nulldev.ts.api.http.TachiWebRoute;
@@ -20,12 +21,7 @@ import xyz.nulldev.ts.settings.Preferences;
 public class PreferencesRoute extends TachiWebRoute {
     public static final String KEY_PREFS = "prefs";
 
-    private Context context;
-
-    public PreferencesRoute(Context context, Library library) {
-        super(library);
-        this.context = context;
-    }
+    private Context context = InjektKt.getInjekt().getInstance(Context.class);
 
     @Override
     public Object handleReq(Request request, Response response) throws Exception {
