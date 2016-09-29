@@ -50,7 +50,7 @@ public class Configuration {
                 throw new ParseException("Invalid port (not a number)!");
             }
         }
-        if(commandLine.hasOption("demo-mode")) {
+        if(commandLine.hasOption("demoMode")) {
             configuration.demoMode = true;
         }
         return configuration;
@@ -61,7 +61,7 @@ public class Configuration {
         options.addOption("help", "Show this help text.");
         options.addOption("ip", true, "The IP to bind the server to.");
         options.addOption("port", true, "The port to bind the server to.");
-        options.addOption("demo-mode", "Disable changes to the server settings.");
+        options.addOption("demoMode", "Disable changes to the server settings.");
         return options;
     }
 
