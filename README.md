@@ -35,10 +35,10 @@ To make up for the lack of Android classes, a no-op Android JAR is used and any 
 
 # State
 TachiWeb-Server usable, but still **alpha** software.
-Do **NOT** use it as your primary manga reader *yet*.
-Although a lot of effort has gone into stability, TachiWeb-Server may still periodically crash and/or corrupt library data.
+The API is not stable and can change at any time.
 
 # License
+```
 Copyright 2016 Andy Bao
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,3 +52,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```
