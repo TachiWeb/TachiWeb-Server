@@ -40,7 +40,7 @@ class TaskStatusRoute : TachiWebRoute() {
         val task = taskManager.getTask(taskId)
                 ?: return error("No task found with the specified task ID!")
         val result = success()
-        result.put(KEY_COMPELTE, task.isComplete)
+        result.put(KEY_COMPELTE, task.complete)
         result.put(KEY_DETAILS, task.taskStatus)
         return result
     }

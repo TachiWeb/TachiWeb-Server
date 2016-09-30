@@ -25,8 +25,8 @@ import xyz.nulldev.ts.api.http.TachiWebRoute
  */
 class ClearSessionsRoute : TachiWebRoute() {
     override fun handleReq(request: Request, response: Response): Any {
-        TachiWebRoute.getSessionManager().deauthAllSessions()
-        TachiWebRoute.getSessionManager().authenticateSession(request.attribute<String>("session"))
+        sessionManager.deauthAllSessions()
+        sessionManager.authenticateSession(request.attribute<String>("session"))
         return success()
     }
 }
