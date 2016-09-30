@@ -61,19 +61,19 @@ class CoverRoute : TachiWebRoute() {
 
         var url = manga.thumbnail_url
         try {
-            if (url == null || url.isEmpty()) {
-                libraryUpdater.updateManga(library, manga)
+            if (url.isNullOrEmpty()) {
+                libraryUpdater.silentUpdateMangaInfo(library, manga)
                 url = manga.thumbnail_url
             }
         } catch (e: Exception) {
             logger.info("Failed to update manga (No thumbnail)!")
         }
 
-        if (url == null || url.isEmpty()) {
+        if (url.isNullOrEmpty()) {
             response.redirect("/img/no-cover.png", 302)
             return null
         }
-        val cacheFile = coverCache.getCoverFile(url)
+        val cacheFile = coverCache.getCoverFile(url!!)
         val parentFile = cacheFile.parentFile
         //Make cache dirs
         parentFile.mkdirs()

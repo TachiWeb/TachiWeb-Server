@@ -48,7 +48,8 @@ public class UpdateMangaOperation extends ChangeMangaOperation {
 
     @Override
     public Conflict tryMangaApply(Manga manga, Library library) {
-        updater.updateManga(library, manga);
+        updater.silentUpdateMangaInfo(library, manga);
+        updater.silentUpdateChapters(library, manga);
         return null;
     }
 }

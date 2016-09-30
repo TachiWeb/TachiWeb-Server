@@ -14,33 +14,39 @@
  * limitations under the License.
  */
 
-package xyz.nulldev.ts.api.http.manga
+package xyz.nulldev.ts.api.http.task
 
 import spark.Request
 import spark.Response
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
+import xyz.nulldev.ts.api.task.TaskManager
 
 /**
  * Project: TachiServer
  * Author: nulldev
  * Creation Date: 30/09/16
  */
-class SetFlagRoute : TachiWebRoute() {
-    override fun handleReq(request: Request, response: Response): Any {
-        val mangaId = request.params(":mangaId")?.toLong()
-                ?: return error("MangaID must be specified!")
-        val manga = library.getManga(mangaId)
-                ?: return error("The specified manga does not exist!")
-        val flag: MangaFlag
-        try {
-            flag = MangaFlag.valueOf((request.params(":flag") ?: "").toUpperCase())
-        } catch (e: IllegalArgumentException) {
-            return error("Invalid/no flag specified!")
-        }
+class TaskStatusRoute : TachiWebRoute() {
 
-        val flagState = flag.findFlagState((request.params(":state") ?: "").toUpperCase())
-                ?: return error("Invalid/no flag state specified!")
-        flag.set(manga, flagState)
-        return success()
+    private val taskManager: TaskManager = Injekt.get()
+
+    override fun handleReq(request: Request, response: Response): Any {
+        //Parse arguments
+        val taskId = request.params(":taskId")?.toLong()
+                ?: return error("TaskID must be specified!")
+        //Get task
+        val task = taskManager.getTask(taskId)
+                ?: return error("No task found with the specified task ID!")
+        val result = success()
+        result.put(KEY_COMPELTE, task.isComplete)
+        result.put(KEY_DETAILS, task.taskStatus)
+        return result
+    }
+
+    companion object {
+        val KEY_COMPELTE = "complete"
+        val KEY_DETAILS = "details"
     }
 }

@@ -21,6 +21,7 @@ import eu.kanade.tachiyomi.data.database.models.Manga;
 import eu.kanade.tachiyomi.data.source.Source;
 import eu.kanade.tachiyomi.data.source.SourceManager;
 import eu.kanade.tachiyomi.util.ChapterSourceSyncKt;
+import kotlin.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uy.kohesive.injekt.InjektKt;
@@ -40,36 +41,54 @@ public class LibraryUpdater {
     private SourceManager sourceManager = InjektKt.getInjekt().getInstance(SourceManager.class);
 
     public void updateLibrary(Library library, boolean updateAll) {
-        for(Manga manga : new ArrayList<>(updateAll ? library.getMangas() : library.getFavoriteMangas())) {
-            updateManga(library, manga);
+        for (Manga manga :
+                new ArrayList<>(updateAll ? library.getMangas() : library.getFavoriteMangas())) {
+            silentUpdateMangaInfo(library, manga);
+            silentUpdateChapters(library, manga);
         }
     }
 
-    public void updateManga(Library library, Manga manga) {
+    public void silentUpdateMangaInfo(Library library, Manga manga) {
         Source source = sourceManager.get(manga.getSource());
-        if(source == null) {
+        if (source == null) {
             logger.info("Manga #{} is missing it's source!", manga.getId());
             return;
         }
-        //Update manga info
         try {
-            manga.copyFrom(source.fetchMangaDetails(manga).toBlocking().first());
-            //Update the manga in the library
-            library.insertManga(manga);
+            updateMangaInfo(library, manga, source);
         } catch (Exception e) {
             logger.error("Error updating manga!", e);
-            return;
         }
-        //Update manga chapters
+    }
+
+    public void updateMangaInfo(Library library, Manga manga, Source source) {
+        //Update manga info
+        manga.copyFrom(source.fetchMangaDetails(manga).toBlocking().first());
+        //Update the manga in the library
+        library.insertManga(manga);
+    }
+
+    public Pair<Integer, Integer> silentUpdateChapters(Library library, Manga manga) {
+        Source source = sourceManager.get(manga.getSource());
+        if (source == null) {
+            logger.info("Manga #{} is missing it's source!", manga.getId());
+            return new Pair<>(0, 0);
+        }
         try {
-            List<Chapter> chapters = source.fetchChapterList(manga).toBlocking().first();
-            if(chapters == null) {
-                throw new NullPointerException();
-            }
-            //Sync the library chapters with the source chapters
-            ChapterSourceSyncKt.syncChaptersWithSource(library, chapters, manga, source);
+            return updateChapters(library, manga, source);
         } catch (Exception e) {
             logger.error("Error updating chapters!", e);
+            return new Pair<>(0, 0);
         }
+    }
+
+    public Pair<Integer, Integer> updateChapters(Library library, Manga manga, Source source) {
+        //Update manga chapters
+        List<Chapter> chapters = source.fetchChapterList(manga).toBlocking().first();
+        if (chapters == null) {
+            throw new NullPointerException();
+        }
+        //Sync the library chapters with the source chapters
+        return ChapterSourceSyncKt.syncChaptersWithSource(library, chapters, manga, source);
     }
 }
