@@ -29,6 +29,7 @@ import uy.kohesive.injekt.api.*
 import xyz.nulldev.ts.android.CustomContext
 import xyz.nulldev.ts.api.task.TaskManager
 import xyz.nulldev.ts.library.Library
+import xyz.nulldev.ts.library.LibraryUpdater
 
 /**
  * Project: TachiServer
@@ -61,5 +62,7 @@ class ServerModule(): InjektModule {
         addSingletonFactory { TaskManager() }
 
         addSingletonFactory { Library() }
+
+        addSingletonFactory { LibraryUpdater() }
     }
 }

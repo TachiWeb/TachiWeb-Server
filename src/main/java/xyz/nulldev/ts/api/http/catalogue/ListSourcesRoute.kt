@@ -33,7 +33,6 @@ class ListSourcesRoute : TachiWebRoute() {
 
     private val sourceManager: SourceManager = Injekt.get()
 
-    @Throws(Exception::class)
     override fun handleReq(request: Request, response: Response): Any {
         val sources = sourceManager.getOnlineSources()
         val rootObject = success()

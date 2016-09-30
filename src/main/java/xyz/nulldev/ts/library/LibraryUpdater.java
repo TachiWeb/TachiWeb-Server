@@ -23,6 +23,7 @@ import eu.kanade.tachiyomi.data.source.SourceManager;
 import eu.kanade.tachiyomi.util.ChapterSourceSyncKt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uy.kohesive.injekt.InjektKt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,7 @@ public class LibraryUpdater {
 
     private static Logger logger = LoggerFactory.getLogger(LibraryUpdater.class);
 
-    private SourceManager sourceManager;
-
-    public LibraryUpdater(SourceManager sourceManager) {
-        this.sourceManager = sourceManager;
-    }
+    private SourceManager sourceManager = InjektKt.getInjekt().getInstance(SourceManager.class);
 
     public void updateLibrary(Library library, boolean updateAll) {
         for(Manga manga : new ArrayList<>(updateAll ? library.getMangas() : library.getFavoriteMangas())) {

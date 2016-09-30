@@ -24,7 +24,6 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
 import xyz.nulldev.ts.util.ChapterUtils
-import xyz.nulldev.ts.util.LeniantParser
 
 /**
  * Download a chapter
@@ -34,18 +33,20 @@ class DownloadChapterRoute : TachiWebRoute() {
     private val sourceManager: SourceManager = Injekt.get()
     private val downloadManager: DownloadManager = Injekt.get()
 
-    @Throws(Exception::class)
     override fun handleReq(request: Request, response: Response): Any {
-        val mangaId = LeniantParser.parseLong(request.params(":mangaId"))
-        val chapterId = LeniantParser.parseLong(request.params(":chapterId"))
+        val mangaId = request.params(":mangaId")?.toLong()
+        val chapterId = request.params(":chapterId")?.toLong()
         if (mangaId == null) {
             return error("MangaID must be specified!")
         } else if (chapterId == null) {
             return error("ChapterID must be specified!")
         }
-        val manga = library.getManga(mangaId) ?: return error("The specified manga does not exist!")
-        val source = sourceManager.get(manga.source) ?: throw IllegalArgumentException()
-        val chapter = library.getChapter(chapterId) ?: return error("The specified chapter does not exist!")
+        val manga = library.getManga(mangaId)
+                ?: return error("The specified manga does not exist!")
+        val source = sourceManager.get(manga.source)
+                ?: throw IllegalArgumentException()
+        val chapter = library.getChapter(chapterId)
+                ?: return error("The specified chapter does not exist!")
         val delete = "true".equals(request.queryParams("delete"), ignoreCase = true)
         val activeDownload = ChapterUtils.getDownload(downloadManager, chapter)
         if (activeDownload != null) {

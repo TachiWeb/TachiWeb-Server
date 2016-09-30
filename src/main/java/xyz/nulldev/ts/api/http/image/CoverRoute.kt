@@ -1,0 +1,135 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package xyz.nulldev.ts.api.http.image
+
+import eu.kanade.tachiyomi.data.cache.CoverCache
+import eu.kanade.tachiyomi.data.source.Source
+import eu.kanade.tachiyomi.data.source.SourceManager
+import eu.kanade.tachiyomi.data.source.online.OnlineSource
+import org.slf4j.LoggerFactory
+import spark.Request
+import spark.Response
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
+import xyz.nulldev.ts.api.http.TachiWebRoute
+import xyz.nulldev.ts.library.LibraryUpdater
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.nio.file.Files
+
+/**
+ * Project: TachiServer
+ * Author: nulldev
+ * Creation Date: 30/09/16
+ */
+class CoverRoute : TachiWebRoute() {
+
+    val sourceManager: SourceManager = Injekt.get()
+    val coverCache: CoverCache = Injekt.get()
+    val libraryUpdater: LibraryUpdater = Injekt.get()
+
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    override fun handleReq(request: Request, response: Response): Any? {
+        val mangaId = request.params(":mangaId")?.toLong()
+                ?: return error("MangaID must be specified!")
+        val manga = library.getManga(mangaId)
+                ?: return error("The specified manga does not exist!")
+        val source: Source?
+        try {
+            source = sourceManager.get(manga.source)
+            if (source == null) {
+                throw IllegalArgumentException()
+            }
+        } catch (e: Exception) {
+            return error("This manga's source is not loaded!")
+        }
+
+        var url = manga.thumbnail_url
+        try {
+            if (url == null || url.isEmpty()) {
+                libraryUpdater.updateManga(library, manga)
+                url = manga.thumbnail_url
+            }
+        } catch (e: Exception) {
+            logger.info("Failed to update manga (No thumbnail)!")
+        }
+
+        if (url == null || url.isEmpty()) {
+            response.redirect("/img/no-cover.png", 302)
+            return null
+        }
+        val cacheFile = coverCache.getCoverFile(url)
+        val parentFile = cacheFile.parentFile
+        //Make cache dirs
+        parentFile.mkdirs()
+        //Download image if it does not exist
+        if (!cacheFile.exists()) {
+            if (source !is OnlineSource) {
+                response.redirect("/img/no-cover.png", 302)
+                return null
+            }
+            try {
+                FileOutputStream(cacheFile).use { outputStream ->
+                    val httpResponse = source.client.newCall(
+                            okhttp3.Request.Builder().headers(source.headers).url(url!!).build()).execute()
+                    httpResponse.use {
+                        val stream = httpResponse!!.body().byteStream()
+                        stream.use {
+                            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                            while (true) {
+                                val n = stream.read(buffer)
+                                if(n == -1) {
+                                    break
+                                }
+                                outputStream.write(buffer, 0, n)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                logger.error("Failed to download cover image!", e)
+                return error("Failed to download cover image!")
+            }
+        }
+        //Send cached image
+        response.type(Files.probeContentType(cacheFile.toPath()))
+        try {
+            FileInputStream(cacheFile).use { stream ->
+                response.raw().outputStream.use { os ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    while (true) {
+                        val n = stream.read(buffer)
+                        if(n == -1) {
+                            break
+                        }
+                        os.write(buffer, 0, n)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            logger.error("Error sending cached cover!", e)
+            return error("Error sending cached cover!")
+        }
+
+        return ""
+    }
+
+    companion object {
+        private val DEFAULT_BUFFER_SIZE = 1024 * 4
+    }
+}

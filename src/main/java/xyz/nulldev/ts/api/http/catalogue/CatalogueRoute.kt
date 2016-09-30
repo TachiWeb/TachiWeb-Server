@@ -22,15 +22,12 @@ import eu.kanade.tachiyomi.data.source.model.MangasPage
 import eu.kanade.tachiyomi.data.source.online.OnlineSource
 import org.json.JSONArray
 import org.json.JSONObject
-import org.slf4j.LoggerFactory
 import rx.Observable
 import spark.Request
 import spark.Response
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
-import xyz.nulldev.ts.DIReplacement
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.util.LeniantParser
 import xyz.nulldev.ts.util.StringUtils
 
 /**
@@ -40,11 +37,10 @@ class CatalogueRoute : TachiWebRoute() {
 
     private val sourceManager: SourceManager = Injekt.get()
 
-    @Throws(Exception::class)
     override fun handleReq(request: Request, response: Response): Any {
         try {
-            val sourceId = LeniantParser.parseInteger(request.params(":sourceId"))
-            val page = LeniantParser.parseInteger(request.params(":page"))
+            val sourceId = request.params(":sourceId")?.toInt()
+            val page = request.params(":page")?.toInt()
             val lastUrl = request.queryParams("lurl")
             val query = request.queryParams("query")
             if (sourceId == null) {

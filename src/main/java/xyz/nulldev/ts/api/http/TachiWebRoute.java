@@ -16,7 +16,6 @@
 
 package xyz.nulldev.ts.api.http;
 
-import kotlin.reflect.jvm.internal.impl.javax.inject.Inject;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import uy.kohesive.injekt.InjektKt;
-import xyz.nulldev.ts.DIReplacement;
 import xyz.nulldev.ts.api.http.auth.SessionManager;
 import xyz.nulldev.ts.library.Library;
 
@@ -63,7 +61,7 @@ public abstract class TachiWebRoute implements Route {
             }
             request.attribute("session", session);
             //Auth all sessions if auth not enabled
-            if(!SessionManager.authEnabled()) {
+            if(!SessionManager.Companion.authEnabled()) {
                 sessionManager.authenticateSession(session);
             }
             if(!sessionManager.isAuthenticated(session) && requiresAuth) {

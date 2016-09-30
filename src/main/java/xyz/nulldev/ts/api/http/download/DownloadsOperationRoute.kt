@@ -22,7 +22,6 @@ import spark.Response
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.util.L
 
 /**
  * Pause/resume/clear downloads.
@@ -31,11 +30,10 @@ class DownloadsOperationRoute : TachiWebRoute() {
 
     private val downloadManager: DownloadManager = Injekt.get()
 
-    @Throws(Exception::class)
     override fun handleReq(request: Request, response: Response): Any {
         val operation: Operation
         try {
-            operation = Operation.valueOf(L.def(request.params(":operation"), "").toUpperCase())
+            operation = Operation.valueOf((request.params(":operation") ?: "").toUpperCase())
         } catch (e: IllegalArgumentException) {
             return error("Invalid/no operation specified!")
         }

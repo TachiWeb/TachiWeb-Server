@@ -17,7 +17,7 @@
 package xyz.nulldev.ts.sync.operation.manga;
 
 import eu.kanade.tachiyomi.data.database.models.Manga;
-import xyz.nulldev.ts.DIReplacement;
+import uy.kohesive.injekt.InjektKt;
 import xyz.nulldev.ts.library.Library;
 import xyz.nulldev.ts.library.LibraryUpdater;
 import xyz.nulldev.ts.sync.conflict.Conflict;
@@ -30,11 +30,10 @@ import xyz.nulldev.ts.sync.conflict.Conflict;
 public class UpdateMangaOperation extends ChangeMangaOperation {
     public static final String NAME = "Update Manga";
 
-    private LibraryUpdater updater;
+    private LibraryUpdater updater = InjektKt.getInjekt().getInstance(LibraryUpdater.class);
 
     public UpdateMangaOperation(String mangaTitle, String mangaUrl, int mangaSource) {
         super(mangaTitle, mangaUrl, mangaSource);
-        this.updater = new LibraryUpdater(DIReplacement.get().injectSourceManager());
     }
 
     @Override
