@@ -56,6 +56,7 @@ class ChaptersRoute : TachiWebRoute() {
             jsonChapter.put(KEY_READ, chapter.read)
             jsonChapter.put(KEY_LAST_READ, chapter.last_page_read)
             jsonChapter.put(KEY_CHAPTER_NUMBER, chapter.chapter_number.toDouble())
+            jsonChapter.put(KEY_SOURCE_ORDER, chapter.source_order)
             if (source != null) {
                 jsonChapter.put(KEY_DOWNLOAD_STATUS, getDownloadStatus(source, manga, chapter))
             }
@@ -81,6 +82,7 @@ class ChaptersRoute : TachiWebRoute() {
         val KEY_LAST_READ = "last_page_read"
         val KEY_CHAPTER_NUMBER = "chapter_number"
         val KEY_DOWNLOAD_STATUS = "download_status"
+        val KEY_SOURCE_ORDER = "source_order"
         val KEY_CONTENT = "content"
 
         val STATUS_DOWNLOADED = "DOWNLOADED"
