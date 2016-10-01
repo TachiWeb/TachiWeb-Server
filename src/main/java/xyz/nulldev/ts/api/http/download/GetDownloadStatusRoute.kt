@@ -27,9 +27,7 @@ import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
 
 /**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 30/09/16
+ * Get download statuses
  */
 class GetDownloadStatusRoute : TachiWebRoute() {
 
@@ -40,9 +38,11 @@ class GetDownloadStatusRoute : TachiWebRoute() {
         val array = JSONArray()
         for (download in downloadManager.queue) {
             val downloadJson = JSONObject()
+
             val downloadPages = download.pages
             val downloadProgressMax: Float
             var downloadProgress: Float
+            //Manually calculate download progress
             if (downloadPages != null) {
                 downloadProgressMax = (downloadPages.size * 100).toFloat()
                 downloadProgress = 0f

@@ -24,7 +24,6 @@ import spark.Request
 import spark.Response
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
-import xyz.nulldev.ts.DIReplacement
 import xyz.nulldev.ts.api.http.TachiWebRoute
 
 /**

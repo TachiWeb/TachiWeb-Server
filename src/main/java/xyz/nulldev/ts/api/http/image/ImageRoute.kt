@@ -16,13 +16,16 @@
 
 package xyz.nulldev.ts.api.http.image
 
+import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.source.Source
+import eu.kanade.tachiyomi.data.source.SourceManager
 import eu.kanade.tachiyomi.data.source.model.Page
 import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
 import spark.utils.IOUtils
-import xyz.nulldev.ts.DIReplacement
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
 import xyz.nulldev.ts.util.ChapterUtils
 import java.io.FileInputStream
@@ -36,19 +39,18 @@ import java.nio.file.Paths
  */
 class ImageRoute : TachiWebRoute() {
 
-    private val downloadManager = DIReplacement.get().injectDownloadManager()
+    private val downloadManager: DownloadManager = Injekt.get()
+    private val sourceManager: SourceManager = Injekt.get()
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun handleReq(request: Request, response: Response): Any {
         val mangaId = request.params(":mangaId")?.toLong()
+                ?: return error("MangaID must be specified!")
         val chapterId = request.params(":chapterId")?.toLong()
+                ?: return error("ChapterID must be specified!")
         var page = request.params(":page")?.toInt()
-        if (mangaId == null) {
-            return error("MangaID must be specified!")
-        } else if (chapterId == null) {
-            return error("ChapterID must be specified!")
-        }
+
         if (page == null || page < 0) {
             page = 0
         }
@@ -56,7 +58,7 @@ class ImageRoute : TachiWebRoute() {
                 ?: return error("The specified manga does not exist!")
         val source: Source?
         try {
-            source = DIReplacement.get().injectSourceManager().get(manga.source)
+            source = sourceManager.get(manga.source)
             if (source == null) {
                 throw IllegalArgumentException()
             }

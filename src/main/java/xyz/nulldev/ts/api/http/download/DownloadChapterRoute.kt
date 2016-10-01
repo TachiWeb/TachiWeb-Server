@@ -34,13 +34,13 @@ class DownloadChapterRoute : TachiWebRoute() {
     private val downloadManager: DownloadManager = Injekt.get()
 
     override fun handleReq(request: Request, response: Response): Any {
+        //Get params
         val mangaId = request.params(":mangaId")?.toLong()
+                ?: return error("MangaID must be specified!")
         val chapterId = request.params(":chapterId")?.toLong()
-        if (mangaId == null) {
-            return error("MangaID must be specified!")
-        } else if (chapterId == null) {
-            return error("ChapterID must be specified!")
-        }
+                ?: return error("ChapterID must be specified!")
+
+        //Resolve objects and parse params
         val manga = library.getManga(mangaId)
                 ?: return error("The specified manga does not exist!")
         val source = sourceManager.get(manga.source)
@@ -48,6 +48,8 @@ class DownloadChapterRoute : TachiWebRoute() {
         val chapter = library.getChapter(chapterId)
                 ?: return error("The specified chapter does not exist!")
         val delete = "true".equals(request.queryParams("delete"), ignoreCase = true)
+
+        //Check for active download
         val activeDownload = ChapterUtils.getDownload(downloadManager, chapter)
         if (activeDownload != null) {
             if (delete) {
@@ -56,14 +58,19 @@ class DownloadChapterRoute : TachiWebRoute() {
                 return error("This chapter is already being downloaded!")
             }
         }
-        val isChapterDownloded = downloadManager.isChapterDownloaded(source, manga, chapter)
-        if (!delete && isChapterDownloded) {
+
+        //Check if chapter is downloaded
+        val isChapterDownloaded = downloadManager.isChapterDownloaded(source, manga, chapter)
+        if (!delete && isChapterDownloaded) {
             return error("This chapter is already downloaded!")
         }
-        if (delete && !isChapterDownloded) {
+        if (delete && !isChapterDownloaded) {
             return error("This chapter is not downloaded!")
         }
+
+
         if (delete) {
+            //This is a delete request! Delete the chapter!
             val wasRunning = downloadManager.isRunning
             if (wasRunning) {
                 downloadManager.destroySubscriptions()
@@ -73,6 +80,7 @@ class DownloadChapterRoute : TachiWebRoute() {
                 downloadManager.startDownloads()
             }
         } else {
+            //Download the chapter
             downloadManager.downloadChapters(manga, listOf(chapter))
             downloadManager.startDownloads()
         }

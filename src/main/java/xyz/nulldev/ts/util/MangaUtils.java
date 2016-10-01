@@ -18,7 +18,8 @@ package xyz.nulldev.ts.util;
 
 import eu.kanade.tachiyomi.data.database.models.Chapter;
 import eu.kanade.tachiyomi.data.database.models.Manga;
-import xyz.nulldev.ts.DIReplacement;
+import uy.kohesive.injekt.InjektKt;
+import xyz.nulldev.ts.library.Library;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,11 @@ import java.util.stream.Collectors;
  */
 public class MangaUtils {
     public static List<Chapter> getUnreadChapters(Manga manga) {
-        return DIReplacement.get().getLibrary().getChapters(manga).stream().filter(chapter -> !chapter.getRead()).collect(Collectors.toList());
+        return ((Library) InjektKt.getInjekt().getInstance(Library.class))
+                .getChapters(manga)
+                .stream()
+                .filter(chapter -> !chapter.getRead())
+                .collect(Collectors.toList());
     }
 
     public static int getUnreadCount(Manga manga) {

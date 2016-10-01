@@ -16,10 +16,12 @@
 
 package xyz.nulldev.ts.api.http.library
 
+import eu.kanade.tachiyomi.data.backup.BackupManager
 import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
-import xyz.nulldev.ts.DIReplacement
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
 import javax.servlet.MultipartConfigElement
 
@@ -36,7 +38,7 @@ class RestoreFromFileRoute : TachiWebRoute() {
         request.attribute("org.eclipse.jetty.multipartConfig", MultipartConfigElement("/tmp"))
         try {
             request.raw().getPart("uploaded_file").inputStream
-                    .use { `is` -> DIReplacement.get().injectBackupManager().restoreFromStream(`is`, library) }
+                    .use { stream -> Injekt.get<BackupManager>().restoreFromStream(stream, library) }
         } catch (e: Exception) {
             logger.error("Restore failed!", e)
             return error("Restore failed!")

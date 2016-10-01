@@ -32,9 +32,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 
 /**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 30/09/16
+ * Get a manga thumbnail.
  */
 class CoverRoute : TachiWebRoute() {
 

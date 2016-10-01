@@ -22,13 +22,13 @@ import eu.kanade.tachiyomi.data.source.model.MangasPage
 import eu.kanade.tachiyomi.data.source.online.OnlineSource
 import org.json.JSONArray
 import org.json.JSONObject
+import org.slf4j.LoggerFactory
 import rx.Observable
 import spark.Request
 import spark.Response
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.util.StringUtils
 
 /**
  * List the manga in a source.
@@ -37,64 +37,67 @@ class CatalogueRoute : TachiWebRoute() {
 
     private val sourceManager: SourceManager = Injekt.get()
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     override fun handleReq(request: Request, response: Response): Any {
         try {
+            //Get/parse parameters
             val sourceId = request.params(":sourceId")?.toInt()
+                    ?: return error("SourceID must be specified!")
             val page = request.params(":page")?.toInt()
+                    ?: return error("Page must be specified!")
             val lastUrl = request.queryParams("lurl")
             val query = request.queryParams("query")
-            if (sourceId == null) {
-                return error("SourceID must be specified!")
-            } else if (page == null) {
-                return error("Page must be specified!")
-            } else if (page > 1 && lastUrl == null) {
+            if (page > 1 && lastUrl == null) {
                 return error("Is not first page but lastURL not specified!")
             }
-            val onlineSource: OnlineSource?
-            try {
-                onlineSource = sourceManager.get(sourceId) as OnlineSource?
-            } catch (e: ClassCastException) {
+
+            //Try to resolve source
+            val onlineSource = sourceManager.get(sourceId)
+                    ?: return error("The specified source does not exist!")
+            if(onlineSource !is OnlineSource) {
                 return error("The specified source is not an OnlineSource!")
             }
 
-            if (onlineSource == null) {
-                return error("The specified source does not exist!")
-            }
+            //Parse page
             val pageObj = MangasPage(page)
             if (lastUrl != null) {
                 pageObj.url = lastUrl
             } else if (page !== 1) {
                 return error("Page is not '1' but no last URL provided!")
             }
+            //Get catalogue from source
             val observable: Observable<MangasPage>
-            if (StringUtils.notNullOrEmpty(query)) {
+            if (!query.isNullOrEmpty()) {
                 observable = onlineSource.fetchSearchManga(pageObj, query)
             } else {
                 observable = onlineSource.fetchPopularManga(pageObj)
             }
+            //Actually get manga from catalogue
             val result = observable
                     .flatMap { Observable.from<Manga>(it.mangas) }
                     .map{ this.networkToLocalManga(it) }
                     .toList()
                     .toBlocking()
                     .first()
+
+            //Generate JSON response
             val toReturn = success()
             val content = JSONArray()
             for (manga in result) {
-                val mangaJson = JSONObject()
-                mangaJson.put(KEY_ID, manga.id)
-                mangaJson.put(KEY_TITLE, manga.title)
-                mangaJson.put(KEY_FAVORITE, manga.favorite)
-                content.put(mangaJson)
+                content.put(JSONObject()
+                        .put(KEY_ID, manga.id)
+                        .put(KEY_TITLE, manga.title)
+                        .put(KEY_FAVORITE, manga.favorite))
             }
             toReturn.put(KEY_CONTENT, content)
             val nextUrl = pageObj.nextPageUrl
-            if (StringUtils.notNullOrEmpty(nextUrl)) {
+            if (!nextUrl.isNullOrEmpty()) {
                 toReturn.put(KEY_NEXT_URL, nextUrl)
             }
             return toReturn
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Exception when serving catalogue!", e)
             throw e
         }
 

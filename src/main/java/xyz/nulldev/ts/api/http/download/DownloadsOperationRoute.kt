@@ -31,6 +31,7 @@ class DownloadsOperationRoute : TachiWebRoute() {
     private val downloadManager: DownloadManager = Injekt.get()
 
     override fun handleReq(request: Request, response: Response): Any {
+        //Get and parse operation
         val operation: Operation
         try {
             operation = Operation.valueOf((request.params(":operation") ?: "").toUpperCase())
@@ -38,20 +39,25 @@ class DownloadsOperationRoute : TachiWebRoute() {
             return error("Invalid/no operation specified!")
         }
 
-        if (operation == Operation.PAUSE) {
-            if (!downloadManager.isRunning) {
-                return error("Download manager is already paused!")
+        //Perform operation
+        when (operation) {
+            Operation.PAUSE -> {
+                if (!downloadManager.isRunning) {
+                    return error("Download manager is already paused!")
+                }
+                downloadManager.destroySubscriptions()
             }
-            downloadManager.destroySubscriptions()
-        } else if (operation == Operation.RESUME) {
-            if (downloadManager.isRunning) {
-                return error("Download manager is not paused!")
+            Operation.RESUME -> {
+                if (downloadManager.isRunning) {
+                    return error("Download manager is not paused!")
+                }
+                //I assume we can restart the download manager without reinitialization (appears to work fine)
+                downloadManager.startDownloads()
             }
-            //I assume we can restart the download manager without reinitialization
-            downloadManager.startDownloads()
-        } else if (operation == Operation.CLEAR) {
-            downloadManager.destroySubscriptions()
-            downloadManager.clearQueue()
+            Operation.CLEAR -> {
+                downloadManager.destroySubscriptions()
+                downloadManager.clearQueue()
+            }
         }
         return success()
     }
