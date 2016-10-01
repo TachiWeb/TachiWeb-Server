@@ -37,7 +37,7 @@ class SetPreferenceRoute : TachiWebRoute() {
 
     override fun handleReq(request: Request, response: Response): Any {
         //Do not allow changing configuration in demo mode
-        if (TachiServer.getConfiguration().isDemoMode) {
+        if (TachiServer.configuration.isDemoMode) {
             return error("The configuration cannot be changed in demo mode!")
         }
         val type = request.params(":type")
