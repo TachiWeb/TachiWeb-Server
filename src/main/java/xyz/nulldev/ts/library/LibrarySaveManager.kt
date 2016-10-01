@@ -29,7 +29,6 @@ import xyz.nulldev.ts.files.Files
 import java.io.*
 import java.nio.file.StandardCopyOption
 import java.util.*
-import kotlin.concurrent.thread
 
 /**
  * Project: TachiServer
@@ -208,7 +207,7 @@ class LibrarySaveManager {
      */
     fun setupShutdownHooks() {
         Runtime.getRuntime().addShutdownHook(
-                thread {
+                Thread {
                     logger.info("Server shutting down...")
                     timer.cancel() //Cancel the auto-save timer
                     saveLibrary() //Save the library
