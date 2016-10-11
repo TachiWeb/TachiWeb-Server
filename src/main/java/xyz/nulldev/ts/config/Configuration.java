@@ -29,6 +29,7 @@ public class Configuration {
     private String ip = "0.0.0.0";
     private int port = 4567;
     private boolean demoMode = false;
+    private String staticFilesFolder = null;
 
     public static Configuration fromArgs(String[] args) throws ParseException {
         DefaultParser parser = new DefaultParser();
@@ -53,6 +54,9 @@ public class Configuration {
         if(commandLine.hasOption("demoMode")) {
             configuration.demoMode = true;
         }
+        if(commandLine.hasOption("staticFiles")) {
+            configuration.staticFilesFolder = commandLine.getOptionValue("staticFiles");
+        }
         return configuration;
     }
 
@@ -62,6 +66,7 @@ public class Configuration {
         options.addOption("ip", true, "The IP to bind the server to.");
         options.addOption("port", true, "The port to bind the server to.");
         options.addOption("demoMode", "Disable changes to the server settings.");
+        options.addOption("staticFiles", true, "Use external static files instead of the built in ones.");
         return options;
     }
 
@@ -75,5 +80,9 @@ public class Configuration {
 
     public boolean isDemoMode() {
         return demoMode;
+    }
+
+    public String getStaticFilesFolder() {
+        return staticFilesFolder;
     }
 }

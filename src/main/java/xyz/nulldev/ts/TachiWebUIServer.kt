@@ -25,7 +25,12 @@ import spark.Spark.*
 class TachiWebUIServer {
     fun start() {
         staticFiles.header("Access-Control-Allow-Origin", "*")
-        staticFiles.location("/tachiweb-ui")
+        //Use external static files if specified
+        if(TachiServer.configuration.staticFilesFolder != null) {
+            staticFiles.externalLocation(TachiServer.configuration.staticFilesFolder)
+        } else {
+            staticFiles.location("/tachiweb-ui")
+        }
         redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
         redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
     }
