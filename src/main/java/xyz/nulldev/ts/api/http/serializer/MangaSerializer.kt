@@ -17,13 +17,16 @@
 package xyz.nulldev.ts.api.http.serializer
 
 import eu.kanade.tachiyomi.data.database.models.Manga
+import eu.kanade.tachiyomi.data.download.DownloadManager
+import eu.kanade.tachiyomi.data.source.Source
 import eu.kanade.tachiyomi.data.source.SourceManager
 import eu.kanade.tachiyomi.data.source.online.OnlineSource
+import org.json.JSONArray
 import org.json.JSONObject
 import uy.kohesive.injekt.injectLazy
 import xyz.nulldev.ts.api.http.manga.MangaFlag
-import xyz.nulldev.ts.api.http.manga.MangaRoute
 import xyz.nulldev.ts.library.Library
+import xyz.nulldev.ts.util.MangaUtils
 
 /**
  * Project: TachiServer
@@ -33,46 +36,73 @@ import xyz.nulldev.ts.library.Library
 
 class MangaSerializer {
 
-    val library: Library by injectLazy()
-    val sourceManager: SourceManager by injectLazy()
+    private val library: Library by injectLazy()
+    private val sourceManager: SourceManager by injectLazy()
+    private val downloadManager: DownloadManager by injectLazy()
 
     fun serialize(manga: Manga): JSONObject {
         val builtResponse = JSONObject()
-        builtResponse.put(MangaRoute.KEY_TITLE, manga.title)
-                .put(MangaRoute.KEY_CHAPTER_COUNT, library.getChapters(manga).size)
+        builtResponse.put(KEY_TITLE, manga.title)
+                .put(KEY_CHAPTER_COUNT, library.getChapters(manga).size)
+                .put(KEY_ID, manga.id)
+                .put(KEY_UNREAD, MangaUtils.getUnreadCount(manga))
         val source = sourceManager.get(manga.source)
         var url = ""
         if (source != null) {
-            builtResponse.put(MangaRoute.KEY_SOURCE_NAME, source.name)
+            builtResponse.put(KEY_SOURCE_NAME, source.name)
             if (source is OnlineSource) {
                 url = source.baseUrl + manga.url
             }
+            builtResponse.put(KEY_DOWNLOADED, isMangaDownloaded(source, manga))
         }
-        builtResponse.put(MangaRoute.KEY_BROWSER_URL, url)
+        builtResponse.put(KEY_BROWSER_URL, url)
         if (!manga.artist.isNullOrEmpty()) {
-            builtResponse.put(MangaRoute.KEY_ARTIST, manga.artist)
+            builtResponse.put(KEY_ARTIST, manga.artist)
         }
         if (!manga.author.isNullOrEmpty()) {
-            builtResponse.put(MangaRoute.KEY_AUTHOR, manga.author)
+            builtResponse.put(KEY_AUTHOR, manga.author)
         }
         if (!manga.description.isNullOrEmpty()) {
-            builtResponse.put(MangaRoute.KEY_DESCRIPTION, manga.description)
+            builtResponse.put(KEY_DESCRIPTION, manga.description)
         }
         if (!manga.genre.isNullOrEmpty()) {
-            builtResponse.put(MangaRoute.KEY_GENRES, manga.genre)
+            builtResponse.put(KEY_GENRES, manga.genre)
         }
-        builtResponse.put(MangaRoute.KEY_STATUS, statusToString(manga.status))
-        builtResponse.put(MangaRoute.KEY_FAVORITE, manga.favorite)
+        builtResponse.put(KEY_STATUS, statusToString(manga.status))
+        builtResponse.put(KEY_FAVORITE, manga.favorite)
         //Send flags
         val flagObject = JSONObject()
         for (flag in MangaFlag.values()) {
             flagObject.put(flag.name, flag[manga]!!.name)
         }
-        builtResponse.put(MangaRoute.KEY_FLAGS, flagObject)
+        builtResponse.put(KEY_FLAGS, flagObject)
+        //Categories
+        val categoriesJson = JSONArray()
+        for (category in library.getCategoriesForManga(manga)) {
+            categoriesJson.put(category.name)
+        }
+        builtResponse.put(KEY_CATEGORIES, categoriesJson)
         return builtResponse
     }
 
+    private fun isMangaDownloaded(source: Source, manga: Manga): Boolean {
+        val mangaDir = downloadManager.getAbsoluteMangaDirectory(source, manga)
+
+        if (mangaDir.exists()) {
+            for (file in mangaDir.listFiles() ?: emptyArray()) {
+                if (file.isDirectory && (file.listFiles() ?: emptyArray()).size >= 1) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     companion object {
+        val KEY_ID = "id"
+        val KEY_UNREAD = "unread"
+        val KEY_DOWNLOADED = "downloaded"
+        val KEY_CATEGORIES = "categories"
         val KEY_TITLE = "title"
         val KEY_CHAPTER_COUNT = "chapters"
         val KEY_SOURCE_NAME = "source"
