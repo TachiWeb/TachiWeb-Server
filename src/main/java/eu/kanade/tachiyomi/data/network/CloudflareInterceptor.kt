@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.network
 
 import okhttp3.HttpUrl
@@ -38,7 +54,7 @@ class CloudflareInterceptor(private val cookies: PersistentCookieStore) : Interc
     }
 
     private fun resolveChallenge(response: Response): Request {
-        val engine = ScriptEngineManager().getEngineByName("nashorn");
+        val engine = ScriptEngineManager().getEngineByName("nashorn")
         val originalRequest = response.request()
         val domain = originalRequest.url().host()
         val content = response.body().string()
@@ -62,18 +78,18 @@ class CloudflareInterceptor(private val cookies: PersistentCookieStore) : Interc
                 .replace("\n", "")
 
         // Duktape can only return strings, so the result has to be converted to string first
-        val stringRes = engine.eval("$js.toString()");
-        val result: Int;
+        val stringRes = engine.eval("$js.toString()")
+        val result: Int
         if (stringRes is String) {
-            result = BigDecimal(stringRes).toInt();
+            result = BigDecimal(stringRes).toInt()
         } else if (stringRes is Int) {
-            result = stringRes.toInt();
+            result = stringRes.toInt()
         } else if (stringRes is Double) {
-            result = stringRes.toInt();
+            result = stringRes.toInt()
         } else if (stringRes is Long) {
-            result = stringRes.toInt();
+            result = stringRes.toInt()
         } else {
-            throw RuntimeException("Result was not String/Int/Long/Double!");
+            throw RuntimeException("Result was not String/Int/Long/Double!")
         }
 
         val answer = "${result + domain.length}"
