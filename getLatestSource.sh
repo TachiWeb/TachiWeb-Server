@@ -77,8 +77,6 @@ enterPackage "data.database.models"
     download "MangaChapterHistory.kt"
 leavePackage
 
-#TODO mangasync
-
 enterPackage "data.mangasync"
     download "MangaSyncManager.kt"
     download "MangaSyncService.kt"
