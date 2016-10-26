@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.source.online.english
 
 import android.content.Context
@@ -13,7 +29,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Mangahere(context: Context, override val id: Int) : ParsedOnlineSource(context) {
+class Mangahere(override val id: Int) : ParsedOnlineSource() {
 
     override val name = "Mangahere"
 
@@ -21,9 +37,15 @@ class Mangahere(context: Context, override val id: Int) : ParsedOnlineSource(con
 
     override val lang: Language get() = EN
 
-    override fun popularMangaInitialUrl() = "$baseUrl/directory/"
+    override val supportsLatest = true
+
+    override fun popularMangaInitialUrl() = "$baseUrl/directory/?views.za"
+
+    override fun latestUpdatesInitialUrl() = "$baseUrl/directory/?last_chapter_time.za"
 
     override fun popularMangaSelector() = "div.directory_list > ul > li"
+
+    override fun latestUpdatesSelector() = "div.directory_list > ul > li"
 
     override fun popularMangaFromElement(element: Element, manga: Manga) {
         element.select("div.title > a").first().let {
@@ -32,10 +54,15 @@ class Mangahere(context: Context, override val id: Int) : ParsedOnlineSource(con
         }
     }
 
+    override fun latestUpdatesFromElement(element: Element, manga: Manga) {
+        popularMangaFromElement(element, manga)
+    }
+
     override fun popularMangaNextPageSelector() = "div.next-page > a.next"
 
-    override fun searchMangaInitialUrl(query: String) =
-            "$baseUrl/search.php?name=$query&page=1&sort=views&order=za"
+    override fun latestUpdatesNextPageSelector() = "div.next-page > a.next"
+
+    override fun searchMangaInitialUrl(query: String, filters: List<Filter>) = "$baseUrl/search.php?name=$query&page=1&sort=views&order=za&${filters.map { it.id + "=1" }.joinToString("&")}&advopts=1"
 
     override fun searchMangaSelector() = "div.result_search > dl:has(dt)"
 
@@ -109,5 +136,42 @@ class Mangahere(context: Context, override val id: Int) : ParsedOnlineSource(con
     }
 
     override fun imageUrlParse(document: Document) = document.getElementById("image").attr("src")
+
+    // [...document.querySelectorAll("select[id^='genres'")].map((el,i) => `Filter("${el.getAttribute('name')}", "${el.nextSibling.nextSibling.textContent.trim()}")`).join(',\n')
+    // http://www.mangahere.co/advsearch.htm
+    override fun getFilterList(): List<Filter> = listOf(
+            Filter("genres[Action]", "Action"),
+            Filter("genres[Adventure]", "Adventure"),
+            Filter("genres[Comedy]", "Comedy"),
+            Filter("genres[Doujinshi]", "Doujinshi"),
+            Filter("genres[Drama]", "Drama"),
+            Filter("genres[Ecchi]", "Ecchi"),
+            Filter("genres[Fantasy]", "Fantasy"),
+            Filter("genres[Gender Bender]", "Gender Bender"),
+            Filter("genres[Harem]", "Harem"),
+            Filter("genres[Historical]", "Historical"),
+            Filter("genres[Horror]", "Horror"),
+            Filter("genres[Josei]", "Josei"),
+            Filter("genres[Martial Arts]", "Martial Arts"),
+            Filter("genres[Mature]", "Mature"),
+            Filter("genres[Mecha]", "Mecha"),
+            Filter("genres[Mystery]", "Mystery"),
+            Filter("genres[One Shot]", "One Shot"),
+            Filter("genres[Psychological]", "Psychological"),
+            Filter("genres[Romance]", "Romance"),
+            Filter("genres[School Life]", "School Life"),
+            Filter("genres[Sci-fi]", "Sci-fi"),
+            Filter("genres[Seinen]", "Seinen"),
+            Filter("genres[Shoujo]", "Shoujo"),
+            Filter("genres[Shoujo Ai]", "Shoujo Ai"),
+            Filter("genres[Shounen]", "Shounen"),
+            Filter("genres[Shounen Ai]", "Shounen Ai"),
+            Filter("genres[Slice of Life]", "Slice of Life"),
+            Filter("genres[Sports]", "Sports"),
+            Filter("genres[Supernatural]", "Supernatural"),
+            Filter("genres[Tragedy]", "Tragedy"),
+            Filter("genres[Yaoi]", "Yaoi"),
+            Filter("genres[Yuri]", "Yuri")
+    )
 
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.source.online.english
 
 import android.content.Context
@@ -14,7 +30,7 @@ import org.jsoup.nodes.Element
 import java.util.*
 import java.util.regex.Pattern
 
-class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(context) {
+class Mangasee(override val id: Int) : ParsedOnlineSource() {
 
     override val name = "Mangasee"
 
@@ -22,7 +38,9 @@ class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(cont
 
     override val lang: Language get() = EN
 
-    private val datePattern = Pattern.compile("(\\d+)\\s+(.*?)s? ago.*")
+    override val supportsLatest = false
+
+    private val datePattern = Pattern.compile("(\\d+)\\s+(.*?)s? (from now|ago).*")
 
     private val dateFields = HashMap<String, Int>().apply {
         put("second", Calendar.SECOND)
@@ -32,6 +50,11 @@ class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(cont
         put("week", Calendar.WEEK_OF_YEAR)
         put("month", Calendar.MONTH)
         put("year", Calendar.YEAR)
+    }
+
+    private val dateRelationFields = HashMap<String, Int>().apply {
+        put("from now", 1)
+        put("ago", -1)
     }
 
     override fun popularMangaInitialUrl() = "$baseUrl/search_result.php?Action=Yes&order=popularity&numResultPerPage=20&sort=desc"
@@ -47,8 +70,8 @@ class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(cont
 
     override fun popularMangaNextPageSelector() = "ul.pagination > li > a:contains(Next)"
 
-    override fun searchMangaInitialUrl(query: String) =
-            "$baseUrl/advanced-search/result.php?sortBy=alphabet&direction=ASC&textOnly=no&resPerPage=20&page=1&seriesName=$query"
+    override fun searchMangaInitialUrl(query: String, filters: List<Filter>) =
+            "$baseUrl/advanced-search/result.php?sortBy=alphabet&direction=ASC&textOnly=no&resPerPage=20&page=1&seriesName=$query&${filters.map { it.id + "=Yes" }.joinToString("&")}"
 
     override fun searchMangaSelector() = "div.row > div > div > div > h1"
 
@@ -77,7 +100,7 @@ class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(cont
         else -> Manga.UNKNOWN
     }
 
-    override fun chapterListSelector() = "div.row > div > div.row:has(a.chapter_link[alt])"
+    override fun chapterListSelector() = "div.row > div > div.row > div > div.row:has(a.chapter_link[alt])"
 
     override fun chapterFromElement(element: Element, chapter: Chapter) {
         val urlElement = element.select("a").first()
@@ -93,9 +116,10 @@ class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(cont
         if (m.matches()) {
             val amount = Integer.parseInt(m.group(1))
             val unit = m.group(2)
+            val relation = m.group(3)
 
             return Calendar.getInstance().apply {
-                add(dateFields[unit]!!, -amount)
+                add(dateFields[unit]!!, dateRelationFields[relation]!! * amount)
             }.time.time
         } else {
             return 0
@@ -121,5 +145,62 @@ class Mangasee(context: Context, override val id: Int) : ParsedOnlineSource(cont
     }
 
     override fun imageUrlParse(document: Document) = document.select("div > a > img").attr("src")
+
+    // [...document.querySelectorAll("label.triStateCheckBox input")].map(el => `Filter("${el.getAttribute('name')}", "${el.nextSibling.textContent.trim()}")`).join(',\n')
+    // http://mangasee.co/advanced-search/
+    override fun getFilterList(): List<Filter> = listOf(
+            Filter("Action", "Action"),
+            Filter("Adult", "Adult"),
+            Filter("Adventure", "Adventure"),
+            Filter("Comedy", "Comedy"),
+            Filter("Doujinshi", "Doujinshi"),
+            Filter("Drama", "Drama"),
+            Filter("Ecchi", "Ecchi"),
+            Filter("Fantasy", "Fantasy"),
+            Filter("Gender_Bender", "Gender Bender"),
+            Filter("Harem", "Harem"),
+            Filter("Hentai", "Hentai"),
+            Filter("Historical", "Historical"),
+            Filter("Horror", "Horror"),
+            Filter("Josei", "Josei"),
+            Filter("Lolicon", "Lolicon"),
+            Filter("Martial_Arts", "Martial Arts"),
+            Filter("Mature", "Mature"),
+            Filter("Mecha", "Mecha"),
+            Filter("Mystery", "Mystery"),
+            Filter("Psychological", "Psychological"),
+            Filter("Romance", "Romance"),
+            Filter("School_Life", "School Life"),
+            Filter("Sci-fi", "Sci-fi"),
+            Filter("Seinen", "Seinen"),
+            Filter("Shotacon", "Shotacon"),
+            Filter("Shoujo", "Shoujo"),
+            Filter("Shoujo_Ai", "Shoujo Ai"),
+            Filter("Shounen", "Shounen"),
+            Filter("Shounen_Ai", "Shounen Ai"),
+            Filter("Slice_of_Life", "Slice of Life"),
+            Filter("Smut", "Smut"),
+            Filter("Sports", "Sports"),
+            Filter("Supernatural", "Supernatural"),
+            Filter("Tragedy", "Tragedy"),
+            Filter("Yaoi", "Yaoi"),
+            Filter("Yuri", "Yuri")
+    )
+
+    override fun latestUpdatesInitialUrl(): String {
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    override fun latestUpdatesNextPageSelector(): String {
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    override fun latestUpdatesFromElement(element: Element, manga: Manga) {
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    override fun latestUpdatesSelector(): String {
+        throw UnsupportedOperationException("not implemented")
+    }
 
 }

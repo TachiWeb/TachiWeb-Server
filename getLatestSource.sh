@@ -75,6 +75,7 @@ enterPackage "data.database.models"
     download "MangaCategory.kt"
     download "MangaChapter.kt"
     download "MangaChapterHistory.kt"
+    download "History.kt"
 leavePackage
 
 enterPackage "data.mangasync"

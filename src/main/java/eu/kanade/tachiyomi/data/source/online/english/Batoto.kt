@@ -1,6 +1,21 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.source.online.english
 
-import android.content.Context
 import android.net.Uri
 import android.text.Html
 import eu.kanade.tachiyomi.data.database.models.Chapter
@@ -28,13 +43,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(context), LoginSource {
+class Batoto(override val id: Int) : ParsedOnlineSource(), LoginSource {
 
     override val name = "Batoto"
 
     override val baseUrl = "http://bato.to"
 
     override val lang: Language get() = EN
+
+    override val supportsLatest = true
 
     private val datePattern = Pattern.compile("(\\d+|A|An)\\s+(.*?)s? ago.*")
 
@@ -59,6 +76,8 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
 
     override fun popularMangaInitialUrl() = "$baseUrl/search_ajax?order_cond=views&order=desc&p=1"
 
+    override fun latestUpdatesInitialUrl() = "$baseUrl/search_ajax?order_cond=update&order=desc&p=1"
+
     override fun popularMangaParse(response: Response, page: MangasPage) {
         val document = response.asJsoup()
         for (element in document.select(popularMangaSelector())) {
@@ -73,7 +92,23 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
         }
     }
 
+    override fun latestUpdatesParse(response: Response, page: MangasPage) {
+        val document = response.asJsoup()
+        for (element in document.select(latestUpdatesSelector())) {
+            Manga.create(id).apply {
+                latestUpdatesFromElement(element, this)
+                page.mangas.add(this)
+            }
+        }
+
+        page.nextPageUrl = document.select(latestUpdatesNextPageSelector()).first()?.let {
+            "$baseUrl/search_ajax?order_cond=update&order=desc&p=${page.page + 1}"
+        }
+    }
+
     override fun popularMangaSelector() = "tr:has(a)"
+
+    override fun latestUpdatesSelector() = "tr:has(a)"
 
     override fun popularMangaFromElement(element: Element, manga: Manga) {
         element.select("a[href^=http://bato.to]").first().let {
@@ -82,11 +117,29 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
         }
     }
 
+    override fun latestUpdatesFromElement(element: Element, manga: Manga) {
+        popularMangaFromElement(element, manga)
+    }
+
     override fun popularMangaNextPageSelector() = "#show_more_row"
 
-    override fun searchMangaInitialUrl(query: String) = "$baseUrl/search_ajax?name=${Uri.encode(query)}&p=1"
+    override fun latestUpdatesNextPageSelector() = "#show_more_row"
 
-    override fun searchMangaParse(response: Response, page: MangasPage, query: String) {
+    override fun searchMangaInitialUrl(query: String, filters: List<Filter>) = "$baseUrl/search_ajax?name=${Uri.encode(query)}&order_cond=views&order=desc&p=1&genre_cond=and&genres=${getFilterParams(filters)}"
+
+    private fun getFilterParams(filters: List<Filter>): String = filters
+            .map {
+                ";i" + it.id
+            }.joinToString()
+
+    override fun searchMangaRequest(page: MangasPage, query: String, filters: List<Filter>): Request {
+        if (page.page == 1) {
+            page.url = searchMangaInitialUrl(query, filters)
+        }
+        return GET(page.url, headers)
+    }
+
+    override fun searchMangaParse(response: Response, page: MangasPage, query: String, filters: List<Filter>) {
         val document = response.asJsoup()
         for (element in document.select(searchMangaSelector())) {
             Manga.create(id).apply {
@@ -96,7 +149,7 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
         }
 
         page.nextPageUrl = document.select(searchMangaNextPageSelector()).first()?.let {
-            "$baseUrl/search_ajax?name=${Uri.encode(query)}&p=${page.page + 1}"
+            "$baseUrl/search_ajax?name=${Uri.encode(query)}&p=${page.page + 1}&order_cond=views&order=desc&genre_cond=and&genres=" + getFilterParams(filters)
         }
     }
 
@@ -211,7 +264,7 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
         val start = pageUrl.indexOf("#") + 1
         val end = pageUrl.indexOf("_", start)
         val id = pageUrl.substring(start, end)
-        return GET("$baseUrl/areader?id=$id&p=${pageUrl.substring(end+1)}", pageHeaders)
+        return GET("$baseUrl/areader?id=$id&p=${pageUrl.substring(end + 1)}", pageHeaders)
     }
 
     override fun imageUrlParse(document: Document): String {
@@ -219,10 +272,10 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
     }
 
     override fun login(username: String, password: String) =
-        client.newCall(GET("$baseUrl/forums/index.php?app=core&module=global&section=login", headers))
-                .asObservable()
-                .flatMap { doLogin(it, username, password) }
-                .map { isAuthenticationSuccessful(it) }
+            client.newCall(GET("$baseUrl/forums/index.php?app=core&module=global&section=login", headers))
+                    .asObservable()
+                    .flatMap { doLogin(it, username, password) }
+                    .map { isAuthenticationSuccessful(it) }
 
     private fun doLogin(response: Response, username: String, password: String): Observable<Response> {
         val doc = response.asJsoup()
@@ -242,7 +295,7 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
     }
 
     override fun isAuthenticationSuccessful(response: Response) =
-        response.priorResponse() != null && response.priorResponse().code() == 302
+            response.priorResponse() != null && response.priorResponse().code() == 302
 
     override fun isLogged(): Boolean {
         return network.cookies.get(URI(baseUrl)).any { it.name() == "pass_hash" }
@@ -263,5 +316,50 @@ class Batoto(context: Context, override val id: Int) : ParsedOnlineSource(contex
             return super.fetchChapterList(manga)
         }
     }
+
+    // [...document.querySelectorAll("#advanced_options div.genre_buttons")].map((el,i) => {
+    //     const onClick=el.getAttribute('onclick');const id=onClick.substr(14,onClick.length-16);return `Filter("${id}", "${el.textContent.trim()}")`
+    // }).join(',\n')
+    // on https://bato.to/search
+    override fun getFilterList(): List<Filter> = listOf(
+            Filter("40", "4-Koma"),
+            Filter("1", "Action"),
+            Filter("2", "Adventure"),
+            Filter("39", "Award Winning"),
+            Filter("3", "Comedy"),
+            Filter("41", "Cooking"),
+            Filter("9", "Doujinshi"),
+            Filter("10", "Drama"),
+            Filter("12", "Ecchi"),
+            Filter("13", "Fantasy"),
+            Filter("15", "Gender Bender"),
+            Filter("17", "Harem"),
+            Filter("20", "Historical"),
+            Filter("22", "Horror"),
+            Filter("34", "Josei"),
+            Filter("27", "Martial Arts"),
+            Filter("30", "Mecha"),
+            Filter("42", "Medical"),
+            Filter("37", "Music"),
+            Filter("4", "Mystery"),
+            Filter("38", "Oneshot"),
+            Filter("5", "Psychological"),
+            Filter("6", "Romance"),
+            Filter("7", "School Life"),
+            Filter("8", "Sci-fi"),
+            Filter("32", "Seinen"),
+            Filter("35", "Shoujo"),
+            Filter("16", "Shoujo Ai"),
+            Filter("33", "Shounen"),
+            Filter("19", "Shounen Ai"),
+            Filter("21", "Slice of Life"),
+            Filter("23", "Smut"),
+            Filter("25", "Sports"),
+            Filter("26", "Supernatural"),
+            Filter("28", "Tragedy"),
+            Filter("36", "Webtoon"),
+            Filter("29", "Yaoi"),
+            Filter("31", "Yuri")
+    )
 
 }

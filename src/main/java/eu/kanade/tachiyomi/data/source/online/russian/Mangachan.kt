@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.source.online.russian
 
 import android.content.Context
@@ -13,7 +29,7 @@ import org.jsoup.nodes.Element
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Mangachan(context: Context, override val id: Int) : ParsedOnlineSource(context) {
+class Mangachan(override val id: Int) : ParsedOnlineSource() {
 
     override val name = "Mangachan"
 
@@ -21,11 +37,17 @@ class Mangachan(context: Context, override val id: Int) : ParsedOnlineSource(con
 
     override val lang: Language get() = RU
 
+    override val supportsLatest = true
+
     override fun popularMangaInitialUrl() = "$baseUrl/mostfavorites"
 
-    override fun searchMangaInitialUrl(query: String) = "$baseUrl/?do=search&subaction=search&story=$query"
+    override fun latestUpdatesInitialUrl() = "$baseUrl/manga/new"
+
+    override fun searchMangaInitialUrl(query: String, filters: List<Filter>) = "$baseUrl/?do=search&subaction=search&story=$query"
 
     override fun popularMangaSelector() = "div.content_row"
+
+    override fun latestUpdatesSelector() = "div.content_row"
 
     override fun popularMangaFromElement(element: Element, manga: Manga) {
         element.select("h2 > a").first().let {
@@ -34,7 +56,13 @@ class Mangachan(context: Context, override val id: Int) : ParsedOnlineSource(con
         }
     }
 
+    override fun latestUpdatesFromElement(element: Element, manga: Manga) {
+        popularMangaFromElement(element, manga)
+    }
+
     override fun popularMangaNextPageSelector() = "a:contains(Вперед)"
+
+    override fun latestUpdatesNextPageSelector() = "a:contains(Вперед)"
 
     override fun searchMangaSelector() = popularMangaSelector()
 
@@ -91,4 +119,5 @@ class Mangachan(context: Context, override val id: Int) : ParsedOnlineSource(con
     override fun pageListParse(document: Document, pages: MutableList<Page>) { }
 
     override fun imageUrlParse(document: Document) = ""
+
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.source
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -18,20 +34,7 @@ import java.io.File
 
 open class SourceManager(private val context: Context) {
 
-    val BATOTO = 1
-    val MANGAHERE = 2
-    val MANGAFOX = 3
-    val KISSMANGA = 4
-    val READMANGA = 5
-    val MINTMANGA = 6
-    val MANGACHAN = 7
-    val READMANGATODAY = 8
-    val MANGASEE = 9
-    val WIEMANGA = 10
-
-    val LAST_SOURCE = 10
-
-    val sourcesMap = createSources()
+    private val sourcesMap = createSources()
 
     open fun get(sourceKey: Int): Source? {
         return sourcesMap[sourceKey]
@@ -39,24 +42,21 @@ open class SourceManager(private val context: Context) {
 
     fun getOnlineSources() = sourcesMap.values.filterIsInstance(OnlineSource::class.java)
 
-    private fun createSource(id: Int): Source? = when (id) {
-        BATOTO -> Batoto(context, id)
-        KISSMANGA -> Kissmanga(context, id)
-        MANGAHERE -> Mangahere(context, id)
-        MANGAFOX -> Mangafox(context, id)
-        READMANGA -> Readmanga(context, id)
-        MINTMANGA -> Mintmanga(context, id)
-        MANGACHAN -> Mangachan(context, id)
-        READMANGATODAY -> Readmangatoday(context, id)
-        MANGASEE -> Mangasee(context, id)
-        WIEMANGA -> WieManga(context, id)
-        else -> null
-    }
+    private fun createOnlineSourceList(): List<Source> = listOf(
+            Batoto(1),
+            Mangahere(2),
+            Mangafox(3),
+            Kissmanga(4),
+            Readmanga(5),
+            Mintmanga(6),
+            Mangachan(7),
+            Readmangatoday(8),
+            Mangasee(9),
+            WieManga(10)
+    )
 
     private fun createSources(): Map<Int, Source> = hashMapOf<Int, Source>().apply {
-        for (i in 1..LAST_SOURCE) {
-            createSource(i)?.let { put(i, it) }
-        }
+        createOnlineSourceList().forEach { put(it.id, it) }
 
         val parsersDir = File(Environment.getExternalStorageDirectory().absolutePath +
                 File.separator + context.getString(R.string.app_name), "parsers")
@@ -66,7 +66,7 @@ open class SourceManager(private val context: Context) {
             for (file in parsersDir.listFiles().filter { it.extension == "yml" }) {
                 try {
                     val map = file.inputStream().use { yaml.loadAs(it, Map::class.java) }
-                    YamlOnlineSource(context, map).let { put(it.id, it) }
+                    YamlOnlineSource(map).let { put(it.id, it) }
                 } catch (e: Exception) {
                     Timber.e("Error loading source from file. Bad format?")
                 }

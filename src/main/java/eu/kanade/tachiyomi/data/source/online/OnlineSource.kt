@@ -16,7 +16,6 @@
 
 package eu.kanade.tachiyomi.data.source.online
 
-import android.content.Context
 import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.Manga
@@ -25,7 +24,6 @@ import eu.kanade.tachiyomi.data.network.NetworkHelper
 import eu.kanade.tachiyomi.data.network.asObservable
 import eu.kanade.tachiyomi.data.network.newCallWithProgress
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
-import eu.kanade.tachiyomi.data.preference.getOrDefault
 import eu.kanade.tachiyomi.data.source.Language
 import eu.kanade.tachiyomi.data.source.Source
 import eu.kanade.tachiyomi.data.source.model.MangasPage
@@ -36,31 +34,27 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import rx.Observable
-import uy.kohesive.injekt.Injekt
-import uy.kohesive.injekt.api.get
+import uy.kohesive.injekt.injectLazy
 
 /**
  * A simple implementation for sources from a website.
- *
- * @param context the application context.
  */
-//TODO KEEP THIS UPDATED
-abstract class OnlineSource(context: Context) : Source {
+abstract class OnlineSource() : Source {
 
     /**
      * Network service.
      */
-    val network: NetworkHelper = Injekt.get()
+    val network: NetworkHelper by injectLazy()
 
     /**
      * Chapter cache.
      */
-    val chapterCache: ChapterCache = Injekt.get()
+    val chapterCache: ChapterCache by injectLazy()
 
     /**
      * Preferences helper.
      */
-    val preferences: PreferencesHelper = Injekt.get()
+    val preferences: PreferencesHelper by injectLazy()
 
     /**
      * Base url of the website without the trailing slash, like: http://mysite.com
@@ -73,9 +67,19 @@ abstract class OnlineSource(context: Context) : Source {
     abstract val lang: Language
 
     /**
+     * Whether the source has support for latest updates.
+     */
+    abstract val supportsLatest : Boolean
+
+    /**
      * Headers used for requests.
      */
     val headers by lazy { headersBuilder().build() }
+
+    /**
+     * Genre filters.
+     */
+    val filters by lazy { getFilterList() }
 
     /**
      * Default network client for doing requests.
@@ -145,11 +149,11 @@ abstract class OnlineSource(context: Context) : Source {
      *             the current page and the next page url.
      * @param query the search query.
      */
-    open fun fetchSearchManga(page: MangasPage, query: String): Observable<MangasPage> = client
-            .newCall(searchMangaRequest(page, query))
+    open fun fetchSearchManga(page: MangasPage, query: String, filters: List<Filter>): Observable<MangasPage> = client
+            .newCall(searchMangaRequest(page, query, filters))
             .asObservable()
             .map { response ->
-                searchMangaParse(response, page, query)
+                searchMangaParse(response, page, query, filters)
                 page
             }
 
@@ -160,9 +164,9 @@ abstract class OnlineSource(context: Context) : Source {
      * @param page the page object.
      * @param query the search query.
      */
-    open protected fun searchMangaRequest(page: MangasPage, query: String): Request {
+    open protected fun searchMangaRequest(page: MangasPage, query: String, filters: List<Filter>): Request {
         if (page.page == 1) {
-            page.url = searchMangaInitialUrl(query)
+            page.url = searchMangaInitialUrl(query, filters)
         }
         return GET(page.url, headers)
     }
@@ -172,7 +176,7 @@ abstract class OnlineSource(context: Context) : Source {
      *
      * @param query the search query.
      */
-    abstract protected fun searchMangaInitialUrl(query: String): String
+    abstract protected fun searchMangaInitialUrl(query: String, filters: List<Filter>): String
 
     /**
      * Parse the response from the site. It should add a list of manga and the absolute url to the
@@ -182,7 +186,38 @@ abstract class OnlineSource(context: Context) : Source {
      * @param page the page object to be filled.
      * @param query the search query.
      */
-    abstract protected fun searchMangaParse(response: Response, page: MangasPage, query: String)
+    abstract protected fun searchMangaParse(response: Response, page: MangasPage, query: String, filters: List<Filter>)
+
+    /**
+     * Returns an observable containing a page with a list of latest manga.
+     */
+    open fun fetchLatestUpdates(page: MangasPage): Observable<MangasPage> = client
+            .newCall(latestUpdatesRequest(page))
+            .asObservable()
+            .map { response ->
+                latestUpdatesParse(response, page)
+                page
+            }
+
+    /**
+     * Returns the request for latest manga given the page.
+     */
+    open protected fun latestUpdatesRequest(page: MangasPage): Request {
+        if (page.page == 1) {
+            page.url = latestUpdatesInitialUrl()
+        }
+        return GET(page.url, headers)
+    }
+
+    /**
+     * Returns the absolute url of the first page to latest manga.
+     */
+    abstract protected fun latestUpdatesInitialUrl(): String
+
+    /**
+     * Same as [popularMangaParse], but for latest manga.
+     */
+    abstract protected fun latestUpdatesParse(response: Response, page: MangasPage)
 
     /**
      * Returns an observable with the updated details for a manga. Normally it's not needed to
@@ -206,7 +241,7 @@ abstract class OnlineSource(context: Context) : Source {
      *
      * @param manga the manga to be updated.
      */
-    open protected fun mangaDetailsRequest(manga: Manga): Request {
+    open fun mangaDetailsRequest(manga: Manga): Request {
         return GET(baseUrl + manga.url, headers)
     }
 
@@ -306,7 +341,7 @@ abstract class OnlineSource(context: Context) : Source {
     /**
      * Returns the key for the page list to be stored in [ChapterCache].
      */
-    fun getChapterCacheKey(chapter: Chapter) = "$id${chapter.url}"
+    private fun getChapterCacheKey(chapter: Chapter) = "$id${chapter.url}"
 
     /**
      * Returns an observable with the page containing the source url of the image. If there's any
@@ -349,10 +384,10 @@ abstract class OnlineSource(context: Context) : Source {
      * @param page the page whose source image has to be downloaded.
      */
     final override fun fetchImage(page: Page): Observable<Page> =
-        if (page.imageUrl.isNullOrEmpty())
-            fetchImageUrl(page).flatMap { getCachedImage(it) }
-        else
-            getCachedImage(page)
+            if (page.imageUrl.isNullOrEmpty())
+                fetchImageUrl(page).flatMap { getCachedImage(it) }
+            else
+                getCachedImage(page)
 
     /**
      * Returns an observable with the response of the source image.
@@ -412,7 +447,7 @@ abstract class OnlineSource(context: Context) : Source {
     private fun cacheImage(page: Page): Observable<Page> {
         page.status = Page.DOWNLOAD_IMAGE
         return imageResponse(page)
-                .doOnNext { chapterCache.putImageToCache(page.imageUrl!!, it, preferences.reencodeImage().getOrDefault()) }
+                .doOnNext { chapterCache.putImageToCache(page.imageUrl!!, it) }
                 .map { page }
     }
 
@@ -447,4 +482,7 @@ abstract class OnlineSource(context: Context) : Source {
 
     }
 
+    data class Filter(val id: String, val name: String)
+
+    open fun getFilterList(): List<Filter> = emptyList()
 }

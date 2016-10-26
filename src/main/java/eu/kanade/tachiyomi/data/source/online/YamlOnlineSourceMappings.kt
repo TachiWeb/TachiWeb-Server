@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @file:Suppress("UNCHECKED_CAST")
 
 package eu.kanade.tachiyomi.data.source.online
@@ -29,6 +45,8 @@ class YamlSourceNode(uncheckedMap: Map<*, *>) {
         get() = map["client"] as? String
 
     val popular = PopularNode(toMap(map["popular"])!!)
+
+    val latestupdates = toMap(map["latest_updates"])?.let { LatestUpdatesNode(it) }
 
     val search = SearchNode(toMap(map["search"])!!)
 
@@ -72,6 +90,17 @@ class PopularNode(override val map: Map<String, Any?>): RequestableNode {
         get() = map["next_url_css"] as? String
 
 }
+
+
+class LatestUpdatesNode(override val map: Map<String, Any?>): RequestableNode {
+
+    val manga_css: String by map
+
+    val next_url_css: String?
+        get() = map["next_url_css"] as? String
+
+}
+
 
 class SearchNode(override val map: Map<String, Any?>): RequestableNode {
 

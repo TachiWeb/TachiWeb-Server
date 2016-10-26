@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andy Bao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package eu.kanade.tachiyomi.data.source.online.russian
 
 import android.content.Context
@@ -14,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class Mintmanga(context: Context, override val id: Int) : ParsedOnlineSource(context) {
+class Mintmanga(override val id: Int) : ParsedOnlineSource() {
 
     override val name = "Mintmanga"
 
@@ -22,11 +38,18 @@ class Mintmanga(context: Context, override val id: Int) : ParsedOnlineSource(con
 
     override val lang: Language get() = RU
 
+    override val supportsLatest = true
+
     override fun popularMangaInitialUrl() = "$baseUrl/list?sortType=rate"
 
-    override fun searchMangaInitialUrl(query: String) = "$baseUrl/search?q=$query"
+    override fun latestUpdatesInitialUrl() = "$baseUrl/list?sortType=updated"
+
+    override fun searchMangaInitialUrl(query: String, filters: List<Filter>) =
+            "$baseUrl/search?q=$query&${filters.map { it.id + "=in" }.joinToString("&")}"
 
     override fun popularMangaSelector() = "div.desc"
+
+    override fun latestUpdatesSelector() = "div.desc"
 
     override fun popularMangaFromElement(element: Element, manga: Manga) {
         element.select("h3 > a").first().let {
@@ -35,7 +58,13 @@ class Mintmanga(context: Context, override val id: Int) : ParsedOnlineSource(con
         }
     }
 
+    override fun latestUpdatesFromElement(element: Element, manga: Manga) {
+        popularMangaFromElement(element, manga)
+    }
+
     override fun popularMangaNextPageSelector() = "a.nextLink"
+
+    override fun latestUpdatesNextPageSelector() = "a.nextLink"
 
     override fun searchMangaSelector() = popularMangaSelector()
 
@@ -43,7 +72,8 @@ class Mintmanga(context: Context, override val id: Int) : ParsedOnlineSource(con
         popularMangaFromElement(element, manga)
     }
 
-    override fun searchMangaNextPageSelector() = popularMangaNextPageSelector()
+    // max 200 results
+    override fun searchMangaNextPageSelector() = null
 
     override fun mangaDetailsParse(document: Document, manga: Manga) {
         val infoElement = document.select("div.leftContent").first()
@@ -99,4 +129,55 @@ class Mintmanga(context: Context, override val id: Int) : ParsedOnlineSource(con
     override fun pageListParse(document: Document, pages: MutableList<Page>) { }
 
     override fun imageUrlParse(document: Document) = ""
+
+    /* [...document.querySelectorAll("tr.advanced_option:nth-child(1) > td:nth-child(3) span.js-link")].map((el,i) => {
+    * const onClick=el.getAttribute('onclick');const id=onClick.substr(31,onClick.length-33);
+    * return `Filter("${id}", "${el.textContent.trim()}")` }).join(',\n')
+    * on http://mintmanga.com/search
+    */
+    override fun getFilterList(): List<Filter> = listOf(
+            Filter("el_2220", "арт"),
+            Filter("el_1353", "бара"),
+            Filter("el_1346", "боевик"),
+            Filter("el_1334", "боевые искусства"),
+            Filter("el_1339", "вампиры"),
+            Filter("el_1333", "гарем"),
+            Filter("el_1347", "гендерная интрига"),
+            Filter("el_1337", "героическое фэнтези"),
+            Filter("el_1343", "детектив"),
+            Filter("el_1349", "дзёсэй"),
+            Filter("el_1332", "додзинси"),
+            Filter("el_1310", "драма"),
+            Filter("el_5229", "игра"),
+            Filter("el_1311", "история"),
+            Filter("el_1351", "киберпанк"),
+            Filter("el_1328", "комедия"),
+            Filter("el_1318", "меха"),
+            Filter("el_1324", "мистика"),
+            Filter("el_1325", "научная фантастика"),
+            Filter("el_1327", "повседневность"),
+            Filter("el_1342", "постапокалиптика"),
+            Filter("el_1322", "приключения"),
+            Filter("el_1335", "психология"),
+            Filter("el_1313", "романтика"),
+            Filter("el_1316", "самурайский боевик"),
+            Filter("el_1350", "сверхъестественное"),
+            Filter("el_1314", "сёдзё"),
+            Filter("el_1320", "сёдзё-ай"),
+            Filter("el_1326", "сёнэн"),
+            Filter("el_1330", "сёнэн-ай"),
+            Filter("el_1321", "спорт"),
+            Filter("el_1329", "сэйнэн"),
+            Filter("el_1344", "трагедия"),
+            Filter("el_1341", "триллер"),
+            Filter("el_1317", "ужасы"),
+            Filter("el_1331", "фантастика"),
+            Filter("el_1323", "фэнтези"),
+            Filter("el_1319", "школа"),
+            Filter("el_1340", "эротика"),
+            Filter("el_1354", "этти"),
+            Filter("el_1315", "юри"),
+            Filter("el_1336", "яой")
+    )
+
 }

@@ -26,6 +26,8 @@ import eu.kanade.tachiyomi.data.source.online.OnlineSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,6 +51,17 @@ public class ChapterUtils {
                         .findFirst());
     }
 
+    //Don't want to have to modify OnlineSource because of one modifier
+    private static Method chapterCacheKeyMethod;
+    {
+        try {
+            chapterCacheKeyMethod = OnlineSource.class.getMethod("getChapterCacheKey", Chapter.class);
+            chapterCacheKeyMethod.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Could not find method: 'getChapterCacheKey'!");
+        }
+    }
+
     public static List<Page> getPageList(
             DownloadManager downloadManager, Source source, Manga manga, Chapter chapter) {
         List<Page> pageList = downloadManager.getSavedPageList(source, manga, chapter);
@@ -57,12 +70,16 @@ public class ChapterUtils {
             if (OnlineSource.class.isAssignableFrom(source.getClass())) {
                 OnlineSource casted = (OnlineSource) source;
                 //Try getting the page list from the cache first
-                pageList =
-                        casted.getChapterCache()
-                                .getPageListFromCache(casted.getChapterCacheKey(chapter))
-                                .onErrorReturn(t -> null)
-                                .toBlocking()
-                                .first();
+                try {
+                    pageList =
+                            casted.getChapterCache()
+                                    .getPageListFromCache((String) chapterCacheKeyMethod.invoke(casted, chapter))
+                                    .onErrorReturn(t -> null)
+                                    .toBlocking()
+                                    .first();
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("Could not invoke method: 'getChapterCacheKey'!");
+                }
                 //If it's not in the cache, fetch it from the network and cache it
                 if(pageList == null) {
                     try {

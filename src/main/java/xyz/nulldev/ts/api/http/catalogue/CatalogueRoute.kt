@@ -59,6 +59,13 @@ class CatalogueRoute : TachiWebRoute() {
                 return error("The specified source is not an OnlineSource!")
             }
 
+            //Parse filters
+            val filters = request.queryParamsValues("filter").map { id ->
+                return onlineSource.getFilterList().find {
+                    it.id == id
+                } ?: return@map error("'$id' is not a valid filter ID!")
+            }
+
             //Parse page
             val pageObj = MangasPage(page)
             if (lastUrl != null) {
@@ -69,7 +76,7 @@ class CatalogueRoute : TachiWebRoute() {
             //Get catalogue from source
             val observable: Observable<MangasPage>
             if (!query.isNullOrEmpty()) {
-                observable = onlineSource.fetchSearchManga(pageObj, query)
+                observable = onlineSource.fetchSearchManga(pageObj, query, filters)
             } else {
                 observable = onlineSource.fetchPopularManga(pageObj)
             }
