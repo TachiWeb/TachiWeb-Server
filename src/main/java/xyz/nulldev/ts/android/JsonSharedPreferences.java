@@ -20,6 +20,8 @@ import android.content.SharedPreferences;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -42,6 +44,8 @@ public class JsonSharedPreferences implements SharedPreferences {
     private List<OnSharedPreferenceChangeListener> listeners = new ArrayList<>(); //Change listeners
     private File file; //Where the values should be stored
 
+    private Logger logger = LoggerFactory.getLogger(JsonSharedPreferences.class);
+
     public JsonSharedPreferences(File file) {
         this.file = file;
         //Load previous values if they exist
@@ -49,10 +53,8 @@ public class JsonSharedPreferences implements SharedPreferences {
             if(file.exists()) {
                 try {
                     loadFromString(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
-                } catch (IOException ignored) {
-                    //TODO Logging
-                    System.out.println("Failed to read shared prefs from String!");
-                    ignored.printStackTrace();
+                } catch (IOException e) {
+                    logger.error("Failed to read shared prefs from String!", e);
                 }
             }
         }
@@ -287,9 +289,7 @@ public class JsonSharedPreferences implements SharedPreferences {
                     try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)))) {
                         writer.print(string);
                     } catch (IOException e) {
-                        //TODO Logging
-                        System.out.println("Failed to save shared prefs!");
-                        e.printStackTrace();
+                        logger.error("Failed to save shared prefs!", e);
                         prefs = oldPrefs;
                         return false;
                     }

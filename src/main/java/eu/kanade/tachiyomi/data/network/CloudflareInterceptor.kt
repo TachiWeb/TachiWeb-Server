@@ -23,7 +23,7 @@ import okhttp3.Response
 import java.math.BigDecimal
 import javax.script.ScriptEngineManager
 
-//TODO KEEP THIS UPDATED
+//TODO KEEP THIS UPDATED (11ac4df)
 class CloudflareInterceptor(private val cookies: PersistentCookieStore) : Interceptor {
 
     //language=RegExp

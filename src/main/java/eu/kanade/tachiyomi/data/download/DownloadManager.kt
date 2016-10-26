@@ -44,7 +44,7 @@ import java.io.File
 import java.io.FileReader
 import java.util.*
 
-//TODO Keep updated
+//TODO Keep updated (6a30a75)
 class DownloadManager(
         private val context: Context = Injekt.get(),
         private val sourceManager: SourceManager = Injekt.get(),
