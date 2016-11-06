@@ -31,9 +31,13 @@ class CheckSessionRoute: TachiWebRoute(false /* No auth */) {
         val password = request.queryParams("password")
         if (SessionManager.authPassword() == password) {
             sessionManager.authenticateSession(session)
-            return success()
+            return success().put(KEY_TOKEN, session)
         } else {
             return error("Incorrect password!")
         }
+    }
+
+    companion object {
+        val KEY_TOKEN = "token"
     }
 }
