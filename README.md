@@ -10,7 +10,7 @@ TachiWeb-Server allows multiple programs to use the same Tachiyomi library at th
 TachiWeb is not officially supported by Tachiyomi or it's contributors.
 
 # Live demo
-A live demo is available here: [http://tw1-tachiweb.rhcloud.com/](http://tw1-tachiweb.rhcloud.com/)
+A live demo is available here: [http://d3.nulldev.xyz:4567/](http://d3.nulldev.xyz:4567/)
 **NOTE**: Kissmanga is very unstable. Batoto normally requires log in but in the demo, I will use my own credentials.
 Please don't destroy the live demo.
 
