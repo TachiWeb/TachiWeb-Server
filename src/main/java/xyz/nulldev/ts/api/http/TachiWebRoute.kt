@@ -50,9 +50,13 @@ abstract class TachiWebRoute : Route {
             response.header("Access-Control-Allow-Credentials", "true")
             var session: String? = request.cookie("session")
             if (session.isNullOrBlank()) {
-                session = sessionManager.newSession()
-                response.removeCookie("session")
-                response.cookie("session", session)
+                //Try session header if session is not provided in cookie
+                session = request.headers(SESSION_HEADER)
+                if(session.isNullOrBlank()) {
+                    session = sessionManager.newSession()
+                    response.removeCookie("session")
+                    response.cookie("session", session)
+                }
             }
             request.attribute("session", session)
             //Auth all sessions if auth not enabled
@@ -91,6 +95,8 @@ abstract class TachiWebRoute : Route {
         get() = Injekt.get()
 
     companion object {
+
+        val SESSION_HEADER = "TW-Session"
 
         private val logger = LoggerFactory.getLogger(TachiWebRoute::class.java)
 

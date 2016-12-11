@@ -17,6 +17,7 @@
 package xyz.nulldev.ts.library;
 
 import eu.kanade.tachiyomi.data.database.models.*;
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import xyz.nulldev.ts.util.OptionalUtils;
 import xyz.nulldev.ts.util.UnboxTherapy;
@@ -112,6 +113,16 @@ public class Library {
         return mangaCategories;
     }
 
+    public synchronized Category findCategory(String category) {
+        String nameLower = category.toLowerCase();
+        for(Category cat : categories) {
+           if(cat.getNameLower().equals(nameLower)) {
+               return cat;
+           }
+        }
+        return null;
+    }
+
     public synchronized List<Category> getCategoriesForManga(Manga manga) {
         List<Integer> mCategories = mangaCategories.get(manga.getId());
         if (mCategories == null) {
@@ -128,7 +139,7 @@ public class Library {
                             }
                             return null;
                         })
-                .filter(category -> category != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -208,13 +219,17 @@ public class Library {
         }
     }
 
+    public synchronized void deleteMangaCategories(List<MangaCategory> toDelete) {
+        for(MangaCategory mangaCategory : toDelete) {
+            List<Integer> categories = mangaCategories.get(mangaCategory.getManga_id());
+            if(categories != null)
+                categories.remove(mangaCategory.getCategory_id());
+        }
+    }
+
     public synchronized void insertMangasCategories(List<MangaCategory> toInsert) {
         for (MangaCategory mangaCategory : toInsert) {
-            List<Integer> categories = mangaCategories.get(mangaCategory.getManga_id());
-            if (categories == null) {
-                categories = new ArrayList<>();
-                mangaCategories.put(mangaCategory.getManga_id(), categories);
-            }
+            List<Integer> categories = mangaCategories.computeIfAbsent(mangaCategory.getManga_id(), k -> new ArrayList<>());
             categories.add(mangaCategory.getCategory_id());
         }
     }
@@ -238,11 +253,7 @@ public class Library {
     }
 
     public synchronized LongInsertionResult insertChapter(Chapter chapter) {
-        List<Chapter> found = chapters.get(chapter.getManga_id());
-        if (found == null) {
-            found = new ArrayList<>();
-            chapters.put(chapter.getManga_id(), found);
-        }
+        List<Chapter> found = chapters.computeIfAbsent(chapter.getManga_id(), k -> new ArrayList<>());
         boolean removed = removeWithIdLong(chapter, found, new ChapterIdMapping());
         found.add(chapter);
         return new LongInsertionResult(!removed, removed ? UnboxTherapy.unbox(chapter.getId()) : newLongId());
@@ -255,11 +266,7 @@ public class Library {
     }
 
     public synchronized long insertMangaSync(MangaSync mangaSync) {
-        List<MangaSync> found = mangasSync.get(mangaSync.getManga_id());
-        if (found == null) {
-            found = new ArrayList<>();
-            mangasSync.put(mangaSync.getManga_id(), found);
-        }
+        List<MangaSync> found = mangasSync.computeIfAbsent(mangaSync.getManga_id(), k -> new ArrayList<>());
         boolean removed = removeWithIdLong(mangaSync, found, new MangasSyncIdMapping());
         found.add(mangaSync);
         return removed ? UnboxTherapy.unbox(mangaSync.getId()) : newLongId();
@@ -276,6 +283,18 @@ public class Library {
     public synchronized Manga getManga(long id) {
         return OptionalUtils.getOrNull(
                 mangas.stream().filter(manga -> Objects.equals(manga.getId(), id)).findFirst());
+    }
+
+    public synchronized void deleteCategories(List<String> deleteCategories) {
+        List<String> lowercaseCategories = deleteCategories.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        categories.removeIf(category -> lowercaseCategories.contains(category.getNameLower()));
+    }
+
+    public synchronized void deleteCategory(String category) {
+        categories.removeIf(category1 -> category1.getNameLower().equals(category.toLowerCase()));
     }
 
     public AtomicReference<ReentrantLock> getMasterLock() {

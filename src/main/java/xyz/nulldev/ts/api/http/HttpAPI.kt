@@ -20,6 +20,7 @@ import spark.Route
 import spark.Spark
 import xyz.nulldev.ts.api.http.auth.CheckSessionRoute
 import xyz.nulldev.ts.api.http.auth.ClearSessionsRoute
+import xyz.nulldev.ts.api.http.auth.TestAuthenticatedRoute
 import xyz.nulldev.ts.api.http.catalogue.CatalogueRoute
 import xyz.nulldev.ts.api.http.catalogue.ListSourcesRoute
 import xyz.nulldev.ts.api.http.download.DownloadChapterRoute
@@ -35,6 +36,7 @@ import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute
 import xyz.nulldev.ts.api.http.settings.PreferencesRoute
 import xyz.nulldev.ts.api.http.settings.SetPreferenceRoute
 import xyz.nulldev.ts.api.http.settings.SourceLoginRoute
+import xyz.nulldev.ts.api.http.sync.DiffSyncRoute
 import xyz.nulldev.ts.api.http.sync.SyncRoute
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute
 
@@ -70,6 +72,8 @@ class HttpAPI {
     private val taskStatusRoute = TaskStatusRoute()
     private val checkSessionRoute = CheckSessionRoute()
     private val clearSessionsRoute = ClearSessionsRoute()
+    private val diffSyncRoute = DiffSyncRoute()
+    private val testAuthRoute = TestAuthenticatedRoute()
 
     fun start() {
         //Get an image from a chapter
@@ -122,6 +126,10 @@ class HttpAPI {
         getAPIRoute("/auth", checkSessionRoute)
         //Clear sessions
         getAPIRoute("/clear_sessions", clearSessionsRoute)
+        //Diff sync route
+        postAPIRoute("/diff_sync", diffSyncRoute)
+        //Test auth route
+        getAPIRoute("/test_auth", testAuthRoute)
     }
 
     private fun buildAPIPath(path: String): String {

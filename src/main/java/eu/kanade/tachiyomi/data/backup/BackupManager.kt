@@ -216,7 +216,7 @@ class BackupManager() {
      *
      * @param jsonCategories the categories of the json.
      */
-    private fun restoreCategories(jsonCategories: JsonArray, library: Library) {
+    fun restoreCategories(jsonCategories: JsonArray, library: Library) {
         // Get categories from file and from db
         val dbCategories = library.categories
         val backupCategories = gson.fromJson<List<CategoryImpl>>(jsonCategories)
@@ -296,7 +296,7 @@ class BackupManager() {
      * @param manga the manga whose chapters have to be restored.
      * @param chapters the chapters to restore.
      */
-    private fun restoreChaptersForManga(manga: Manga, chapters: List<Chapter>, library: Library) {
+     fun restoreChaptersForManga(manga: Manga, chapters: List<Chapter>, library: Library) {
         // Fix foreign keys with the current manga id
         for (chapter in chapters) {
             chapter.manga_id = manga.id
