@@ -109,8 +109,8 @@ class DiffSyncRoute : TachiWebRoute() {
             trans.library.deleteMangaCategories(toDelete)
         }
         trans.apply()
-        //TODO Return data
-        return success()
+
+        return success().put(NEW_LIBRARY, backupManager.backupToJson(library = library))
     }
 
     fun pairToMangaCategory(pair: Pair<JsonElement, JsonElement>, library: Library): MangaCategory? {
@@ -121,7 +121,7 @@ class DiffSyncRoute : TachiWebRoute() {
            return MangaCategory.create(manga, cat)
     }
 
-    fun LibraryDiff.MangaReference.findInLibrary(library: Library) = library.getManga(this.url, this.source)
+    fun LibraryDiff.MangaReference.findInLibrary(library: Library): Manga? = library.getManga(this.url, this.source)
 
     fun pairFromJson(element: JsonElement)
             = Pair(element[Pair<JsonElement, JsonElement>::first.name],
@@ -142,5 +142,9 @@ class DiffSyncRoute : TachiWebRoute() {
             manga.copyFrom(dbManga)
             library.insertManga(manga)
         }
+    }
+
+    companion object {
+        val NEW_LIBRARY = "new_library"
     }
 }
