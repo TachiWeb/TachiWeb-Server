@@ -2,4 +2,5 @@
 /target/
 /out/
 /.idea/workspace.xml
-/local-repo
+/*.iml
+local-repo/

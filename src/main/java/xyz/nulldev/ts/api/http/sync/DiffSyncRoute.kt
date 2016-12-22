@@ -57,7 +57,7 @@ class DiffSyncRoute : TachiWebRoute() {
 
         //Parse diff
         val requestBody = String(request.bodyAsBytes(), StandardCharsets.UTF_8)
-        val root = jsonParser.parse(requestBody).asJsonObject!! //TODO Replace with error
+        val root = jsonParser.parse(requestBody).asJsonObject
 
         val trans = library.newTransaction()
 
