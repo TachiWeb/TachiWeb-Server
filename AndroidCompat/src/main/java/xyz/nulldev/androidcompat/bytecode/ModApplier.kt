@@ -18,5 +18,9 @@ class ModApplier {
         val modifiedClasses = mutableListOf<CtClass>()
 
         modifiedClasses += forceOverrideMod.apply("xyz.nulldev.androidcompat.androidimpl.CustomContext")
+
+        modifiedClasses.forEach {
+            it.toClass()
+        }
     }
 }
