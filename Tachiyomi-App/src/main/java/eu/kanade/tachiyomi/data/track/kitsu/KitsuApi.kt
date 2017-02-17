@@ -1,0 +1,200 @@
+package eu.kanade.tachiyomi.data.track.kitsu
+
+import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonObject
+import eu.kanade.tachiyomi.data.database.models.Track
+import eu.kanade.tachiyomi.data.network.POST
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.*
+import rx.Observable
+
+class KitsuApi(private val client: OkHttpClient, interceptor: KitsuInterceptor) {
+
+    private val rest = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client.newBuilder().addInterceptor(interceptor).build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+            .build()
+            .create(KitsuApi.Rest::class.java)
+
+    fun addLibManga(track: Track, userId: String): Observable<Track> {
+        return Observable.defer {
+            // @formatter:off
+            val data = jsonObject(
+                "type" to "libraryEntries",
+                "attributes" to jsonObject(
+                    "status" to track.toKitsuStatus(),
+                    "progress" to track.last_chapter_read
+                ),
+                "relationships" to jsonObject(
+                    "user" to jsonObject(
+                        "data" to jsonObject(
+                            "id" to userId,
+                            "type" to "users"
+                        )
+                    ),
+                    "media" to jsonObject(
+                        "data" to jsonObject(
+                            "id" to track.remote_id,
+                            "type" to "manga"
+                        )
+                    )
+                )
+            )
+            // @formatter:on
+
+            rest.addLibManga(jsonObject("data" to data))
+                    .map { json ->
+                        track.remote_id = json["data"]["id"].int
+                        track
+                    }
+        }
+    }
+
+    fun updateLibManga(track: Track): Observable<Track> {
+        return Observable.defer {
+            // @formatter:off
+            val data = jsonObject(
+                "type" to "libraryEntries",
+                "id" to track.remote_id,
+                "attributes" to jsonObject(
+                    "status" to track.toKitsuStatus(),
+                    "progress" to track.last_chapter_read,
+                    "rating" to track.toKitsuScore()
+                )
+            )
+            // @formatter:on
+
+            rest.updateLibManga(track.remote_id, jsonObject("data" to data))
+                    .map { track }
+        }
+    }
+
+    fun search(query: String): Observable<List<Track>> {
+        return rest.search(query)
+                .map { json ->
+                    val data = json["data"].array
+                    data.map { KitsuManga(it.obj) }
+                            .filter { it.type != "novel" }
+                            .map { it.toTrack() }
+                }
+    }
+
+    fun findLibManga(track: Track, userId: String): Observable<Track?> {
+        return rest.findLibManga(track.remote_id, userId)
+                .map { json ->
+                    val data = json["data"].array
+                    if (data.size() > 0) {
+                        KitsuLibManga(data[0].obj, json["included"].array[0].obj).toTrack()
+                    } else {
+                        null
+                    }
+                }
+    }
+
+    fun getLibManga(track: Track): Observable<Track> {
+        return rest.getLibManga(track.remote_id)
+                .map { json ->
+                    val data = json["data"].array
+                    if (data.size() > 0) {
+                        val include = json["included"].array[0].obj
+                        KitsuLibManga(data[0].obj, include).toTrack()
+                    } else {
+                        throw Exception("Could not find manga")
+                    }
+                }
+    }
+
+    fun login(username: String, password: String): Observable<OAuth> {
+        return Retrofit.Builder()
+                .baseUrl(loginUrl)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build()
+                .create(KitsuApi.LoginRest::class.java)
+                .requestAccessToken(username, password)
+    }
+
+    fun getCurrentUser(): Observable<String> {
+        return rest.getCurrentUser().map { it["data"].array[0]["id"].string }
+    }
+
+    private interface Rest {
+
+        @Headers("Content-Type: application/vnd.api+json")
+        @POST("library-entries")
+        fun addLibManga(
+                @Body data: JsonObject
+        ): Observable<JsonObject>
+
+        @Headers("Content-Type: application/vnd.api+json")
+        @PATCH("library-entries/{id}")
+        fun updateLibManga(
+                @Path("id") remoteId: Int,
+                @Body data: JsonObject
+        ): Observable<JsonObject>
+
+        @GET("manga")
+        fun search(
+                @Query("filter[text]", encoded = true) query: String
+        ): Observable<JsonObject>
+
+        @GET("library-entries")
+        fun findLibManga(
+                @Query("filter[media_id]", encoded = true) remoteId: Int,
+                @Query("filter[user_id]", encoded = true) userId: String,
+                @Query("page[limit]", encoded = true) limit: Int = 10000,
+                @Query("include") includes: String = "media"
+        ): Observable<JsonObject>
+
+        @GET("library-entries")
+        fun getLibManga(
+                @Query("filter[id]", encoded = true) remoteId: Int,
+                @Query("include") includes: String = "media"
+        ): Observable<JsonObject>
+
+        @GET("users")
+        fun getCurrentUser(
+                @Query("filter[self]", encoded = true) self: Boolean = true
+        ): Observable<JsonObject>
+
+    }
+
+    private interface LoginRest {
+
+        @FormUrlEncoded
+        @POST("oauth/token")
+        fun requestAccessToken(
+                @Field("username") username: String,
+                @Field("password") password: String,
+                @Field("grant_type") grantType: String = "password",
+                @Field("client_id") client_id: String = clientId,
+                @Field("client_secret") client_secret: String = clientSecret
+        ): Observable<OAuth>
+
+    }
+
+    companion object {
+        private const val clientId = "dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd"
+        private const val clientSecret = "54d7307928f63414defd96399fc31ba847961ceaecef3a5fd93144e960c0e151"
+        private const val baseUrl = "https://kitsu.io/api/edge/"
+        private const val loginUrl = "https://kitsu.io/api/"
+
+
+        fun refreshTokenRequest(token: String) = POST("${loginUrl}oauth/token",
+                body = FormBody.Builder()
+                        .add("grant_type", "refresh_token")
+                        .add("client_id", clientId)
+                        .add("client_secret", clientSecret)
+                        .add("refresh_token", token)
+                        .build())
+
+    }
+
+}
