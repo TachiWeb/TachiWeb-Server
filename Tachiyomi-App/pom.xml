@@ -16,6 +16,13 @@
     </properties>
 
     <dependencies>
+        <!-- AndroidCompat module -->
+        <dependency>
+            <groupId>tachiweb-server</groupId>
+            <artifactId>tachiweb-server-androidcompat</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- Injekt -->
         <dependency>
             <groupId>uy.kohesive.injekt</groupId>
