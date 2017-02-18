@@ -1,29 +1,26 @@
 package android.os;
 
-import xyz.nulldev.ts.files.Files;
+import xyz.nulldev.androidcompat.io.AndroidFiles;
+import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
 
 import java.io.File;
-
-/**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 12/07/16
- */
 
 /**
  * Android compatibility layer for files
  */
 public class Environment {
-    public static String DIRECTORY_ALARMS = getHomeFolder("Alarms").getAbsolutePath();
-    public static String DIRECTORY_DCIM = getHomeFolder("DCIM").getAbsolutePath();
-    public static String DIRECTORY_DOCUMENTS = getHomeFolder("Documents").getAbsolutePath();
-    public static String DIRECTORY_DOWNLOADS = getHomeFolder("Downloads").getAbsolutePath();
-    public static String DIRECTORY_MOVIES = getHomeFolder("Movies").getAbsolutePath();
-    public static String DIRECTORY_MUSIC = getHomeFolder("Music").getAbsolutePath();
-    public static String DIRECTORY_NOTIFICATIONS = getHomeFolder("Notifications").getAbsolutePath();
-    public static String DIRECTORY_PICTURES = getHomeFolder("Pictures").getAbsolutePath();
-    public static String DIRECTORY_PODCASTS = getHomeFolder("Podcasts").getAbsolutePath();
-    public static String DIRECTORY_RINGTONES = getHomeFolder("Ringtones").getAbsolutePath();
+    private static AndroidFiles androidFiles = KodeinGlobalHelper.Companion.instance(AndroidFiles.class);
+
+    public static String DIRECTORY_ALARMS = getHomeDirectory("Alarms").getAbsolutePath();
+    public static String DIRECTORY_DCIM = getHomeDirectory("DCIM").getAbsolutePath();
+    public static String DIRECTORY_DOCUMENTS = getHomeDirectory("Documents").getAbsolutePath();
+    public static String DIRECTORY_DOWNLOADS = getHomeDirectory("Downloads").getAbsolutePath();
+    public static String DIRECTORY_MOVIES = getHomeDirectory("Movies").getAbsolutePath();
+    public static String DIRECTORY_MUSIC = getHomeDirectory("Music").getAbsolutePath();
+    public static String DIRECTORY_NOTIFICATIONS = getHomeDirectory("Notifications").getAbsolutePath();
+    public static String DIRECTORY_PICTURES = getHomeDirectory("Pictures").getAbsolutePath();
+    public static String DIRECTORY_PODCASTS = getHomeDirectory("Podcasts").getAbsolutePath();
+    public static String DIRECTORY_RINGTONES = getHomeDirectory("Ringtones").getAbsolutePath();
     public static final String MEDIA_BAD_REMOVAL = "bad_removal";
     public static final String MEDIA_CHECKING = "checking";
     public static final String MEDIA_EJECTING = "ejecting";
@@ -36,32 +33,28 @@ public class Environment {
     public static final String MEDIA_UNMOUNTABLE = "unmountable";
     public static final String MEDIA_UNMOUNTED = "unmounted";
 
-    public static File getHomeFolder() {
-        return new File(System.getProperty("user.home"));
-    }
-
-    public static File getHomeFolder(String nestedFolder) {
-        return new File(getHomeFolder(), nestedFolder);
+    public static File getHomeDirectory(String nestedFolder) {
+        return new File(getExternalStorageDirectory(), nestedFolder);
     }
 
     public static File getRootDirectory() {
-        return File.listRoots()[0];
+        return androidFiles.getRootDir();
     }
 
     public static File getDataDirectory() {
-        return Files.getStorageDir();
+        return androidFiles.getDataDir();
     }
 
     public static File getExternalStorageDirectory() {
-        return getHomeFolder();
+        return androidFiles.getExternalStorageDir();
     }
 
     public static File getExternalStoragePublicDirectory(String type) {
-        return getHomeFolder();
+        return androidFiles.getExternalStorageDir();
     }
 
     public static File getDownloadCacheDirectory() {
-        return Files.getExtCacheDir();
+        return androidFiles.getDownloadCacheDir();
     }
 
     public static String getExternalStorageState() {
@@ -98,6 +91,6 @@ public class Environment {
     }
 
     public static File getLegacyExternalStorageDirectory() {
-        return getHomeFolder();
+        return getExternalStorageDirectory();
     }
 }

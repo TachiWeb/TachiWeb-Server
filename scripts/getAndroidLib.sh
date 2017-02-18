@@ -41,16 +41,21 @@ function downloadLib {
     rm -rf "tmp"
 }
 
-function downloadJitpackLib {
+function downloadCentralLib {
     downloadLib "http://central.maven.org/maven2/" "$1"
 }
 
-function downloadCentralLib {
+function downloadJitpackLib {
     downloadLib "https://jitpack.io/" "$1"
+}
+
+function downloadBintrayLib {
+    downloadLib "https://dl.bintray.com/$1/" "$2"
 }
 
 # Download libraries here
 downloadCentralLib "com.jakewharton.timber:timber:4.5.1"
 downloadJitpackLib "com.github.seven332:unifile:1.0.0"
+#downloadBintrayLib "inorichi/tachiyomi" "eu.kanade.tachiyomi:extensions-library:1.0"
 
 echo "Done!"

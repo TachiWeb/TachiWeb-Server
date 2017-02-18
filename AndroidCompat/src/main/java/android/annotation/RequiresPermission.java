@@ -15,8 +15,6 @@
  */
 package android.annotation;
 
-import android.content.Intent;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

@@ -1,5 +1,6 @@
 package com.github.pwittchen.reactivenetwork.library
 
+import android.content.Context
 import rx.Observable
 
 /**

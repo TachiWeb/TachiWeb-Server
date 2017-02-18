@@ -3,6 +3,7 @@ package eu.kanade.tachiyomi.util;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.pm.PackageManager;
 
 import timber.log.Timber;

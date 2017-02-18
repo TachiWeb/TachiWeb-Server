@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tachiweb-server-androidcompat</artifactId>
+    <artifactId>androidcompat</artifactId>
 
     <properties>
         <kotlin.version>1.0.6</kotlin.version>
@@ -74,8 +74,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

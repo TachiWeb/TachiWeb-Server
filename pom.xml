@@ -11,6 +11,8 @@
     <modules>
         <module>Tachiyomi-App</module>
         <module>AndroidCompat</module>
+        <module>TSApi</module>
+        <module>TachiServer</module>
     </modules>
 
     <properties>
@@ -20,6 +22,34 @@
     </properties>
 
     <dependencies>
+        <!-- Tachiyomi-Extensions -->
+        <!--<dependency>
+            <groupId>eu.kanade.tachiyomi</groupId>
+            <artifactId>extensions-library</artifactId>
+            <version>1.0</version>
+        </dependency>-->
+
+        <!-- UniFile -->
+        <dependency>
+            <groupId>com.github.seven332</groupId>
+            <artifactId>unifile</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- JSoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.10.2</version>
+        </dependency>
+
+        <!-- RxJava -->
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.2.6</version>
+        </dependency>
+
         <!-- Android Logging -->
         <dependency>
             <groupId>com.jakewharton.timber</groupId>

@@ -24,6 +24,9 @@ class AndroidFiles : KodeinGlobalAware {
     val codeCacheDir: File get() = File(filesConfig.codeCacheDir)
     val externalCacheDirs: List<File> get() = filesConfig.externalCacheDirs.map(::File)
     val externalMediaDirs: List<File> get() = filesConfig.externalMediaDirs.map(::File)
+    val rootDir: File get() = File(filesConfig.rootDir)
+    val externalStorageDir: File get() = File(filesConfig.externalStorageDir)
+    val downloadCacheDir: File get() = File(filesConfig.downloadCacheDir)
 
     val prefsDir: File get() = File(filesConfig.prefsDir)
 }

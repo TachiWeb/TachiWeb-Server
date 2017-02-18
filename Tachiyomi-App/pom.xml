@@ -9,17 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tachiweb-server-tachiyomi</artifactId>
+    <artifactId>tachiyomi-app</artifactId>
 
     <properties>
         <kotlin.version>1.0.6</kotlin.version>
     </properties>
 
     <dependencies>
-        <!-- AndroidCompat module -->
+        <!-- AndroidCompat -->
         <dependency>
             <groupId>tachiweb-server</groupId>
-            <artifactId>tachiweb-server-androidcompat</artifactId>
+            <artifactId>androidcompat</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -58,13 +58,6 @@
             <version>3.6.0</version>
         </dependency>
 
-        <!-- RxJava -->
-        <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>1.2.6</version>
-        </dependency>
-
         <!-- SQLite -->
         <dependency>
             <groupId>com.pushtorefresh.storio</groupId>
@@ -74,23 +67,9 @@
 
         <!-- RxRelay -->
         <dependency>
-            <groupId>com.jakewharton.rxrelay2</groupId>
+            <groupId>com.jakewharton.rxrelay</groupId>
             <artifactId>rxrelay</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <!-- UniFile -->
-        <dependency>
-            <groupId>com.github.seven332</groupId>
-            <artifactId>unifile</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <!-- JSoup -->
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.10.2</version>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
 

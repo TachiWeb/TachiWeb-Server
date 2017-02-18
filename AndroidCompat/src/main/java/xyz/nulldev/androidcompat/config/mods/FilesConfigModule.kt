@@ -17,6 +17,9 @@ class FilesConfigModule(config: Config) : ConfigModule(config) {
     val codeCacheDir = config.getString("codeCacheDir")!!
     val externalCacheDirs: MutableList<String> = config.getStringList("externalCacheDirs")!!
     val externalMediaDirs: MutableList<String> = config.getStringList("externalMediaDirs")!!
+    val rootDir = config.getString("rootDir")!!
+    val externalStorageDir = config.getString("externalStorageDir")!!
+    val downloadCacheDir = config.getString("downloadCacheDir")!!
 
     val prefsDir = config.getString("prefsDir")!!
 }

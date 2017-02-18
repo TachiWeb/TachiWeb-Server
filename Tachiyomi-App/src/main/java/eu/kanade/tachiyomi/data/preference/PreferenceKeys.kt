@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.data.preference
 
+import android.content.Context
 import eu.kanade.tachiyomi.R
 
 /**
@@ -39,6 +40,8 @@ class PreferenceKeys(context: Context) {
     val zoomStart = context.getString(R.string.pref_zoom_start_key)
 
     val readerTheme = context.getString(R.string.pref_reader_theme_key)
+
+    val cropBorders = context.getString(R.string.pref_crop_borders_key)
 
     val readWithTapping = context.getString(R.string.pref_read_with_tapping_key)
 
@@ -90,9 +93,9 @@ class PreferenceKeys(context: Context) {
 
     val downloadNew = context.getString(R.string.pref_download_new_key)
 
-    fun sourceUsername(sourceId: Int) = "pref_source_username_$sourceId"
+    fun sourceUsername(sourceId: Long) = "pref_source_username_$sourceId"
 
-    fun sourcePassword(sourceId: Int) = "pref_source_password_$sourceId"
+    fun sourcePassword(sourceId: Long) = "pref_source_password_$sourceId"
 
     fun trackUsername(syncId: Int) = "pref_mangasync_username_$syncId"
 

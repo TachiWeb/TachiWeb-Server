@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.data.track.kitsu
 
+import android.content.Context
 import android.graphics.Color
 import com.google.gson.Gson
 import eu.kanade.tachiyomi.R
