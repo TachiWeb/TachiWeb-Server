@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tachiyomi;
+package eu.kanade.tachiyomi;
 
 import xyz.nulldev.androidcompat.res.RCompat;
 
