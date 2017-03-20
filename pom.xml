@@ -87,6 +87,11 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.22</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging</artifactId>
+            <version>1.4.3</version>
+        </dependency>
 
         <!-- Mock Android Jar (SDK 24)-->
         <dependency>

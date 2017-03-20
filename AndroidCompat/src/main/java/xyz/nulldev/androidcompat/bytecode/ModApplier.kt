@@ -1,7 +1,7 @@
 package xyz.nulldev.androidcompat.bytecode
 
 import javassist.CtClass
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 
 /**
  * Applies Javassist modifications
@@ -11,10 +11,10 @@ class ModApplier {
 
     val forceOverrideMod by lazy { ForceOverrideMod() }
 
-    val logger = LoggerFactory.getLogger(ModApplier::class.java)
+    val logger = KotlinLogging.logger {}
 
     fun apply() {
-        logger.info("Applying Javassist mods...")
+        logger.info { "Applying Javassist mods..." }
         val modifiedClasses = mutableListOf<CtClass>()
 
         modifiedClasses += forceOverrideMod.apply("xyz.nulldev.androidcompat.androidimpl.CustomContext")
