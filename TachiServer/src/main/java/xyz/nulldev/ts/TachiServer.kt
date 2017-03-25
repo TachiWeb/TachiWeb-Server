@@ -6,7 +6,7 @@ import xyz.nulldev.androidcompat.AndroidCompatInitializer
  */
 
 fun main(args: Array<String>){
-    TachiServer()
+    TachiServer().main(args)
 }
 
 class TachiServer {

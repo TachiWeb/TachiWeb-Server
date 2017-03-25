@@ -17,7 +17,7 @@ class ForceOverrideMod {
     fun apply(clazz: String): List<CtClass> {
         fun recursiveFindSuperClasses(clazz: CtClass, supers: MutableList<CtClass>) {
             val theSuper = clazz.superclass
-            if(theSuper != clazz && !supers.contains(theSuper)) {
+            if(theSuper != null && theSuper != clazz && !supers.contains(theSuper)) {
                 supers += theSuper
                 recursiveFindSuperClasses(theSuper, supers)
             }
@@ -52,8 +52,8 @@ class ForceOverrideMod {
                     it.name = annotation.targetMethod
 
                     //Flag classes as modified
-                    if (!modifiedClasses.contains(it.declaringClass)) modifiedClasses += it.declaringClass
                     if (!modifiedClasses.contains(superClass)) modifiedClasses += superClass
+                    if (!modifiedClasses.contains(it.declaringClass)) modifiedClasses += it.declaringClass
 
                     return@forEach
                 } catch (e: NotFoundException) {
