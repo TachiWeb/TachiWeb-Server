@@ -12,7 +12,7 @@
     <artifactId>tachiyomi-app</artifactId>
 
     <properties>
-        <kotlin.version>1.0.6</kotlin.version>
+        <kotlin.version>1.1.0</kotlin.version>
     </properties>
 
     <dependencies>
@@ -20,6 +20,12 @@
         <dependency>
             <groupId>tachiweb-server</groupId>
             <artifactId>androidcompat</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!-- TachiServer -->
+        <dependency>
+            <groupId>tachiweb-server</groupId>
+            <artifactId>tachiserver</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -70,6 +76,51 @@
             <groupId>com.jakewharton.rxrelay</groupId>
             <artifactId>rxrelay</artifactId>
             <version>1.2.0</version>
+        </dependency>
+
+        <!-- Retrofit -->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>adapter-rxjava</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <!-- XML Parser -->
+        <dependency>
+            <groupId>xmlpull</groupId>
+            <artifactId>xmlpull</artifactId>
+            <version>1.1.3.1</version>
+        </dependency>
+
+        <!-- Java UnRAR Android -->
+        <dependency>
+            <groupId>tachiweb-server</groupId>
+            <artifactId>junrar-android</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Java Natural Sort -->
+        <dependency>
+            <groupId>net.grey-panther</groupId>
+            <artifactId>natural-comparator</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <!-- YAML -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.18</version>
         </dependency>
     </dependencies>
 

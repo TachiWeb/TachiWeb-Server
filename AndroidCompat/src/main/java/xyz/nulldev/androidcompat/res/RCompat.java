@@ -37,6 +37,10 @@ public class RCompat {
         return res(new StringResource(s));
     }
 
+    public static int dres(String s) {
+        return res(new DrawableResource(s));
+    }
+
     /**
      * Add a resource.
      * @param res The resource to add.

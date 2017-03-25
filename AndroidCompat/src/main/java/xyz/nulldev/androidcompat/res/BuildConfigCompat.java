@@ -9,5 +9,8 @@ import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
 public class BuildConfigCompat {
     private static ApplicationInfoImpl applicationInfo = KodeinGlobalHelper.Companion.instance(ApplicationInfoImpl.class);
 
-    public static boolean DEBUG = applicationInfo.getDebug();
+    public static final boolean DEBUG = applicationInfo.getDebug();
+
+    //We assume application ID = package name
+    public static final String APPLICATION_ID = applicationInfo.getPackageName();
 }

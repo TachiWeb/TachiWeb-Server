@@ -1,6 +1,9 @@
 package eu.kanade.tachiyomi.util
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.support.v4.os.EnvironmentCompat
@@ -73,8 +76,9 @@ object DiskUtil {
     /**
      * Returns the root folders of all the available external storages.
      */
-    fun getExternalStorages(context: Context): List<File> {
-        return ContextCompat.getExternalFilesDirs(context, null)
+    fun getExternalStorages(context: Context): Collection<File> {
+        val directories = mutableSetOf<File>()
+        directories += ContextCompat.getExternalFilesDirs(context, null)
                 .filterNotNull()
                 .mapNotNull {
                     val file = File(it.absolutePath.substringBefore("/Android/"))
@@ -85,6 +89,29 @@ object DiskUtil {
                         null
                     }
                 }
+
+        if (Build.VERSION.SDK_INT < 21) {
+            val extStorages = System.getenv("SECONDARY_STORAGE")
+            if (extStorages != null) {
+                directories += extStorages.split(":").map(::File)
+            }
+        }
+
+        return directories
+    }
+
+    /**
+     * Scans the given file so that it can be shown in gallery apps, for example.
+     */
+    fun scanMedia(context: Context, file: File) {
+        val action = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            Intent.ACTION_MEDIA_MOUNTED
+        } else {
+            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE
+        }
+        val mediaScanIntent = Intent(action)
+        mediaScanIntent.data = Uri.fromFile(file)
+        context.sendBroadcast(mediaScanIntent)
     }
 
     /**

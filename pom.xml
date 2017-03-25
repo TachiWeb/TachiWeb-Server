@@ -13,10 +13,11 @@
         <module>AndroidCompat</module>
         <module>TSApi</module>
         <module>TachiServer</module>
+        <module>junrarandroid</module>
     </modules>
 
     <properties>
-        <kotlin.version>1.0.6</kotlin.version>
+        <kotlin.version>1.1.0</kotlin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -47,7 +48,7 @@
         <dependency>
             <groupId>io.reactivex</groupId>
             <artifactId>rxjava</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.7</version>
         </dependency>
 
         <!-- Android Logging -->

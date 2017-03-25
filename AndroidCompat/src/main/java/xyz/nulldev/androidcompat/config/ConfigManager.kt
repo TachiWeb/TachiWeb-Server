@@ -13,7 +13,7 @@ class ConfigManager {
     lateinit var config: Config
 
     val configFolder: String
-        get() = System.getProperty("tw-configdirs") ?: "config"
+        get() = System.getProperty("compat-configdirs") ?: "config"
 
     /**
      * Get a config module
