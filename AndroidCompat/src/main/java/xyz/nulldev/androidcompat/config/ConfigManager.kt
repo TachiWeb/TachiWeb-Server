@@ -2,7 +2,9 @@ package xyz.nulldev.androidcompat.config
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
+import xyz.nulldev.androidcompat.config.mods.ApplicationInfoConfigModule
 import xyz.nulldev.androidcompat.config.mods.FilesConfigModule
+import xyz.nulldev.androidcompat.config.mods.SystemConfigModule
 import java.io.File
 
 /**
@@ -42,8 +44,10 @@ class ConfigManager {
     /**
      * Generate the config modules from each file
      */
-    fun configToModules(config: Config) = mutableListOf<ConfigModule>(
-            FilesConfigModule(config.getConfig("files"))
+    fun configToModules(config: Config) = mutableListOf(
+            FilesConfigModule(config.getConfig("files")),
+            ApplicationInfoConfigModule(config.getConfig("app")),
+            SystemConfigModule(config.getConfig("system"))
     )
 
     /**
