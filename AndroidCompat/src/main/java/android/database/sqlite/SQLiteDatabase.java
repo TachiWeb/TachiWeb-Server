@@ -29,6 +29,8 @@ import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import dalvik.system.CloseGuard;
+import xyz.nulldev.androidcompat.io.AndroidFiles;
+import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -2032,7 +2034,8 @@ public final class SQLiteDatabase extends SQLiteClosable {
     }
 
     // === BRIDGE CODE START ===
-    private static final String DRIVER_CLASS = "org.h2.Driver";
+    private static final String DRIVER_CLASS = "org.sqlite.JDBC";
+    private static final AndroidFiles ANDROID_FILES = KodeinGlobalHelper.Companion.instance(AndroidFiles.class);
 
     private Connection connection;
     private Deque<Transaction> transactionStack = new ArrayDeque<>();
@@ -2048,7 +2051,8 @@ public final class SQLiteDatabase extends SQLiteClosable {
 
     private void B_openInner() {
         try {
-            connection = DriverManager.getConnection("jdbc:h2:" + new File(getPath()).getAbsolutePath());
+            connection = DriverManager.getConnection("jdbc:sqlite:" + new File(ANDROID_FILES.getDatabasesDir(),
+                    getPath()).getAbsolutePath());
         } catch (java.sql.SQLException e) {
             //TODO Figure out how to detect corrupt databases
             throw new SQLiteException("Failed to open database!", e);

@@ -18,6 +18,7 @@ package android.database.sqlite;
 
 import android.database.DatabaseUtils;
 import android.os.CancellationSignal;
+import xyz.nulldev.androidcompat.db.ScrollableResultSet;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -197,14 +198,28 @@ public abstract class SQLiteProgram extends SQLiteClosable {
         mBindArgs[index - 1] = value;
     }
 
-    private ResultSet resultSet = null;
-    ResultSet getResultSet() {
-        if(resultSet == null)
+    protected void B_setBindArgs() {
+        Object[] bindArgs = getBindArgs();
+        if(bindArgs == null) bindArgs = new Object[0];
+        for(int i = 0; i < bindArgs.length; i++) {
+            Object obj = bindArgs[i];
             try {
-                resultSet = getPreparedStatement().getResultSet();
+                getPreparedStatement().setObject(i + 1, obj);
             } catch (SQLException e) {
-            throw new SQLiteException("Failed to get result set!", e);
+                throw new SQLiteException("Failed to bind argument: (" + i + ", " + obj + ")");
             }
+        }
+    }
+
+    private ScrollableResultSet resultSet = null;
+    ScrollableResultSet getResultSet() {
+        if(resultSet == null) {
+            try {
+                resultSet = new ScrollableResultSet(getPreparedStatement().getResultSet());
+            } catch (SQLException e) {
+                throw new SQLiteException("Failed to get result set!", e);
+            }
+        }
 
         return resultSet;
     }

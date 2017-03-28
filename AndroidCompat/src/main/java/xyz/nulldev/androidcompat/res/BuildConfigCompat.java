@@ -12,5 +12,5 @@ public class BuildConfigCompat {
     public static final boolean DEBUG = applicationInfo.getDebug();
 
     //We assume application ID = package name
-    public static final String APPLICATION_ID = applicationInfo.getPackageName();
+    public static final String APPLICATION_ID = applicationInfo.packageName;
 }

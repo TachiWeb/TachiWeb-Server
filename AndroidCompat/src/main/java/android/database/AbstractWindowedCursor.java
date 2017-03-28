@@ -15,7 +15,7 @@
  */
 package android.database;
 
-import java.sql.ResultSet;
+import xyz.nulldev.androidcompat.db.ScrollableResultSet;
 
 /**
  * A base class for Cursors that store their data in {@link CursorWindow}s.
@@ -173,7 +173,7 @@ public abstract class AbstractWindowedCursor extends AbstractCursor {
      *
      * @hide
      */
-    protected void clearOrCreateWindow(ResultSet rs) {
+    protected void clearOrCreateWindow(ScrollableResultSet rs) {
         if (mWindow == null) {
             mWindow = new CursorWindow(rs);
         } else {

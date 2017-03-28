@@ -101,6 +101,9 @@ public class SQLiteCursor extends AbstractWindowedCursor {
         mQuery = query;
 
         try {
+            query.B_setBindArgs();
+            query.getPreparedStatement().execute();
+
             ResultSetMetaData metaData = query.getResultSet().getMetaData();
             mColumns = new String[metaData.getColumnCount()];
             for(int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -132,10 +135,7 @@ public class SQLiteCursor extends AbstractWindowedCursor {
 
     @Override
     public int getCount() {
-        if (mCount == NO_COUNT) {
-            fillWindow(0);
-        }
-        return mCount;
+        return mQuery.getResultSet().getResultSetLength();
     }
 
     private void fillWindow(int requiredPos) {

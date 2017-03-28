@@ -29,11 +29,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.*;
 import android.view.Display;
-import xyz.nulldev.androidcompat.bytecode.ForceOverride;
+import android.view.DisplayAdjustments;
 import xyz.nulldev.androidcompat.info.ApplicationInfoImpl;
 import xyz.nulldev.androidcompat.io.AndroidFiles;
 import xyz.nulldev.androidcompat.io.sharedprefs.JsonSharedPreferences;
-import xyz.nulldev.androidcompat.res.RCompat;
 import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
 
 import java.io.*;
@@ -48,18 +47,6 @@ public class CustomContext extends Context {
 
     private AndroidFiles androidFiles = KodeinGlobalHelper.Companion.instance(AndroidFiles.class);
     private ApplicationInfoImpl applicationInfo = KodeinGlobalHelper.Companion.instance(ApplicationInfoImpl.class);
-
-    @ForceOverride(targetMethod = "getString")
-    public String _OVERRIDE_getString(int resId) {
-        //Defer to custom R.java
-        return RCompat.getString(resId);
-    }
-
-    @ForceOverride(targetMethod = "getString")
-    public String _OVERRIDE_getString(int resId, Object... formatArgs) {
-        //Defer to custom R.java and format
-        return String.format(getString(resId), formatArgs);
-    }
 
     @Override
     public AssetManager getAssets() {
@@ -88,7 +75,7 @@ public class CustomContext extends Context {
 
     @Override
     public Context getApplicationContext() {
-        return null;
+        return this;
     }
 
     @Override
@@ -112,8 +99,18 @@ public class CustomContext extends Context {
     }
 
     @Override
-    public ApplicationInfo getApplicationInfo() {
+    public String getBasePackageName() {
         return null;
+    }
+
+    @Override
+    public String getOpPackageName() {
+        return null;
+    }
+
+    @Override
+    public ApplicationInfo getApplicationInfo() {
+        return applicationInfo;
     }
 
     @Override
@@ -176,6 +173,11 @@ public class CustomContext extends Context {
 
     @Override
     public File getFileStreamPath(String s) {
+        return null;
+    }
+
+    @Override
+    public File getSharedPreferencesPath(String name) {
         return null;
     }
 
@@ -255,12 +257,12 @@ public class CustomContext extends Context {
 
     @Override
     public SQLiteDatabase openOrCreateDatabase(String s, int i, SQLiteDatabase.CursorFactory cursorFactory) {
-        return null;
+        return openOrCreateDatabase(s, i, cursorFactory, null);
     }
 
     @Override
     public SQLiteDatabase openOrCreateDatabase(String s, int i, SQLiteDatabase.CursorFactory cursorFactory, DatabaseErrorHandler databaseErrorHandler) {
-        return null;
+        return SQLiteDatabase.openOrCreateDatabase(s, cursorFactory, databaseErrorHandler);
     }
 
     @Override
@@ -359,12 +361,37 @@ public class CustomContext extends Context {
     }
 
     @Override
+    public void sendBroadcastMultiplePermissions(Intent intent, String[] receiverPermissions) {
+
+    }
+
+    @Override
+    public void sendBroadcast(Intent intent, String receiverPermission, Bundle options) {
+
+    }
+
+    @Override
+    public void sendBroadcast(Intent intent, String receiverPermission, int appOp) {
+
+    }
+
+    @Override
     public void sendOrderedBroadcast(Intent intent, String s) {
 
     }
 
     @Override
     public void sendOrderedBroadcast(Intent intent, String s, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s1, Bundle bundle) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcast(Intent intent, String receiverPermission, Bundle options, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcast(Intent intent, String receiverPermission, int appOp, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras) {
 
     }
 
@@ -379,7 +406,22 @@ public class CustomContext extends Context {
     }
 
     @Override
+    public void sendBroadcastAsUser(Intent intent, UserHandle user, String receiverPermission, int appOp) {
+
+    }
+
+    @Override
     public void sendOrderedBroadcastAsUser(Intent intent, UserHandle userHandle, String s, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s1, Bundle bundle) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcastAsUser(Intent intent, UserHandle user, String receiverPermission, int appOp, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcastAsUser(Intent intent, UserHandle user, String receiverPermission, int appOp, Bundle options, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras) {
 
     }
 
@@ -404,6 +446,11 @@ public class CustomContext extends Context {
     }
 
     @Override
+    public void sendStickyBroadcastAsUser(Intent intent, UserHandle user, Bundle options) {
+
+    }
+
+    @Override
     public void sendStickyOrderedBroadcastAsUser(Intent intent, UserHandle userHandle, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s, Bundle bundle) {
 
     }
@@ -423,6 +470,11 @@ public class CustomContext extends Context {
         return null;
     }
 
+    @Override
+    public Intent registerReceiverAsUser(BroadcastReceiver receiver, UserHandle user, IntentFilter filter, String broadcastPermission, Handler scheduler) {
+        return null;
+    }
+
     public void unregisterReceiver(BroadcastReceiver broadcastReceiver) {
 
     }
@@ -434,6 +486,16 @@ public class CustomContext extends Context {
 
     @Override
     public boolean stopService(Intent intent) {
+        return false;
+    }
+
+    @Override
+    public ComponentName startServiceAsUser(Intent service, UserHandle user) {
+        return null;
+    }
+
+    @Override
+    public boolean stopServiceAsUser(Intent service, UserHandle user) {
         return false;
     }
 
@@ -465,6 +527,11 @@ public class CustomContext extends Context {
     @Override
     public int checkPermission(String s, int i, int i1) {
         return PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public int checkPermission(String permission, int pid, int uid, IBinder callerToken) {
+        return 0;
     }
 
     @Override
@@ -513,6 +580,11 @@ public class CustomContext extends Context {
     }
 
     @Override
+    public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags, IBinder callerToken) {
+        return 0;
+    }
+
+    @Override
     public int checkCallingUriPermission(Uri uri, int i) {
         return 0;
     }
@@ -553,6 +625,21 @@ public class CustomContext extends Context {
     }
 
     @Override
+    public Context createPackageContextAsUser(String packageName, int flags, UserHandle user) throws PackageManager.NameNotFoundException {
+        return null;
+    }
+
+    @Override
+    public Context createApplicationContext(ApplicationInfo application, int flags) throws PackageManager.NameNotFoundException {
+        return null;
+    }
+
+    @Override
+    public int getUserId() {
+        return 0;
+    }
+
+    @Override
     public Context createConfigurationContext(Configuration configuration) {
         return null;
     }
@@ -568,7 +655,27 @@ public class CustomContext extends Context {
     }
 
     @Override
+    public Context createCredentialProtectedStorageContext() {
+        return null;
+    }
+
+    @Override
+    public DisplayAdjustments getDisplayAdjustments(int displayId) {
+        return null;
+    }
+
+    @Override
+    public Display getDisplay() {
+        return null;
+    }
+
+    @Override
     public boolean isDeviceProtectedStorage() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialProtectedStorage() {
         return false;
     }
 }

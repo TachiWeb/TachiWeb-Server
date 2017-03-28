@@ -12,6 +12,9 @@ class ApplicationInfoImpl : ApplicationInfo(), KodeinGlobalAware {
     val appInfoConfig: ApplicationInfoConfigModule
         get() = configManager.module(ApplicationInfoConfigModule::class.java)
 
-    val packageName: String get() = appInfoConfig.packageName
     val debug: Boolean get() = appInfoConfig.debug
+
+    init {
+        super.packageName = appInfoConfig.packageName
+    }
 }

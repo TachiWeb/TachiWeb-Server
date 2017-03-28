@@ -2,6 +2,8 @@ package xyz.nulldev.androidcompat.config
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigRenderOptions
+import mu.KotlinLogging
 import xyz.nulldev.androidcompat.config.mods.ApplicationInfoConfigModule
 import xyz.nulldev.androidcompat.config.mods.FilesConfigModule
 import xyz.nulldev.androidcompat.config.mods.SystemConfigModule
@@ -16,6 +18,8 @@ class ConfigManager {
 
     val configFolder: String
         get() = System.getProperty("compat-configdirs") ?: "config"
+
+    val logger = KotlinLogging.logger {}
 
     /**
      * Get a config module
@@ -38,7 +42,13 @@ class ConfigManager {
             configs += it.withFallback(configs.last())
         }
 
-        return configs.last()
+        val config = configs.last().resolve()
+
+        logger.debug {
+            "Loaded config:\n" + config.root().render(ConfigRenderOptions.concise().setFormatted(true))
+        }
+
+        return config
     }
 
     /**

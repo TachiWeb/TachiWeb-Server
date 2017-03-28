@@ -19,8 +19,8 @@ import android.database.sqlite.SQLiteClosable;
 import android.database.sqlite.SQLiteException;
 import android.os.Parcel;
 import kotlin.NotImplementedError;
+import xyz.nulldev.androidcompat.db.ScrollableResultSet;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -34,8 +34,8 @@ import java.sql.SQLException;
  * </p>
  */
 public class CursorWindow extends SQLiteClosable {
-    private ResultSet resultSet;
-    public CursorWindow(ResultSet resultSet) {
+    private ScrollableResultSet resultSet;
+    public CursorWindow(ScrollableResultSet resultSet) {
         this.resultSet = resultSet;
     }
     /**
@@ -77,12 +77,7 @@ public class CursorWindow extends SQLiteClosable {
      * @return The number of rows in this cursor window.
      */
     public int getNumRows() {
-        try {
-            resultSet.last();
-            return resultSet.getRow();
-        } catch (java.sql.SQLException e) {
-            throw new SQLiteException("Failed to get row count!", e);
-        }
+        return resultSet.getResultSetLength();
     }
     /**
      * Sets the number of columns in this window.
@@ -274,8 +269,6 @@ public class CursorWindow extends SQLiteClosable {
         try {
             jumpToRow(row);
             return resultSet.getString(column + 1);
-        } catch (SQLException e) {
-            throw new SQLiteException("Failed to get String at: (" + row + ", " + column + ")!", e);
         } finally {
             releaseReference();
         }
@@ -318,8 +311,6 @@ public class CursorWindow extends SQLiteClosable {
         try {
             jumpToRow(row);
             buffer.data = resultSet.getString(column + 1).toCharArray();
-        } catch (SQLException e) {
-            throw new SQLiteException("Failed to get String at: (" + row + ", " + column + ")!", e);
         } finally {
             releaseReference();
         }
@@ -351,8 +342,6 @@ public class CursorWindow extends SQLiteClosable {
         try {
             jumpToRow(row);
             return resultSet.getLong(column + 1);
-        } catch (SQLException e) {
-            throw new SQLiteException("Failed to get long at: (" + row + ", " + column + ")!", e);
         } finally {
             releaseReference();
         }
@@ -385,8 +374,6 @@ public class CursorWindow extends SQLiteClosable {
         try {
             jumpToRow(row);
             return resultSet.getDouble(column + 1);
-        } catch (SQLException e) {
-            throw new SQLiteException("Failed to get double at: (" + row + ", " + column + ")!", e);
         } finally {
             releaseReference();
         }
@@ -497,13 +484,9 @@ public class CursorWindow extends SQLiteClosable {
     }
 
     private void jumpToRow(int row) {
-        try {
-            resultSet.first();
-            for(int i = 0; i < row; i++) {
-                resultSet.next();
-            }
-        } catch (SQLException e) {
-            throw new SQLiteException("Failed to jump to row: " + row, e);
+        resultSet.first();
+        for(int i = 0; i < row; i++) {
+            resultSet.next();
         }
     }
 }

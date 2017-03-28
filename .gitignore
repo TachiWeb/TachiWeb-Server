@@ -3,3 +3,4 @@ local-repo
 target
 build
 *.iml
+/test

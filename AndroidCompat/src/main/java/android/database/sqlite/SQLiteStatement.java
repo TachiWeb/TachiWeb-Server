@@ -113,7 +113,7 @@ public final class SQLiteStatement extends SQLiteProgram {
         try {
             B_setBindArgs();
             getPreparedStatement().execute();
-            if(getResultSet().first())
+            if(getResultSet().next())
                 return getResultSet().getLong(1);
             else
                 throw new SQLiteDoneException();
@@ -137,7 +137,7 @@ public final class SQLiteStatement extends SQLiteProgram {
         try {
             B_setBindArgs();
             getPreparedStatement().execute();
-            if(getResultSet().first())
+            if(getResultSet().next())
                 return getResultSet().getString(1);
             else
                 throw new SQLiteDoneException();
@@ -163,17 +163,5 @@ public final class SQLiteStatement extends SQLiteProgram {
     @Override
     public String toString() {
         return "SQLiteProgram: " + getSql();
-    }
-
-    private void B_setBindArgs() {
-        Object[] bindArgs = getBindArgs();
-        for(int i = 0; i < bindArgs.length; i++) {
-            Object obj = bindArgs[i];
-            try {
-                getPreparedStatement().setObject(i, obj);
-            } catch (SQLException e) {
-                throw new SQLiteException("Failed to bind argument: (" + i + ", " + obj + ")");
-            }
-        }
     }
 }

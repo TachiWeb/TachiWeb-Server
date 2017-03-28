@@ -20,6 +20,7 @@ class FilesConfigModule(config: Config) : ConfigModule(config) {
     val rootDir = config.getString("rootDir")!!
     val externalStorageDir = config.getString("externalStorageDir")!!
     val downloadCacheDir = config.getString("downloadCacheDir")!!
+    val databasesDir = config.getString("databasesDir")!!
 
     val prefsDir = config.getString("prefsDir")!!
 }
