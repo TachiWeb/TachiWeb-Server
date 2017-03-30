@@ -30,6 +30,9 @@ class TachiServer {
         //Start app
         androidCompat.startApp(App())
 
+        //Start UI server
+        TachiWebUIServer().start()
+
         //Start HTTP API
         HttpAPI().start()
     }

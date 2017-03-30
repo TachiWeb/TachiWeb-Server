@@ -14,6 +14,7 @@
         <module>TSApi</module>
         <module>TachiServer</module>
         <module>junrarandroid</module>
+        <module>tachiwebui</module>
     </modules>
 
     <properties>

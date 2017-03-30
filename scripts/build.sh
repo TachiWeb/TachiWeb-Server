@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Update submodules (UI components)
-echo "Updating submodules..."
-git submodule update --init --recursive
+# Build UI components
+chmod +x scripts/buildWeb.sh
+scripts/buildWeb.sh
 # Init local repo
 rm -rf "local-repo"
 mkdir -p "local-repo"
