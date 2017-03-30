@@ -2041,7 +2041,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
     private Deque<Transaction> transactionStack = new ArrayDeque<>();
     private boolean transactionStackInvalidated = false;
 
-    private void B_initDriver() {
+    private synchronized void B_initDriver() {
         try {
             Class.forName(DRIVER_CLASS);
         } catch (ClassNotFoundException e) {
@@ -2049,7 +2049,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private void B_openInner() {
+    private synchronized void B_openInner() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:" + new File(ANDROID_FILES.getDatabasesDir(),
                     getPath()).getAbsolutePath());
@@ -2059,7 +2059,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    public void B_validateSql(String sql, CancellationSignal cancellationSignal) {
+    public synchronized void B_validateSql(String sql, CancellationSignal cancellationSignal) {
         try {
             connection.prepareStatement(sql).close();
         } catch (java.sql.SQLException e) {
@@ -2071,14 +2071,16 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private boolean B_yieldIfContendedHelper(boolean throwIfUnsafe, long sleepAfterYieldDelay) {
+    private synchronized boolean B_yieldIfContendedHelper(boolean throwIfUnsafe, long sleepAfterYieldDelay) {
         if(transactionStack.size() > 1)
             throw new SQLiteException("This method cannot be used when there are nested transactions!");
         try {
             //Does not 100% replicate original behavior, but better than nothing
             if(B_inTransaction()) {
                 connection.commit();
+                connection.setAutoCommit(true);
                 Thread.sleep(sleepAfterYieldDelay);
+                connection.setAutoCommit(false);
                 return true;
             } else {
                 return false;
@@ -2090,7 +2092,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private boolean B_inTransaction() {
+    private synchronized boolean B_inTransaction() {
         try {
             return connection.getAutoCommit();
         } catch (java.sql.SQLException e) {
@@ -2098,7 +2100,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private void B_setTransactionSuccessful() {
+    private synchronized void B_setTransactionSuccessful() {
         Transaction currentTransaction = transactionStack.peek();
         if(currentTransaction.successful)
             throw new IllegalStateException("Transaction already marked as successful!");
@@ -2106,7 +2108,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         currentTransaction.successful = true;
     }
 
-    private void B_endTransaction() {
+    private synchronized void B_endTransaction() {
         if(transactionStack.isEmpty())
             throw new IllegalStateException("No transaction in progress!");
 
@@ -2133,7 +2135,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private void B_beginTransaction(SQLiteTransactionListener transactionListener,
+    private synchronized void B_beginTransaction(SQLiteTransactionListener transactionListener,
                                   boolean exclusive) { //TODO Deal with "exclusive" arg
         if(transactionListener == null)
             transactionListener = NoOpSQLiteTransactionListener.INSTANCE;
