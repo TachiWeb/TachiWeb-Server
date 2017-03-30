@@ -48,7 +48,7 @@ class ChaptersRoute : TachiWebRoute() {
         val manga = db.getManga(mangaId).executeAsBlocking()
                 ?: return error("The specified manga does not exist!")
         val source = sourceManager.get(manga.source)
-        val chapters = db.getChapters(manga).executeAsBlocking()
+        val chapters = db.getChapters(manga).executeAsBlocking().sortedBy(Chapter::chapter_number)
         val array = JSONArray()
         for (chapter in chapters) {
             val jsonChapter = JSONObject()

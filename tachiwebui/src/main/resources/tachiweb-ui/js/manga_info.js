@@ -544,7 +544,7 @@ function applySort(chapters) {
 function sortChapters(chapters) {
     chapters.sort(function (a, b) {
         if (sort.mode === "SOURCE") {
-            return a.source_order - b.source_order;
+            return b.source_order - a.source_order;
         } else if (sort.mode === "NUMBER") {
             return b.chapter_number - a.chapter_number;
         }
