@@ -42,6 +42,8 @@ import java.util.Map;
 
 /**
  * Custom context implementation.
+ *
+ * TODO Deal with packagemanager for extension sources
  */
 public class CustomContext extends Context {
 

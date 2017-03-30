@@ -50,6 +50,11 @@
             <artifactId>rxjava</artifactId>
             <version>1.2.7</version>
         </dependency>
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxkotlin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!-- Android Logging -->
         <dependency>

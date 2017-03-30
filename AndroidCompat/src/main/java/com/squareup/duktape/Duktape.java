@@ -33,7 +33,7 @@ public final class Duktape implements Closeable, AutoCloseable {
    * calls to {@link #close()} on the returned instance to avoid leaking native memory.
    */
     public static Duktape create() {
-        throw new RuntimeException("Stub!");
+        return new Duktape();
     }
 
     private Duktape() {}

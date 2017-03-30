@@ -48,7 +48,7 @@ public class R extends RCompat {
         public static int pref_custom_brightness_value_key = sres("pref_custom_brightness_value_key");
         public static int pref_color_filter_key = sres("pref_color_filter_key");
         public static int pref_color_filter_value_key = sres("pref_color_filter_value_key");
-        public static int pref_default_viewer_key = sres("pref_default_viewer_keyj");
+        public static int pref_default_viewer_key = sres("pref_default_viewer_key");
         public static int pref_image_scale_type_key = sres("pref_image_scale_type_key");
         public static int pref_image_decoder_key = sres("pref_image_decoder_key");
         public static int pref_zoom_start_key = sres("pref_zoom_start_key");
