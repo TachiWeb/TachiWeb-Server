@@ -17,6 +17,7 @@ import eu.kanade.tachiyomi.source.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.ext.kInstanceLazy
+import xyz.nulldev.ts.library.LibraryUpdater
 
 class TachiyomiKodeinModule {
 
@@ -44,5 +45,7 @@ class TachiyomiKodeinModule {
 
         //Custom dependencies
         bind<BackupManager>() with singleton { BackupManager(Injekt.get()) }
+
+        bind<LibraryUpdater>() with singleton { LibraryUpdater() }
     }
 }

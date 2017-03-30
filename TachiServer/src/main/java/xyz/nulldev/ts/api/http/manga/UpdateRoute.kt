@@ -19,6 +19,7 @@ package xyz.nulldev.ts.api.http.manga
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
+import mu.KotlinLogging
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
@@ -35,6 +36,8 @@ class UpdateRoute : TachiWebRoute() {
     private val libraryUpdater: LibraryUpdater by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
     private val sourceManager: SourceManager by kInstanceLazy()
+
+    private val logger = KotlinLogging.logger {}
 
     override fun handleReq(request: Request, response: Response): Any {
         val updateType: UpdateType
@@ -63,9 +66,11 @@ class UpdateRoute : TachiWebRoute() {
             try {
                 libraryUpdater.updateMangaInfo(manga, source)
             } catch (e: Exception) {
+                logger.warn(e) {
+                    "Error updating info for manga: $mangaId!"
+                }
                 return error("Error updating manga!")
             }
-
         } else if (updateType == UpdateType.CHAPTERS) {
             //Update manga chapters
             try {
@@ -76,9 +81,11 @@ class UpdateRoute : TachiWebRoute() {
                 toReturn.put(KEY_REMOVED, results.second)
                 return toReturn.toString()
             } catch (e: Exception) {
+                logger.warn(e) {
+                    "Error updating chapters for manga: $mangaId!"
+                }
                 return error("Error updating chapters!")
             }
-
         } else {
             return error("Null/unimplemented update type!")
         }
