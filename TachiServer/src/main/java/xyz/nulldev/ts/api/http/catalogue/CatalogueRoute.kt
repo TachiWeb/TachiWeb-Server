@@ -49,11 +49,7 @@ class CatalogueRoute : TachiWebRoute() {
                     ?: return error("SourceID must be specified!")
             val page = request.params(":page")?.toInt()
                     ?: return error("Page must be specified!")
-            val lastUrl = request.queryParams("lurl")
             val query = request.queryParams("query")
-            if (page > 1 && lastUrl == null) {
-                return error("Is not first page but lastURL not specified!")
-            }
 
             //Try to resolve source
             val onlineSource = sourceManager.get(sourceId)

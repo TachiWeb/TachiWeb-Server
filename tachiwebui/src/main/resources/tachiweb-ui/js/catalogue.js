@@ -19,13 +19,13 @@ var currentManga = {};
 var typingTimer;
 var doneTypingInterval = 250;
 
-var scrollEndPadding = 1000;
+var scrollEndPadding = 5000;
 
 var searchState;
 function resetSearchState() {
     searchState = {
         query: null,
-        lastUrl: null,
+        hasNextPage: null,
         page: 1
     };
 }
@@ -95,7 +95,7 @@ function setupSearchBox() {
 
 function performSearch() {
     searchState.page = 1;
-    searchState.lastUrl = null;
+    searchState.hasNextPage = null;
     var searchText = rawElement(searchBox).value;
     if (searchText.trim() !== "") {
         searchState.query = searchText;
@@ -111,7 +111,7 @@ function performSearch() {
 function setupScrollBox() {
     scrollBox.on('scroll', function () {
         if (scrollBox.scrollTop() + scrollBox.innerHeight() >= rawElement(scrollBox).scrollHeight - scrollEndPadding) {
-            if (hasNextPage() && !isRefreshing()) {
+            if (searchState.hasNextPage && !isRefreshing()) {
                 searchState.page++;
                 refreshCatalogue();
             }
@@ -154,7 +154,7 @@ function setupSourcesSelect() {
             showLoginBox(selectedSource);
         } else {
             searchState.page = 1;
-            searchState.lastUrl = null;
+            searchState.hasNextPage = null;
             scrollBox.scrollTop(0);
             clearMangas();
             refreshCatalogue();
@@ -225,10 +225,6 @@ function isRefreshing() {
     return currentRequest && !currentRequest.completed;
 }
 
-function hasNextPage() {
-    return !!(searchState.lastUrl && searchState.lastUrl !== "");
-}
-
 function refreshCatalogue(oldRequest) {
     var request;
     if (oldRequest) {
@@ -249,7 +245,7 @@ function refreshCatalogue(oldRequest) {
                 clearMangas();
             }
             //Set new search state
-            searchState.lastUrl = res.lurl;
+            searchState.hasNextPage = res["has_next"];
             //Add on new manga
             updateCatalogueUI(res.content);
         }
@@ -260,7 +256,6 @@ function refreshCatalogue(oldRequest) {
     }, {
         sourceId: rawElement(sourcesSelect).value,
         page: searchState.page,
-        lastUrl: searchState.lastUrl,
         query: searchState.query
     }, function () {
         if (!request.canceled) {

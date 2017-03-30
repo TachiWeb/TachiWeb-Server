@@ -134,15 +134,8 @@ var TWApi = {
         new ApiCommand("Sources", "/sources");
         new ApiCommand("Catalogue", "/catalogue", function (parameters) {
             var currentUrl = this.endpoint() + "/" + parameters.sourceId + "/" + parameters.page;
-            var usedQuestionMark = false;
-            if (parameters.lastUrl) {
-                currentUrl += usedQuestionMark ? "&" : "?";
-                currentUrl += "lurl=" + encodeURIComponent(parameters.lastUrl);
-                usedQuestionMark = true;
-            }
             if (parameters.query) {
-                currentUrl += usedQuestionMark ? "&" : "?";
-                currentUrl += "query=" + encodeURIComponent(parameters.query);
+                currentUrl += "?query=" + encodeURIComponent(parameters.query);
             }
             return currentUrl;
         });
