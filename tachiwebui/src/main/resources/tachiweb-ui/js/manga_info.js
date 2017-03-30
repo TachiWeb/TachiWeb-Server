@@ -546,7 +546,7 @@ function sortChapters(chapters) {
         if (sort.mode === "SOURCE") {
             return b.source_order - a.source_order;
         } else if (sort.mode === "NUMBER") {
-            return b.chapter_number - a.chapter_number;
+            return a.chapter_number - b.chapter_number;
         }
     });
     return chapters;
