@@ -37,7 +37,7 @@ class LibraryRoute : TachiWebRoute() {
     override fun handleReq(request: Request, response: Response): Any {
         val array = JSONArray()
         for (manga in db.getLibraryMangas().executeAsBlocking()) {
-            array.put(mangaSerializer.serialize(manga))
+            array.put(mangaSerializer.serialize(manga, true))
         }
         return success().put(KEY_CONTENT, array)
     }

@@ -48,6 +48,7 @@ class MangaSerializer {
 
         if(fromLibrary)
                 builtResponse.put(KEY_UNREAD, manga.unread)
+
         val source = sourceManager.get(manga.source)
         var url = ""
         if (source != null) {
