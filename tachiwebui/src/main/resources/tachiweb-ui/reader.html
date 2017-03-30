@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TachiWeb - Reader</title><!-- TODO Manga title later -->
+    <!-- JQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- JQuery Mousewheel -->
+    <script src="bower_components/jquery-mousewheel/jquery.mousewheel.min.js"></script>
+    <!-- Tween.JS -->
+    <script src="bower_components/tween.js/src/Tween.js"></script>
+    <!-- Featherlight -->
+    <link href="bower_components/featherlight/release/featherlight.min.css" type="text/css" rel="stylesheet"/>
+    <script src="bower_components/featherlight/release/featherlight.min.js"></script>
+    <!-- FileSaver -->
+    <script src="bower_components/file-saver/FileSaver.min.js"></script>
+    <!-- Dragscroll -->
+    <script src="bower_components/dragscroll/dragscroll.js"></script>
+    <!-- MDL -->
+    <link href="css/material.min.css" type="text/css" rel="stylesheet"/>
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Material Fonts -->
+    <link href="bower_components/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!-- Core -->
+    <link rel="stylesheet" type="text/css" href="css/core.css">
+    <script src="js/core.js"></script>
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Options -->
+    <script src="js/options_api.js"></script>
+    <!-- Reader -->
+    <script src="js/reader.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/reader.css">
+</head>
+<body>
+<!-- TODO Noscript redirect -->
+<!-- <BUTTONS> -->
+<div id="buttons_wrapper">
+    <div id="back_button" class="rbtn rbtn_square rbtn_left rbtn_top">
+        <div class="rbtn_label">Back</div>
+        <div class="rbtn_icon"><i class="material-icons md-48">arrow_back</i></div>
+    </div>
+    <div id="download_button" class="rbtn rbtn_square rbtn_left rbtn_bottom">
+        <div class="rbtn_label">Download</div>
+        <div class="rbtn_icon"><i class="material-icons md-48">file_download</i></div>
+    </div>
+    <!-- Redownload button -->
+    <div style="display: none" id="redownload_button" class="rbtn rbtn_square rbtn_left rbtn_bottom">
+        <div class="rbtn_label">Refresh Image</div>
+        <div class="rbtn_icon"><i class="material-icons md-48">refresh</i></div>
+    </div>
+    <div id="fullscreen_button" class="rbtn rbtn_square rbtn_right rbtn_top">
+        <div class="rbtn_label">Fullscreen</div>
+        <div class="rbtn_icon"><i class="material-icons md-48">fullscreen</i></div>
+    </div>
+    <div id="rotate_button" class="rbtn rbtn_square rbtn_right rbtn_bottom">
+        <div class="rbtn_label">Rotate 90&deg;</div>
+        <div class="rbtn_icon"><i class="material-icons md-48">rotate_right</i></div>
+    </div>
+    <div class="rbtn_triangle_wrapper rbtn_triangle_wrapper_left">
+        <div class="rbtn rbtn_triangle">
+            <div id="rbtn_previous_page" class="rbtn_real_triangle"></div>
+        </div>
+    </div>
+    <div class="rbtn_triangle_wrapper rbtn_triangle_wrapper_right">
+        <div class="rbtn rbtn_triangle">
+            <div id="rbtn_next_page" class="rbtn_real_triangle"></div>
+        </div>
+    </div>
+</div>
+<!-- </BUTTONS> -->
+<!-- <HUD> -->
+<div id="hud_wrapper">
+    <div id="page_indicator_wrapper" class="hud_button hud_indicator">
+        <div id="page_indicator" class="hud_inner">Loading...</div>
+        <div id="page_slider_wrapper"><input id="page_slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="0" value="0" tabindex="0"></div>
+    </div>
+</div>
+<!-- </HUD> -->
+<!-- <READER_CONTENT> -->
+<div id="rcontent">
+    <div id="reader_img_row">
+    </div>
+</div>
+<!-- </READER_CONTENT> -->
+</body>
+</html>

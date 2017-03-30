@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- JQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Material Lite -->
+    <link href="css/material.min.css" rel="stylesheet">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Material Fonts -->
+    <link href="bower_components/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!-- Core -->
+    <link href="css/core.css" rel="stylesheet">
+    <script src="js/core.js"></script>
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Drawer JS -->
+    <script src="js/drawer.js"></script>
+    <!-- Downloads -->
+    <link href="css/downloads.css" rel="stylesheet">
+    <script src="js/downloads.js"></script>
+    <title>Downloads</title>
+</head>
+<body>
+<div class="mdl-layout mdl-js-layout">
+    <header class="mdl-layout__header">
+        <!-- Top row, always visible -->
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">Downloads</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="toggle_state_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon"
+                    style="display: none">
+                <i id="toggle_state_icon" class="material-icons">pause</i>
+            </button>
+            <button id="clear_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon" style="display: none">
+                <i class="material-icons">clear_all</i>
+            </button>
+        </div>
+    </header>
+    <!-- Nav drawer (populated in drawer.js) -->
+    <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Title</span>
+        <nav class="mdl-navigation"></nav>
+    </div>
+    <!-- Tooltips -->
+    <div id="toggle_state_btn_tooltip" class="mdl-tooltip mdl-tooltip--large" for="toggle_state_btn">
+        Pause Downloads
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="clear_btn">
+        Clear Downloads
+    </div>
+    <main class="mdl-layout__content">
+        <!-- NOTE: This wrapper is necessary, don't touch it! -->
+        <div class="loading_spinner">
+            <div class="mdl-spinner mdl-js-spinner is-active"></div>
+        </div>
+        <div id="download_list" class="page-content">
+        </div>
+        <!-- Snackbar -->
+        <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+    </main>
+</div>
+</body>
+</html>

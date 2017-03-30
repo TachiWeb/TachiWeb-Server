@@ -1,0 +1,53 @@
+.page_button {
+    height: calc(100% - 32px);
+    width: calc(50% - 32px);
+    top: 16px;
+    position: absolute;
+    font-size: 50px;
+}
+
+#restore_button {
+    left: 16px;
+}
+
+#backup_button {
+    right: 16px;
+}
+
+.page-content {
+    height: 100%;
+    width: 100%;
+}
+
+.mdl-layout__content {
+    height: 100%;
+}
+
+.page_button_icon {
+    font-size: 200px;
+}
+
+.dialog_spinner_wrapper {
+    position: relative;
+}
+
+/** File attachment field **/
+.mdl-button--file input {
+    cursor: pointer;
+    height: 100%;
+    right: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 300px;
+    z-index: 4;
+}
+
+.mdl-textfield--file .mdl-textfield__input {
+    box-sizing: border-box;
+    width: calc(100% - 32px);
+}
+
+.mdl-textfield--file .mdl-button--file {
+    right: 0;
+}

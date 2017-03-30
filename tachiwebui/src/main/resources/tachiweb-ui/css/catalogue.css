@@ -1,0 +1,38 @@
+/** Override material select styles to make dropdown visible on blue header **/
+.mdl-selectfield__label {
+    color: rgb(255, 255, 255);
+}
+
+.mdl-selectfield__box {
+    border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+.mdl-selectfield__box > i {
+    color: rgb(255, 255, 255);
+}
+
+/** MDL style override **/
+#search_box_wrapper {
+    margin-left: 16px;
+    width: calc(100% - 325px);
+}
+
+#search_box_wrapper > .mdl-textfield__input {
+    border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+#search_box_wrapper > .mdl-textfield__label {
+    color: rgb(255, 255, 255);
+}
+
+/** Loading dialog **/
+#login_loading_spinner {
+    display: none;
+    position: relative;
+    margin-top: 10px;
+}
+
+/** Show source select **/
+.mdl-layout__header {
+    overflow: visible; /** Source dropdown breaks without this for some weird reason **/
+}

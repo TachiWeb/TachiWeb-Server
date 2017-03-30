@@ -1,0 +1,19 @@
+/** List item seperators **/
+.preference-item {
+    border-bottom: 1px solid #bdbdbd;
+}
+
+/** Option list **/
+.option-list {
+    padding: 0;
+    margin: 0;
+}
+
+/** Hacks to make MDL stuff look better **/
+.mdl-switch.is-upgraded {
+    padding-left: 40px;
+}
+
+.mdl-radio {
+    display: block;
+}

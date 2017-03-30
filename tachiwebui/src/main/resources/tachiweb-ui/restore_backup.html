@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- JQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Material Lite -->
+    <link href="css/material.min.css" rel="stylesheet">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Dialog Polyfill -->
+    <script src="bower_components/dialog-polyfill/dialog-polyfill.js"></script>
+    <link href="bower_components/dialog-polyfill/dialog-polyfill.css" rel="stylesheet">
+    <!-- Material Fonts -->
+    <link href="bower_components/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Drawer JS -->
+    <script src="js/drawer.js"></script>
+    <!-- Core -->
+    <link href="css/core.css" rel="stylesheet">
+    <script src="js/core.js"></script>
+    <link href="css/restore_backup.css" rel="stylesheet">
+    <script src="js/restore_backup.js"></script>
+    <title>Restore Backup</title>
+</head>
+<body>
+<!-- Uses a header that contracts as the page scrolls down. -->
+<div class="mdl-layout mdl-js-layout">
+    <header class="mdl-layout__header">
+        <!-- Top row, always visible -->
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">Backup/Restore</span>
+        </div>
+    </header>
+    <!-- Nav drawer (populated in drawer.js) -->
+    <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Title</span>
+        <nav class="mdl-navigation"></nav>
+    </div>
+    <main class="mdl-layout__content">
+        <div class="page-content">
+            <button id="restore_button"
+                    class="page_button mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                <i class="page_button_icon material-icons">file_upload</i><br>
+                Restore
+            </button>
+            <button id="backup_button"
+                    class="page_button mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                <i class="page_button_icon material-icons">file_download</i><br>
+                Backup
+            </button>
+        </div>
+        <!-- Snackbar -->
+        <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+    </main>
+</div>
+<!-- Dialogs -->
+<dialog id="busy_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Please wait</h3>
+    <div class="mdl-dialog__content">
+        <p>
+            Performing operation...
+        </p>
+        <br>
+        <div class="dialog_spinner_wrapper">
+            <div class="loading_spinner">
+                <div class="mdl-spinner mdl-js-spinner is-active"></div>
+            </div>
+        </div>
+    </div>
+</dialog>
+<dialog id="restore_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Restore</h3>
+    <div class="mdl-dialog__content">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
+            <input class="mdl-textfield__input" placeholder="File" type="text" id="upload_file_name" readonly/>
+            <div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
+                <i class="material-icons">attach_file</i><input type="file" id="uploadBtn"
+                                                                name="uploaded_file">
+            </div>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="submit" id="restore_submit" class="mdl-button mdl-js-button mdl-js-ripple-effect">
+            Submit
+        </button>
+        <button id="restore_close_button" class="mdl-button mdl-js-button mdl-js-ripple-effect close">Close
+        </button>
+    </div>
+</dialog>
+<dialog id="restore_res_dialog" class="mdl-dialog">
+    <h3 id="restore_res_title" class="mdl-dialog__title"></h3>
+    <div class="mdl-dialog__content">
+        <p id="restore_res_body"></p>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button id="restore_res_close_button" class="mdl-button mdl-js-button mdl-js-ripple-effect close">
+            Close
+        </button>
+    </div>
+</dialog>
+</body>
+</html>

@@ -1,0 +1,41 @@
+/** Downloads **/
+.download {
+    padding: 16px;
+}
+
+.download_title {
+    font-size: 16px;
+}
+
+.download_chapter {
+    font-size: 15px;
+}
+
+.download_status {
+    font-size: 12px;
+}
+
+.download_progress {
+    width: 100%;
+}
+
+/** Progress bar (https://codepen.io/holdencreative/pen/vEVbwv) **/
+.progress {
+    position: relative;
+    height: 4px;
+    display: block;
+    width: 100%;
+    background-color: #acece6;
+    border-radius: 2px;
+    background-clip: padding-box;
+    margin: 0.5rem 0 1rem 0;
+    overflow: hidden;
+}
+
+.progress .determinate {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: #26a69a;
+    transition: width .3s linear;
+}

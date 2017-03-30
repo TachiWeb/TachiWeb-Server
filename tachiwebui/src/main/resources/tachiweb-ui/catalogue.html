@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- JQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Material Lite -->
+    <link href="css/material.min.css" rel="stylesheet">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Material SelectField -->
+    <link href="bower_components/mdl-select-component/mdl-selectfield.min.css" rel="stylesheet">
+    <script src="bower_components/mdl-select-component/mdl-selectfield.min.js"></script>
+    <!-- Dialog Polyfill -->
+    <script src="bower_components/dialog-polyfill/dialog-polyfill.js"></script>
+    <link href="bower_components/dialog-polyfill/dialog-polyfill.css" rel="stylesheet">
+    <!-- Material Fonts -->
+    <link href="bower_components/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!-- Intercom -->
+    <script src="bower_components/intercom/intercom.min.js"></script>
+    <!-- Core -->
+    <link href="css/core.css" rel="stylesheet">
+    <script src="js/core.js"></script>
+    <!-- Command API -->
+    <script src="js/cmd.js"></script>
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Options -->
+    <script src="js/options_api.js"></script>
+    <!-- Drawer JS -->
+    <script src="js/drawer.js"></script>
+    <!-- Grid JS -->
+    <script src="js/manga_grid.js"></script>
+    <!-- Catalogue -->
+    <script src="js/catalogue.js"></script>
+    <link href="css/catalogue.css" rel="stylesheet">
+    <title>Catalogues</title>
+</head>
+<body>
+<!-- Uses a header that contracts as the page scrolls down. -->
+<div class="mdl-layout mdl-js-layout">
+    <header class="mdl-layout__header">
+        <!-- Top row, always visible -->
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <div class="mdl-selectfield mdl-js-selectfield">
+                <select id="sources_select" class="mdl-selectfield__select">
+                    <option value="">Loading sources...</option>
+                </select>
+                <label class="mdl-selectfield__label" for="sources_select">Catalogue Source</label>
+            </div>
+            <div id="search_box_wrapper" class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="search_box">
+                <label class="mdl-textfield__label" for="search_box">Search</label>
+            </div>
+        </div>
+    </header>
+    <!-- Nav drawer (populated in drawer.js) -->
+    <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Title</span>
+        <nav class="mdl-navigation"></nav>
+    </div>
+    <main id="page_wrapper" class="mdl-layout__content">
+        <!-- NOTE: This wrapper is necessary, don't touch it! -->
+        <div id="catalogue_spinner" class="loading_spinner">
+            <div class="mdl-spinner mdl-js-spinner is-active"></div>
+        </div>
+        <div class="page-content">
+            <!-- TODO Unread Manga counts -->
+            <div id="library_wrapper"></div>
+            <div id="manga_grid" class="mdl-grid">
+            </div>
+        </div>
+        <!-- Snackbar -->
+        <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+    </main>
+</div>
+<!-- Login dialog -->
+<dialog id="login_dialog" class="mdl-dialog">
+    <h4 id="login_dialog_title" class="mdl-dialog__title"></h4>
+    <div class="mdl-dialog__content">
+        <p id="login_dialog_content"></p>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="login_dialog_username">
+            <label class="mdl-textfield__label" for="login_dialog_username">Username</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="password" id="login_dialog_password">
+            <label class="mdl-textfield__label" for="login_dialog_password">Password</label>
+        </div>
+        <br>
+        <div id="login_loading_spinner" class="dialog_spinner_wrapper">
+            <div class="loading_spinner">
+                <div class="mdl-spinner mdl-js-spinner is-active"></div>
+            </div>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button id="login_dialog_close" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect close">
+            Cancel
+        </button>
+        <button id="login_dialog_login" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Login
+        </button>
+    </div>
+</dialog>
+</body>
+</html>		

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- JQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Material Lite -->
+    <link href="css/material.min.css" rel="stylesheet">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Material Fonts -->
+    <link href="bower_components/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!-- Intercom -->
+    <script src="bower_components/intercom/intercom.min.js"></script>
+    <!-- Core -->
+    <link href="css/core.css" rel="stylesheet">
+    <script src="js/core.js"></script>
+    <!-- Command API -->
+    <script src="js/cmd.js"></script>
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Options -->
+    <script src="js/options_api.js"></script>
+    <!-- Drawer JS -->
+    <script src="js/drawer.js"></script>
+    <!-- Grid JS -->
+    <script src="js/manga_grid.js"></script>
+    <!-- Library JS- -->
+    <script src="js/library.js"></script>
+    <title>My Library</title>
+</head>
+<body>
+<!-- Uses a header that contracts as the page scrolls down. -->
+<div class="mdl-layout mdl-js-layout">
+    <header class="mdl-layout__header">
+        <!-- Top row, always visible -->
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">My Library</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="filter_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">filter_list</i>
+            </button>
+            <div id="search_box" class="search-bar mdl-textfield mdl-js-textfield mdl-textfield--expandable
+			mdl-textfield--floating-label mdl-textfield--align-right">
+                <label id="search_btn" class="mdl-button mdl-js-button mdl-button--icon"
+                       for="manga_search">
+                    <i class="material-icons">search</i>
+                </label>
+                <div class="mdl-textfield__expandable-holder">
+                    <input class="mdl-textfield__input" type="text" id="manga_search">
+                </div>
+            </div>
+            <button id="refresh_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">refresh</i>
+            </button>
+            <button id="more_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">more_vert</i>
+            </button>
+        </div>
+        <!-- Bottom row, not visible on scroll -->
+        <!-- TODO See if we can implement dynamic tabs later -->
+        <!--
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+            <a href="#scroll-tab-1" class="mdl-layout__tab is-active">Tab 1</a>
+            <a href="#scroll-tab-2" class="mdl-layout__tab">Tab 2</a>
+            <a href="#scroll-tab-3" class="mdl-layout__tab">Tab 3</a>
+            <a href="#scroll-tab-4" class="mdl-layout__tab">Tab 4</a>
+            <a href="#scroll-tab-5" class="mdl-layout__tab">Tab 5</a>
+            <a href="#scroll-tab-6" class="mdl-layout__tab">Tab 6</a>
+        </div>
+        -->
+    </header>
+    <!-- Nav drawer (populated in drawer.js) -->
+    <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Title</span>
+        <nav class="mdl-navigation"></nav>
+    </div>
+    <!-- Menus -->
+    <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--bottom-right mdl-js-menu" for="more_btn">
+        <li class="mdl-menu__item">Edit categories</li>
+    </ul>
+    <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--bottom-right mdl-js-menu" for="filter_btn">
+        <label for="download-chkbx">
+            <li class="mdl-menu__item">
+                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="download-chkbx">
+                    <input type="checkbox" id="download-chkbx" class="mdl-checkbox__input">
+                </label>
+                Downloaded
+            </li>
+        </label><label for="unread-chkbx">
+        <li class="mdl-menu__item">
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="unread-chkbx">
+                <input type="checkbox" id="unread-chkbx" class="mdl-checkbox__input">
+            </label>
+            Unread
+        </li>
+    </label>
+        <li id="clear_filters_btn" class="mdl-menu__item">Remove filter</li>
+    </ul>
+    <!-- Tooltips -->
+    <div class="mdl-tooltip mdl-tooltip--large" for="filter_btn">
+        Filter
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="search_btn">
+        Search
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="refresh_btn">
+        Update Library
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="more_btn">
+        More
+    </div>
+    <main class="mdl-layout__content">
+        <!-- NOTE: This wrapper is necessary, don't touch it! -->
+        <div class="loading_spinner">
+            <div class="mdl-spinner mdl-js-spinner is-active"></div>
+        </div>
+        <div class="page-content">
+            <!-- TODO Unread Manga counts -->
+            <div id="library_wrapper"></div>
+            <!--<div id="manga_grid" class="mdl-grid">
+            </div>-->
+        </div>
+        <!-- Snackbar -->
+        <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+    </main>
+</div>
+</body>
+</html>		

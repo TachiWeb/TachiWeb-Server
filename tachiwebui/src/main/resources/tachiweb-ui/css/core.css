@@ -1,0 +1,157 @@
+@import url(../bower_components/roboto-fontface/css/roboto/roboto-fontface.css);
+@import url(../bower_components/roboto-fontface/css/roboto-condensed/roboto-condensed-fontface.css);
+
+html, body {
+    height: 100%;
+    font-family: Roboto, Ubuntu, "Trebuchet MS", sans-serif;
+}
+
+.mdl-layout__header-row .mdl-navigation__link:last-of-type {
+    padding-right: 0;
+}
+
+/** App bar **/
+.back-button {
+    margin-left: -20px;
+}
+
+.app-bar-btn {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
+
+/** Search bar is a button too! **/
+.search-bar {
+    margin-right: 5px;
+}
+
+/** Fix checkboxes being crazy wide **/
+.mdl-checkbox {
+    max-width: 20px;
+}
+
+/** Header has way too much padding on right **/
+.mdl-layout__header-row {
+    padding-right: 5px;
+}
+
+/** Page content **/
+.page-content {
+    position: relative;
+}
+
+/** Cards **/
+.manga_card {
+    color: white;
+    position: relative;
+    padding: 0;
+    text-transform: none;
+    text-align: left;
+    line-height: 20px;
+    height: auto;
+}
+
+.manga_card_img {
+    width: 100%;
+}
+
+.manga_card_label {
+    position: absolute;
+    width: calc(100% - 16px); /* Label gets cut off otherwise for some reason **/
+    padding: 8px;
+    bottom: 0;
+}
+
+.manga_card_label_gradient {
+    background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0) 100%);
+}
+
+.manga_card_label_solid {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: blue;
+    color: white;
+    padding: 3px;
+}
+
+/** List headers **/
+.list_header {
+    width: 100%;
+    background: rgb(96, 125, 139);
+    padding: 8px;
+    color: white;
+    font-size: 20px;
+}
+
+/** Spinners **/
+.loading_spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.dialog_spinner_wrapper {
+    position: relative;
+}
+
+/** Layout **/
+.mdl-layout {
+    overflow: hidden;
+}
+
+.mdl-layout__header {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/** Small screens fix **/
+@media screen and (max-width: 1024px) {
+    .mdl-layout__container {
+        position: static;
+    }
+
+    .mdl-layout__header {
+        display: block;
+    }
+
+    .mdl-layout__header-row {
+        height: 56px;
+        padding: 0 5px 0 80px;
+    }
+
+    .mdl-layout__header > .mdl-layout-icon {
+        left: 40px;
+    }
+
+    .mdl-layout__drawer-button {
+        margin: 10px 12px;
+        color: rgb(255, 255, 255);
+    }
+}
+
+/** Material icons sizing **/
+.material-icons.md-18 {
+    font-size: 18px;
+}
+
+.material-icons.md-24 {
+    font-size: 24px;
+}
+
+.material-icons.md-36 {
+    font-size: 36px;
+}
+
+.material-icons.md-48 {
+    font-size: 48px;
+}

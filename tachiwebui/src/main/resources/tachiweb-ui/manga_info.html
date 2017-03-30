@@ -1,0 +1,228 @@
+<!-- By the time TachiWeb is released, the new manga info PR probably would have been merged so:
+  TODO New Manga Info Screen
+  -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- JQuery -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Material Lite -->
+    <link href="css/material.min.css" rel="stylesheet">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Moment.js -->
+    <script src="bower_components/moment/min/moment-with-locales.min.js"></script>
+    <!-- Dialog Polyfill -->
+    <script src="bower_components/dialog-polyfill/dialog-polyfill.js"></script>
+    <link href="bower_components/dialog-polyfill/dialog-polyfill.css" rel="stylesheet">
+    <!-- Material Fonts -->
+    <link href="bower_components/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!-- Intercom -->
+    <script src="bower_components/intercom/intercom.min.js"></script>
+    <!-- Command API -->
+    <script src="js/cmd.js"></script>
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Options API -->
+    <script src="js/options_api.js"></script>
+    <!-- Core -->
+    <link href="css/core.css" rel="stylesheet">
+    <script src="js/core.js"></script>
+    <link href="css/manga_info.css" rel="stylesheet">
+    <script src="js/manga_info.js"></script>
+    <title>Manga Info</title>
+</head>
+<body>
+<!-- Uses a header that contracts as the page scrolls down. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-tabs">
+    <header class="mdl-layout__header">
+        <div class="back-button mdl-layout-icon mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">arrow_back</i>
+        </div>
+        <!-- Top row, always visible -->
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span id="manga_title" class="mdl-layout-title">Loading</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="filter_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">filter_list</i>
+            </button>
+            <button id="reverse_order_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">swap_vert</i>
+            </button>
+            <button id="download_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">file_download</i>
+            </button>
+            <button id="refresh_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">refresh</i>
+            </button>
+            <button id="open_browser_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">public</i>
+            </button>
+            <button id="more_btn" class="app-bar-btn mdl-button mdl-js-button mdl-button--icon">
+                <i class="material-icons">more_vert</i>
+            </button>
+        </div>
+        <!-- Bottom row, not visible on scroll -->
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+            <a id="info_tab" href="#info_panel" class="mdl-layout__tab">Info</a>
+            <a id="chapter_tab" href="#chapter_panel" class="mdl-layout__tab is-active">Chapters</a>
+        </div>
+    </header>
+    <!-- Menus -->
+    <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--bottom-right mdl-js-menu" for="more_btn">
+        <li id="change_display_mode_btn" class="mdl-menu__item">Change display mode</li>
+        <li id="sort_mode_btn" class="mdl-menu__item">Sorting mode</li>
+    </ul>
+    <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--bottom-right mdl-js-menu" for="filter_btn">
+        <label for="download-chkbx">
+            <li class="mdl-menu__item">
+                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="download-chkbx">
+                    <input type="checkbox" id="download-chkbx" class="mdl-checkbox__input">
+                </label>
+                Downloaded
+            </li>
+        </label><label for="unread-chkbx">
+        <li class="mdl-menu__item">
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="unread-chkbx">
+                <input type="checkbox" id="unread-chkbx" class="mdl-checkbox__input">
+            </label>
+            Unread
+        </li>
+    </label>
+        <li id="clear_filters_btn" class="mdl-menu__item">Remove filter</li>
+    </ul>
+    <div id="chapter_menus">
+        <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--top-right mdl-js-menu">
+            <li class="mdl-menu__item">Download</li>
+            <li class="mdl-menu__item">Mark as unread/read</li>
+        </ul>
+    </div>
+    <!-- Tooltips -->
+    <div class="mdl-tooltip mdl-tooltip--large" for="filter_btn">
+        Filter
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="reverse_order_btn">
+        Reverse Sort Order
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="search_btn">
+        Search
+    </div>
+    <div id="refresh_tooltip" class="mdl-tooltip mdl-tooltip--large" for="refresh_btn">
+        Refresh Chapters
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="open_browser_btn">
+        Open In Browser
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="download_btn">
+        Download
+    </div>
+    <div class="mdl-tooltip mdl-tooltip--large" for="more_btn">
+        More
+    </div>
+    <main class="mdl-layout__content">
+        <div id="chapter_buttons"></div>
+        <!-- NOTE: This wrapper is necessary, don't touch it! -->
+        <div id="info_spinner" class="loading_spinner">
+            <div class="mdl-spinner mdl-js-spinner is-active"></div>
+        </div>
+        <div class="page-content">
+            <div class="mdl-tabs__panel tab_panel" id="info_panel">
+                <!-- When we actually want to apply a background to #info_header, use this: https://css-tricks.com/tinted-images-multiple-backgrounds/ -->
+                <div id="info_header">
+                    <img src="about:blank" id="cover_img" width="100%"/>
+                    <div id="header_content"></div>
+                </div>
+                <button id="fav_btn"
+                        class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                    <i id="fav_btn_icon" class="material-icons">turned_in</i>
+                </button>
+                <div id="manga_desc_wrapper">
+                    <div id="manga_desc"></div>
+                </div>
+            </div>
+            <!-- TODO Floating fab read button -->
+            <div class="mdl-tabs__panel tab_panel selected is-active" id="chapter_panel" oncontextmenu="return false;">
+            </div>
+        </div>
+        <!-- Snackbar -->
+        <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+    </main>
+</div>
+<!-- Page list loading dialog -->
+<dialog id="page_list_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Please wait</h3>
+    <div class="loading_dialog mdl-dialog__content">
+        <p>
+            Please wait while we download the page list for this manga...
+        </p>
+        <br>
+        <div class="dialog_spinner_wrapper">
+            <div class="loading_spinner">
+                <div class="mdl-spinner mdl-js-spinner is-active"></div>
+            </div>
+        </div>
+    </div>
+</dialog>
+<!-- Display Mode dialog -->
+<dialog id="display_mode_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Change display mode</h3>
+    <div class="mdl-dialog__content">
+        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="dm-show-name">
+            <input type="radio" id="dm-show-name" class="mdl-radio__button" name="display-mode" value="NAME" checked>
+            <span class="mdl-radio__label">Show title</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="dm-show-number">
+            <input type="radio" id="dm-show-number" class="mdl-radio__button" name="display-mode" value="NUMBER">
+            <span class="mdl-radio__label">Show chapter number</span>
+        </label>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button id="display_mode_dialog_close" class="mdl-button mdl-js-button mdl-js-ripple-effect" type="button">
+            Close
+        </button>
+    </div>
+</dialog>
+<!-- Sort Mode dialog -->
+<dialog id="sort_mode_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Sorting mode</h3>
+    <div class="mdl-dialog__content">
+        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="sm-by-source">
+            <input type="radio" id="sm-by-source" class="mdl-radio__button" name="sort-mode" value="SOURCE" checked>
+            <span class="mdl-radio__label">By source</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="sm-by-number">
+            <input type="radio" id="sm-by-number" class="mdl-radio__button" name="sort-mode" value="NUMBER">
+            <span class="mdl-radio__label">By chapter number</span>
+        </label>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button id="sort_mode_dialog_close" class="mdl-button mdl-js-button mdl-js-ripple-effect" type="button">
+            Close
+        </button>
+    </div>
+</dialog>
+<!-- Download dialog -->
+<dialog id="download_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Download</h3>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button id="download_btn_1" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Download 1
+        </button>
+        <button id="download_btn_5" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Download 5
+        </button>
+        <button id="download_btn_10" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Download 10
+        </button>
+        <button id="download_btn_unread" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Download
+            unread
+        </button>
+        <button id="download_btn_all" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Download all
+        </button>
+        <button id="download_btn_close" type="button" class="mdl-button mdl-js-button close mdl-js-ripple-effect">
+            Close
+        </button>
+    </div>
+</dialog>
+</body>
+</html>		

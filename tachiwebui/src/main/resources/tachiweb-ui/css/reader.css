@@ -1,0 +1,285 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+/** BUTTONS **/
+.rbtn {
+    position: absolute;
+    cursor: pointer;
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    z-index: 1000;
+}
+.rbtn_square {
+    height: 50%;
+    width: 100px;
+    background-color: #455A64;
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+/** https://css-tricks.com/triangle-with-shadow/ **/
+.rbtn_triangle {
+    pointer-events: none;
+    width: 300px;
+    height: 100px;
+    overflow: hidden;
+    left: 0;
+}
+.rbtn_real_triangle {
+    content: "";
+    cursor: pointer;
+    pointer-events: all;
+    position: absolute;
+    z-index: 1000;
+    width: 141.421356237px;
+    height: 141.421356237px;
+    background: #F50057;
+    transform: rotate(135deg); /* Prefixes... */
+    top: 30px;
+    left: 79.2893218815px;
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.rbtn_real_triangle:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+.rbtn_triangle_wrapper {
+    pointer-events: none;
+    position: absolute;
+    z-index: 1000;
+    width: 300px;
+    height: 300px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+}
+.rbtn_triangle_wrapper_left {
+    left: 0;
+}
+.rbtn_triangle_wrapper_right {
+    right: 0;
+    transform: translateY(-50%) scale(-1, 1) rotate(-90deg);
+}
+.rbtn_square:hover {
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+.rbtn_top {
+    top: 0;
+}
+.rbtn_bottom {
+    bottom: 0;
+}
+.rbtn_top > .rbtn_label {
+    top: 25%;
+}
+.rbtn_bottom > .rbtn_label {
+    top: 75%;
+}
+.rbtn_left > .rbtn_label {
+    left: 0;
+}
+.rbtn_right > .rbtn_label {
+    right: 0;
+}
+.rbtn_top > .rbtn_icon {
+    top: 25%;
+}
+.rbtn_bottom > .rbtn_icon {
+    top: 75%;
+}
+.rbtn_left > .rbtn_icon {
+    left: 50px;
+    transform: translate(-50%, -50%);
+}
+.rbtn_right > .rbtn_icon {
+    right: 50px;
+    transform: translate(50%, -50%);
+}
+.rbtn_left {
+    left: 0;
+}
+.rbtn_right {
+    right: 0;
+}
+
+.rbtn_label {
+    opacity: 0;
+    transition: all 0.5s;
+    position: absolute;
+    z-index: 1002;
+    transform: translateY(-50%);
+    background-color: #424242;
+    padding: 10px;
+    color: white;
+    border-radius: 2px;
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.rbtn_icon {
+    position: absolute;
+    z-index: 1001;
+    color: white;
+}
+
+.rbtn_left:hover > .rbtn_label {
+    opacity: 1;
+    transform: translateY(-50%) translateX(120px);
+}
+
+.rbtn_right:hover > .rbtn_label {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-120px);
+}
+.rbtn_disabled {
+    cursor: default !important;
+    box-shadow: none !important;
+    background: #616161 !important;
+}
+
+.rbtn_cross_chapter {
+    background: #76ff03 !important;
+}
+/** READER **/
+#rcontent {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: absolute;
+    left: 100px;
+    top: 0;
+    width: calc(100% - 200px);
+    height: 100%;
+    z-index: 50;
+}
+#reader_img_row {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    white-space: nowrap;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+}
+
+.reader_img_wrapper {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0 100px;
+}
+/*noinspection CssOptimizeSimilarProperties*/
+.reader_img {
+    margin: 0 auto;
+    height: 100%;
+    width: 100%;
+    /** DO NOT MERGE THE STYLES BELOW **/
+    background-image: url(../img/loading.gif);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.reader_zoom_img {
+    max-height: 100%;
+    max-width: 100%;
+    overflow: visible;
+}
+
+.reader_zoom_img_content {
+    display: block;
+    transform-origin: 0 0;
+}
+/** From official featherlight site **/
+.featherlight .featherlight-content {
+    border-radius: 2px;
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    max-height: calc(100% - 50px);
+    max-width: calc(100% - 150px);
+    padding: 0;
+    border: none;
+    cursor: crosshair;
+}
+.featherlight .featherlight-close {
+    /*
+    Disabled because this button is hard to maintain and is very buggy.
+
+    color: #fff;
+    background: #F50057;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    */
+    display: none;
+}
+
+.featherlight .featherlight-close:hover {
+    /** https://codepen.io/sdthornton/pen/wBZdXq **/
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+/** HUD **/
+.hud_indicator {
+    position: absolute;
+    width: 100px;
+    z-index: 2000;
+    color: white;
+    font-size: 13px;
+    background-color: rgba(0, 0, 0, 0.87);
+    opacity: 0.5;
+    transition: all 0.5s;
+    transform-origin: 0 0;
+}
+.hud_indicator:hover {
+    opacity: 1;
+    transform: scale(2);
+}
+.hud_button:hover {
+    cursor: pointer;
+}
+.hud_inner {
+    padding: 8px;
+}
+#page_indicator_wrapper {
+    top: 0;
+    left: 0;
+    /*border-bottom: solid 2px white;*/
+}
+#page_indicator_wrapper:hover {
+    width: 50%;
+    padding-bottom: 20px; /** Extra area for cursor or it may close while the slider is being used **/
+}
+#page_indicator {
+    padding: 8px 0;
+    width: 100%;
+    text-align: center;
+}
+#page_slider_wrapper {
+    display: none;
+    width: 100%;
+    transition: opacity 1s;
+    opacity: 0;
+}
+#page_indicator_wrapper:hover > #page_slider_wrapper{
+    display: inline-block;
+    opacity: 1;
+}
+/** MDL overrides **/
+#page_slider_wrapper .mdl-slider__background-upper {
+    background-color: white;
+}
+/** Stupidly complex overrider for slider thumb **/
+.mdl-slider.is-upgraded.is-lowest-value::-webkit-slider-thumb {
+    border: 2px solid white;
+}
+
+.mdl-slider.is-upgraded.is-lowest-value::-moz-range-thumb {
+     border: 2px solid white;
+}
+.mdl-slider.is-upgraded.is-lowest-value:active::-webkit-slider-thumb {
+    /*noinspection CssFloatPxLength*/
+    border: 1.6px solid white;
+}
+.mdl-slider.is-upgraded.is-lowest-value:active::-moz-range-thumb {
+    /*noinspection CssFloatPxLength*/
+    border: 1.5px solid white;
+}
