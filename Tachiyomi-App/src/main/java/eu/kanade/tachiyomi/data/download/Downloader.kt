@@ -386,6 +386,7 @@ class Downloader(private val context: Context, private val provider: DownloadPro
                     } catch (e: Exception) {
                         response.close()
                         file.delete()
+                        Timber.e(e)
                         throw e
                     }
                     file

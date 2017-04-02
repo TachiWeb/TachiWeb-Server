@@ -30,9 +30,12 @@ import android.net.Uri;
 import android.os.*;
 import android.view.Display;
 import android.view.DisplayAdjustments;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.nulldev.androidcompat.info.ApplicationInfoImpl;
 import xyz.nulldev.androidcompat.io.AndroidFiles;
 import xyz.nulldev.androidcompat.io.sharedprefs.JsonSharedPreferences;
+import xyz.nulldev.androidcompat.service.ServiceSupport;
 import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
 
 import java.io.*;
@@ -49,6 +52,10 @@ public class CustomContext extends Context {
 
     private AndroidFiles androidFiles = KodeinGlobalHelper.Companion.instance(AndroidFiles.class);
     private ApplicationInfoImpl applicationInfo = KodeinGlobalHelper.Companion.instance(ApplicationInfoImpl.class);
+
+    private ServiceSupport serviceSupport = KodeinGlobalHelper.Companion.instance(ServiceSupport.class);
+
+    private Logger logger = LoggerFactory.getLogger(CustomContext.class);
 
     @Override
     public AssetManager getAssets() {
@@ -483,22 +490,26 @@ public class CustomContext extends Context {
 
     @Override
     public ComponentName startService(Intent intent) {
-        return null;
+        serviceSupport.startService(this, intent);
+        return intent.getComponent();
     }
 
     @Override
     public boolean stopService(Intent intent) {
-        return false;
+        serviceSupport.stopService(this, intent);
+        return true;
     }
 
     @Override
     public ComponentName startServiceAsUser(Intent service, UserHandle user) {
-        return null;
+        logger.warn("An attempt was made to start the service: '{}' as another user! Since multiple user services are currently not supported, the service will be started as the current user!", service.getComponent().getClassName());
+        return startService(service);
     }
 
     @Override
     public boolean stopServiceAsUser(Intent service, UserHandle user) {
-        return false;
+        logger.warn("An attempt was made to stop the service: '{}' as another user! Since multiple user services are currently not supported, the service will be stopped as the current user!", service.getComponent().getClassName());
+        return stopService(service);
     }
 
     @Override
@@ -533,7 +544,7 @@ public class CustomContext extends Context {
 
     @Override
     public int checkPermission(String permission, int pid, int uid, IBinder callerToken) {
-        return 0;
+        return PackageManager.PERMISSION_GRANTED;
     }
 
     @Override

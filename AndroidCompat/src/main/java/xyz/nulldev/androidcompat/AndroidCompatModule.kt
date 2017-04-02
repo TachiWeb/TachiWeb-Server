@@ -10,6 +10,7 @@ import xyz.nulldev.androidcompat.androidimpl.CustomContext
 import xyz.nulldev.androidcompat.config.ConfigManager
 import xyz.nulldev.androidcompat.info.ApplicationInfoImpl
 import xyz.nulldev.androidcompat.io.AndroidFiles
+import xyz.nulldev.androidcompat.service.ServiceSupport
 
 /**
  * AndroidCompatModule
@@ -18,8 +19,14 @@ import xyz.nulldev.androidcompat.io.AndroidFiles
 class AndroidCompatModule {
     fun create() = Kodein.Module {
         bind<ConfigManager>() with singleton { ConfigManager().setup() }
+
         bind<AndroidFiles>() with singleton { AndroidFiles() }
+
         bind<ApplicationInfoImpl>() with singleton { ApplicationInfoImpl() }
+
+        bind<ServiceSupport>() with singleton { ServiceSupport() }
+
+        //Context
         bind<CustomContext>() with singleton { CustomContext() }
         bind<Context>() with singleton { Kodein.global.instance<CustomContext>() }
     }

@@ -26,7 +26,6 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import spark.Request
 import spark.Response
-import uy.kohesive.injekt.injectLazy
 import xyz.nulldev.ts.api.http.TachiWebRoute
 import xyz.nulldev.ts.ext.getDownload
 import xyz.nulldev.ts.ext.isDownloaded
@@ -39,7 +38,7 @@ class DownloadChapterRoute : TachiWebRoute() {
 
     private val sourceManager: SourceManager by kInstanceLazy()
     private val downloadManager: DownloadManager by kInstanceLazy()
-    private val context : Context by injectLazy()
+    private val context : Context by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
