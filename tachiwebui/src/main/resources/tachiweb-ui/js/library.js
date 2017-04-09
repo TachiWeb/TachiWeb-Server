@@ -121,9 +121,11 @@ function setupUpdateButton() {
     });
 }
 function setupEditCategoriesBtn() {
-    //TODO Make this button also exit category edit mode
     editCategoriesBtn.click(function() {
-        beginEditingCategories();
+        if(editingCategories)
+            exitEditingCategories();
+        else
+            beginEditingCategories();
     });
 }
 function updateServerLibrary() {
@@ -238,6 +240,7 @@ function createCategorySplitter(category) {
 function beginEditingCategories() {
     TWApi.Commands.GetCategories.execute(function(res) {
         editingCategories = true;
+        editCategoriesBtn.text("Exit category editor");
         sortCategories(res.content);
         currentCategories = res.content;
         showEditCategoriesUI(res.content.slice(0));
@@ -299,6 +302,12 @@ function sortCategories(categories) {
     categories.sort(function(a, b) {
         return a.order - b.order;
     });
+}
+
+function exitEditingCategories() {
+    updateLibraryUI(currentManga);
+    editCategoriesBtn.text("Edit categories");
+    editingCategories = false;
 }
 
 function showEditCategoriesUI(categories) {
