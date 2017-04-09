@@ -86,7 +86,9 @@ class MangaSerializer {
         //TODO Is it possible to get this directly from the categories field?
         val categoriesJson = JSONArray()
         for (category in db.getCategoriesForManga(manga).executeAsBlocking()) {
-            categoriesJson.put(category.name)
+            categoriesJson.put(JSONObject()
+                    .put(KEY_CATEGORY_ID, category.id)
+                    .put(KEY_CATEGORY_NAME, category.name))
         }
         builtResponse.put(KEY_CATEGORIES, categoriesJson)
         return builtResponse
@@ -118,6 +120,9 @@ class MangaSerializer {
         val KEY_STATUS = "status"
         val KEY_FAVORITE = "favorite"
         val KEY_FLAGS = "flags"
+
+        val KEY_CATEGORY_ID = "id"
+        val KEY_CATEGORY_NAME = "name"
 
         private fun statusToString(i: Int): String {
             when (i) {

@@ -67,6 +67,18 @@ function openInNewTab(url) {
     win.focus();
 }
 
+/**
+ * Shift elements in an array
+ * @param arr The array to move the element in
+ * @param fromIndex The index of the object to move
+ * @param toIndex The target index to move the object to
+ */
+function arraymove(arr, fromIndex, toIndex) {
+    let element = arr[fromIndex];
+    arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, element);
+}
+
 //Catch onload
 window.onload = function () {
     //Setup snackbar

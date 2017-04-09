@@ -28,9 +28,7 @@ import xyz.nulldev.ts.api.http.download.DownloadsOperationRoute
 import xyz.nulldev.ts.api.http.download.GetDownloadStatusRoute
 import xyz.nulldev.ts.api.http.image.CoverRoute
 import xyz.nulldev.ts.api.http.image.ImageRoute
-import xyz.nulldev.ts.api.http.library.CreateBackupRoute
-import xyz.nulldev.ts.api.http.library.LibraryRoute
-import xyz.nulldev.ts.api.http.library.RestoreFromFileRoute
+import xyz.nulldev.ts.api.http.library.*
 import xyz.nulldev.ts.api.http.manga.*
 import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute
 import xyz.nulldev.ts.api.http.settings.PreferencesRoute
@@ -69,6 +67,8 @@ class HttpAPI {
     private val checkSessionRoute = CheckSessionRoute()
     private val clearSessionsRoute = ClearSessionsRoute()
     private val testAuthRoute = TestAuthenticatedRoute()
+    private val getCategoriesRoute = GetCategoriesRoute()
+    private val editCategoriesRoute = EditCategoriesRoute()
 
     fun start() {
         //Get an image from a chapter
@@ -125,6 +125,10 @@ class HttpAPI {
 //        postAPIRoute("/diff_sync", diffSyncRoute)
         //Test auth route
         getAPIRoute("/test_auth", testAuthRoute)
+        //Get categories
+        getAPIRoute("/get_categories", getCategoriesRoute)
+        //Edit categories
+        getAPIRoute("/edit_categories/:operation", editCategoriesRoute)
     }
 
     private fun buildAPIPath(path: String): String {

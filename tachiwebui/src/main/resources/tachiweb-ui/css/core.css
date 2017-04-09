@@ -93,6 +93,22 @@ html, body {
     color: white;
     font-size: 20px;
 }
+.add-category-list-header {
+	opacity: 0.5;
+	transition: opacity 0.1s;
+}
+.add-category-list-header:hover {
+	opacity: 1;
+	cursor: pointer;
+}
+.list-header-controls {
+    float: right;
+    margin-top: -6px;
+    padding-right: 10px;
+}
+.list-header-btn {
+    margin-right: 10px;
+}
 
 /** Spinners **/
 .loading_spinner {

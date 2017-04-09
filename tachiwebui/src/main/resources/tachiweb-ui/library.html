@@ -77,7 +77,7 @@
     </div>
     <!-- Menus -->
     <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--bottom-right mdl-js-menu" for="more_btn">
-        <li class="mdl-menu__item">Edit categories</li>
+        <li id="edit_categories_btn" class="mdl-menu__item">Edit categories</li>
     </ul>
     <ul class="mdl-menu mdl-js-ripple-effect mdl-menu--bottom-right mdl-js-menu" for="filter_btn">
         <label for="download-chkbx">
@@ -128,5 +128,42 @@
         </div>
     </main>
 </div>
+
+<!-- Add category dialog -->
+<dialog id="add_category_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Add category</h3>
+    <div class="mdl-dialog__content">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="add_category_dialog_name">
+            <label class="mdl-textfield__label" for="add_category_dialog_name">Name</label>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button id="add_category_dialog_close_btn" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect close">
+            Cancel
+        </button>
+        <button type="submit" id="add_category_dialog_add_btn" class="mdl-button mdl-js-button mdl-js-ripple-effect">
+            Add
+        </button>
+    </div>
+</dialog>
+<!-- Rename category dialog -->
+<dialog id="rename_category_dialog" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Rename category</h3>
+    <div class="mdl-dialog__content">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="rename_category_dialog_name">
+            <label class="mdl-textfield__label" for="rename_category_dialog_name">Name</label>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button id="rename_category_dialog_close_btn" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect close">
+            Cancel
+        </button>
+        <button type="submit" id="rename_category_dialog_add_btn" class="mdl-button mdl-js-button mdl-js-ripple-effect">
+            Save
+        </button>
+    </div>
+</dialog>
 </body>
 </html>		

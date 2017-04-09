@@ -4,6 +4,22 @@ var currentManga = [];
 var unreadCheckbox;
 var downloadedCheckbox;
 var filters;
+let editCategoriesBtn;
+
+let editingCategories = false;
+let currentCategories;
+
+let addCategoryDialog;
+let addCategoryDialogName;
+let addCategoryDialogAddBtn;
+let addCategoryDialogCloseBtn;
+let renameCategoryDialog;
+let renameCategoryDialogName;
+let renameCategoryDialogAddBtn;
+let renameCategoryDialogCloseBtn;
+
+let currentRenamingCategory = null;
+
 function resetFilters() {
     filters = {
         onlyUnread: false,
@@ -20,10 +36,70 @@ resetFilters();
 function onLoad() {
     librarySpinner = $(".loading_spinner");
     libraryWrapper = $("#library_wrapper");
+
+    addCategoryDialog = $("#add_category_dialog");
+    addCategoryDialogName = $("#add_category_dialog_name");
+    addCategoryDialogAddBtn = $("#add_category_dialog_add_btn");
+    addCategoryDialogCloseBtn = $("#add_category_dialog_close_btn");
+
+    renameCategoryDialog = $("#rename_category_dialog");
+    renameCategoryDialogName = $("#rename_category_dialog_name");
+    renameCategoryDialogAddBtn = $("#rename_category_dialog_add_btn");
+    renameCategoryDialogCloseBtn = $("#rename_category_dialog_close_btn");
+
+    editCategoriesBtn = $("#edit_categories_btn");
+
     setupFilters();
     setupUpdateButton();
     setupFavoriteListener();
+    setupEditCategoriesBtn();
+    setupAddCategoryDialog();
+    setupRenameCategoryDialog();
     updateLibrary();
+}
+
+function setupAddCategoryDialog() {
+    if (!rawElement(addCategoryDialog).showModal) {
+        dialogPolyfill.registerDialog(rawElement(addCategoryDialog));
+    }
+    addCategoryDialogCloseBtn.click(function () {
+        rawElement(addCategoryDialog).close();
+    });
+    addCategoryDialogAddBtn.click(function() {
+        rawElement(addCategoryDialog).close();
+
+        let name = addCategoryDialogName.val();
+
+        for(let category of currentCategories) {
+            if(category.name === name) {
+                snackbarError("A category with this name already exists!");
+                return;
+            }
+        }
+        serverAddCategory(name);
+    });
+}
+function setupRenameCategoryDialog() {
+    if (!rawElement(renameCategoryDialog).showModal) {
+        dialogPolyfill.registerDialog(rawElement(renameCategoryDialog));
+    }
+    renameCategoryDialogCloseBtn.click(function () {
+        rawElement(renameCategoryDialog).close();
+    });
+    renameCategoryDialogAddBtn.click(function() {
+        rawElement(renameCategoryDialog).close();
+
+        let name = renameCategoryDialogName.val();
+
+        for(let category of currentCategories) {
+            if(category.name === name) {
+                if(category.id !== currentRenamingCategory.id)
+                    snackbarError("A category with this name already exists!");
+                return;
+            }
+        }
+        serverRenameCategory(currentRenamingCategory.id, name);
+    });
 }
 
 function setupFavoriteListener() {
@@ -40,6 +116,12 @@ function updateLibrary() {
 function setupUpdateButton() {
     $("#refresh_btn").click(function () {
         updateServerLibrary();
+    });
+}
+function setupEditCategoriesBtn() {
+    //TODO Make this button also exit category edit mode
+    editCategoriesBtn.click(function() {
+        beginEditingCategories();
     });
 }
 function updateServerLibrary() {
@@ -68,6 +150,29 @@ function updateManga(manga, onComplete) {
     }, onComplete);
 }
 
+function serverReorderCategories(newOrder) {
+    let categories = [];
+    for(category of newOrder)
+        if(category.id !== "_default")
+            categories.push(category.id);
+    TWApi.Commands.EditCategories.execute(function(res) {
+        for(let key of Object.keys(res.content)) {
+            for(let obj of newOrder) {
+                if(obj.id === parseInt(key))
+                    obj.order = res.content[key];
+            }
+        }
+        currentCategories = newOrder;
+        sortCategories(currentCategories);
+        showEditCategoriesUI(currentCategories.slice(0));
+    }, function() {
+        serverReorderCategoryError(newOrder);
+    }, {
+        operation: "REORDER",
+        categories: categories
+    });
+}
+
 function showSpinner() {
     librarySpinner.css("opacity", 1);
 }
@@ -87,12 +192,17 @@ function updateLibraryUI(mangas) {
         }
         for (var a = 0; a < mCategories.length; a++) {
             var categoryName = mCategories[a];
-            var category = categories[categoryName];
+            let categoryId = mCategories[a];
+            var category = categories[categoryId];
             if (!category) {
-                category = [];
-                categories[categoryName] = category;
+                category = {
+                    content: [],
+                    id: categoryId,
+                    name: categoryName
+                };
+                categories[categoryId] = category;
             }
-            category.push(manga);
+            category.content.push(manga);
         }
     }
     //Remove old entries
@@ -103,16 +213,186 @@ function updateLibraryUI(mangas) {
         appendMangas(mangas, libraryWrapper[0]);
     } else {
         for (i = 0; i < categoryKeys.length; i++) {
-            categoryName = categoryKeys[i];
-            category = categories[categoryName];
-            var categorySplitter = document.createElement("div");
-            categorySplitter.className = "list_header";
-            categorySplitter.textContent = categoryName;
+            let categoryId = categoryKeys[i];
+            let category = categories[categoryId];
+            let categorySplitter = createCategorySplitter(category);
             libraryWrapper[0].appendChild(categorySplitter);
             //Actually append mangas
-            appendMangas(category, libraryWrapper[0]);
+            appendMangas(category.content, libraryWrapper[0]);
         }
     }
+    //Make sure MDL gets content changes
+    componentHandler.upgradeElement(libraryWrapper[0]);
+}
+
+function createCategorySplitter(category) {
+    let categorySplitter = document.createElement("div");
+    categorySplitter.className = "list_header";
+    categorySplitter.textContent = category.name;
+    categorySplitter.dataset.categoryId = category.id;
+    return categorySplitter;
+}
+
+function beginEditingCategories() {
+    TWApi.Commands.GetCategories.execute(function(res) {
+        editingCategories = true;
+        sortCategories(res.content);
+        currentCategories = res.content;
+        showEditCategoriesUI(res.content.slice(0));
+    }, function() {
+        beginEditingCategoriesError();
+    });
+}
+
+function serverAddCategory(name) {
+    TWApi.Commands.EditCategories.execute(function(res) {
+        let category = {
+            id: res.content.id,
+            name: name,
+            order: res.content.order,
+        };
+        currentCategories.push(category);
+        sortCategories(currentCategories);
+        showEditCategoriesUI(currentCategories.slice(0));
+    }, function() {
+        serverAddCategoryError(name)
+    }, {
+        operation: "CREATE",
+        name: name
+    });
+}
+
+function serverRenameCategory(id, newName) {
+    TWApi.Commands.EditCategories.execute(function() {
+        for(let category of currentCategories) {
+            if(category.id === id) {
+                category.name = newName
+            }
+        }
+        showEditCategoriesUI(currentCategories.slice(0));
+    }, function() {
+        serverRenameCategoryError(id, newName);
+    }, {
+        operation: "RENAME",
+        id: id,
+        name: newName
+    });
+}
+
+function serverDeleteCategory(id) {
+    TWApi.Commands.EditCategories.execute(function() {
+        currentCategories = currentCategories.filter(function(c){return c.id !== id;});
+        sortCategories(currentCategories);
+        showEditCategoriesUI(currentCategories.slice(0));
+    }, function() {
+        serverDeleteCategory(id);
+    }, {
+        operation: "DELETE",
+        id: id
+    });
+}
+
+function sortCategories(categories) {
+    //Sort categories by order
+    categories.sort(function(a, b) {
+        return a.order - b.order;
+    });
+}
+
+function showEditCategoriesUI(categories) {
+    //Add default category
+    categories.unshift({
+        name: "Default",
+        id: "_default" //TODO Move to constant
+    });
+
+    //Clear old entries
+    clearElement(libraryWrapper[0]);
+    for (let category of categories) {
+        let categorySplitter = createCategorySplitter(category);
+
+        //Add category controls
+        if(category.id !== "_default") {
+            function ctrlBtn(icon, tooltip) {
+                //TODO Tooltip
+                let button = document.createElement("button");
+                button.className = "mdl-button mdl-js-button mdl-button--icon list-header-btn";
+                let iconElement = document.createElement("i");
+                iconElement.className = "material-icons";
+                iconElement.textContent = icon;
+                button.appendChild(iconElement);
+                return button;
+            }
+
+            let controls = document.createElement("span");
+            controls.className = "list-header-controls";
+
+            let categoryIndex = currentCategories.indexOf(category);
+
+            let moveUpBtn = ctrlBtn("keyboard_arrow_up");
+            $(moveUpBtn).click(function () {
+                let newOrder = currentCategories.slice(0);
+                arraymove(newOrder, categoryIndex, categoryIndex - 1);
+                serverReorderCategories(newOrder);
+            });
+            if(categoryIndex <= 0) {
+                moveUpBtn.disabled = true;
+            }
+            controls.appendChild(moveUpBtn);
+
+            let moveDownBtn = ctrlBtn("keyboard_arrow_down");
+            $(moveDownBtn).click(function () {
+                let newOrder = currentCategories.slice(0);
+                arraymove(newOrder, categoryIndex, categoryIndex + 1);
+                serverReorderCategories(newOrder);
+            });
+            if(categoryIndex >= currentCategories.length - 1) {
+                moveDownBtn.disabled = true;
+            }
+            controls.appendChild(moveDownBtn);
+
+            let renameBtn = ctrlBtn("mode_edit");
+            $(renameBtn).click(function() {
+                rawElement(renameCategoryDialogName.parent()).MaterialTextfield.change(category.name);
+                currentRenamingCategory = category;
+                rawElement(renameCategoryDialog).showModal();
+            });
+            controls.appendChild(renameBtn);
+
+            let deleteBtn = ctrlBtn("delete");
+            $(deleteBtn).click(function() {
+                serverDeleteCategory(parseInt(categorySplitter.dataset.categoryId));
+            });
+            controls.appendChild(deleteBtn);
+            categorySplitter.appendChild(controls);
+        }
+
+        libraryWrapper[0].appendChild(categorySplitter);
+        //Actually append mangas
+        let mangas = [];
+        for(let manga of currentManga) {
+            if(manga.categories.length <= 0 && category.id === "_default") {
+                mangas.push(manga);
+            } else {
+                for(let mangaCategory of manga.categories) {
+                    if(mangaCategory.id === category.id) {
+                        mangas.push(manga);
+                    }
+                }
+            }
+        }
+        appendMangas(mangas, libraryWrapper[0]);
+    }
+
+    //Append add category button
+    let addCategorySplitter = createCategorySplitter({name: "+ Add category", id: "_addCategory"});
+    addCategorySplitter.classList.add("add-category-list-header");
+    $(addCategorySplitter).click(function() {
+        rawElement(addCategoryDialogName.parent()).MaterialTextfield.change("");
+        rawElement(addCategoryDialog).showModal();
+    });
+    libraryWrapper[0].appendChild(addCategorySplitter);
+
     //Make sure MDL gets content changes
     componentHandler.upgradeElement(libraryWrapper[0]);
 }
@@ -143,10 +423,72 @@ function libraryUpdateError() {
     });
 }
 
+function beginEditingCategoriesError() {
+    snackbar.showSnackbar({
+        message: "Error getting categories to edit!",
+        timeout: 2000,
+        actionText: "Retry",
+        actionHandler: function () {
+            beginEditingCategories();
+        }
+    });
+}
+
+function serverAddCategoryError(name) {
+    snackbar.showSnackbar({
+        message: "Error adding category!",
+        timeout: 2000,
+        actionText: "Retry",
+        actionHandler: function () {
+            serverAddCategory(name);
+        }
+    });
+}
+
+function serverReorderCategoryError(newOrder) {
+    snackbar.showSnackbar({
+        message: "Error moving category!",
+        timeout: 2000,
+        actionText: "Retry",
+        actionHandler: function () {
+            serverReorderCategories(newOrder);
+        }
+    });
+}
+
+function serverRenameCategoryError(id, newName) {
+    snackbar.showSnackbar({
+        message: "Error renaming category!",
+        timeout: 2000,
+        actionText: "Retry",
+        actionHandler: function () {
+            serverRenameCategory(id, newName);
+        }
+    });
+}
+
+function serverDeleteCategoryError(id) {
+    snackbar.showSnackbar({
+        message: "Error deleting category!",
+        timeout: 2000,
+        actionText: "Retry",
+        actionHandler: function () {
+            serverDeleteCategory(id);
+        }
+    });
+}
+
 function mangaUpdateError(manga) {
     snackbar.showSnackbar({
         message: "Error updating manga: '" + manga + "'!",
         timeout: 500
+    });
+}
+
+function snackbarError(text) {
+    snackbar.showSnackbar({
+        message: text,
+        timeout: 1000
     });
 }
 

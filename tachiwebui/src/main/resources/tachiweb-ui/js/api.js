@@ -171,6 +171,28 @@ var TWApi = {
             return this.endpoint() + "?password=" + encodeURIComponent(parameters.password);
         });
         new ApiCommand("ClearSessions", "/clear_sessions");
+	new ApiCommand("GetCategories", "/get_categories");
+        new ApiCommand("EditCategories", "/edit_categories", function(parameters) {
+            let currentUrl = this.endpoint() + "/" + parameters.operation;
+
+            let usedQuestionMark = false;
+            if (parameters.categories != null) {
+                currentUrl += usedQuestionMark ? "&" : "?";
+                currentUrl += "categories=" + encodeURIComponent(JSON.stringify(parameters.categories));
+                usedQuestionMark = true;
+            }
+            if (parameters.id != null) {
+                currentUrl += usedQuestionMark ? "&" : "?";
+                currentUrl += "id=" + parameters.id;
+                usedQuestionMark = true;
+            }
+            if (parameters.name != null) {
+                currentUrl += usedQuestionMark ? "&" : "?";
+                currentUrl += "name=" + encodeURIComponent(parameters.name);
+            }
+
+            return currentUrl;
+        });
         return built;
     }
 }.init();
