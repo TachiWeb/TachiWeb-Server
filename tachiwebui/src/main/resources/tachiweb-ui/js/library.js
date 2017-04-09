@@ -20,6 +20,8 @@ let renameCategoryDialogCloseBtn;
 
 let currentRenamingCategory = null;
 
+const DEFAULT_CATEGORY_ID = "_default";
+
 function resetFilters() {
     filters = {
         onlyUnread: false,
@@ -153,7 +155,7 @@ function updateManga(manga, onComplete) {
 function serverReorderCategories(newOrder) {
     let categories = [];
     for(category of newOrder)
-        if(category.id !== "_default")
+        if(category.id !== DEFAULT_CATEGORY_ID)
             categories.push(category.id);
     TWApi.Commands.EditCategories.execute(function(res) {
         for(let key of Object.keys(res.content)) {
@@ -303,8 +305,10 @@ function showEditCategoriesUI(categories) {
     //Add default category
     categories.unshift({
         name: "Default",
-        id: "_default" //TODO Move to constant
+        id: DEFAULT_CATEGORY_ID
     });
+
+    let upgradeQueue = [];
 
     //Clear old entries
     clearElement(libraryWrapper[0]);
@@ -312,46 +316,50 @@ function showEditCategoriesUI(categories) {
         let categorySplitter = createCategorySplitter(category);
 
         //Add category controls
-        if(category.id !== "_default") {
-            function ctrlBtn(icon, tooltip) {
-                //TODO Tooltip
+        if(category.id !== DEFAULT_CATEGORY_ID) {
+            let categoryIndex = currentCategories.indexOf(category);
+
+            function ctrlBtn(icon, tooltip, disabled) {
+                let div = document.createElement("span");
                 let button = document.createElement("button");
                 button.className = "mdl-button mdl-js-button mdl-button--icon list-header-btn";
+                button.id = "category_ctrl_btn_" + icon + "_" + categoryIndex;
+                button.disabled = disabled;
                 let iconElement = document.createElement("i");
                 iconElement.className = "material-icons";
                 iconElement.textContent = icon;
                 button.appendChild(iconElement);
-                return button;
+                let toolTipElement = document.createElement("div");
+                toolTipElement.className = "mdl-tooltip";
+                toolTipElement.setAttribute("data-mdl-for", button.id);
+                toolTipElement.textContent = tooltip;
+                div.appendChild(button);
+                div.appendChild(toolTipElement);
+                upgradeQueue.push(button);
+                upgradeQueue.push(toolTipElement);
+                return div;
             }
 
             let controls = document.createElement("span");
             controls.className = "list-header-controls";
 
-            let categoryIndex = currentCategories.indexOf(category);
-
-            let moveUpBtn = ctrlBtn("keyboard_arrow_up");
+            let moveUpBtn = ctrlBtn("keyboard_arrow_up", "Move up", categoryIndex <= 0);
             $(moveUpBtn).click(function () {
                 let newOrder = currentCategories.slice(0);
                 arraymove(newOrder, categoryIndex, categoryIndex - 1);
                 serverReorderCategories(newOrder);
             });
-            if(categoryIndex <= 0) {
-                moveUpBtn.disabled = true;
-            }
             controls.appendChild(moveUpBtn);
 
-            let moveDownBtn = ctrlBtn("keyboard_arrow_down");
+            let moveDownBtn = ctrlBtn("keyboard_arrow_down", "Move down", categoryIndex >= currentCategories.length - 1);
             $(moveDownBtn).click(function () {
                 let newOrder = currentCategories.slice(0);
                 arraymove(newOrder, categoryIndex, categoryIndex + 1);
                 serverReorderCategories(newOrder);
             });
-            if(categoryIndex >= currentCategories.length - 1) {
-                moveDownBtn.disabled = true;
-            }
             controls.appendChild(moveDownBtn);
 
-            let renameBtn = ctrlBtn("mode_edit");
+            let renameBtn = ctrlBtn("mode_edit", "Rename");
             $(renameBtn).click(function() {
                 rawElement(renameCategoryDialogName.parent()).MaterialTextfield.change(category.name);
                 currentRenamingCategory = category;
@@ -359,7 +367,7 @@ function showEditCategoriesUI(categories) {
             });
             controls.appendChild(renameBtn);
 
-            let deleteBtn = ctrlBtn("delete");
+            let deleteBtn = ctrlBtn("delete", "Delete");
             $(deleteBtn).click(function() {
                 serverDeleteCategory(parseInt(categorySplitter.dataset.categoryId));
             });
@@ -371,7 +379,7 @@ function showEditCategoriesUI(categories) {
         //Actually append mangas
         let mangas = [];
         for(let manga of currentManga) {
-            if(manga.categories.length <= 0 && category.id === "_default") {
+            if(manga.categories.length <= 0 && category.id === DEFAULT_CATEGORY_ID) {
                 mangas.push(manga);
             } else {
                 for(let mangaCategory of manga.categories) {
@@ -395,6 +403,8 @@ function showEditCategoriesUI(categories) {
 
     //Make sure MDL gets content changes
     componentHandler.upgradeElement(libraryWrapper[0]);
+    for(element of upgradeQueue)
+        componentHandler.upgradeElement(element);
 }
 
 function appendMangas(mangas, rootElement) {
