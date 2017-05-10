@@ -12,6 +12,10 @@ var loginDialogClose;
 var loginDialogLogin;
 var dialogSpinner;
 
+let pageContent;
+let toggleFiltersBtn;
+let toggleFiltersBtnText;
+
 var currentRequest = null;
 var currentSources = [];
 var currentManga = {};
@@ -35,7 +39,7 @@ function onLoad() {
     spinner = $("#catalogue_spinner");
     sourcesSelect = $("#sources_select");
     mangaGrid = $("#manga_grid");
-    scrollBox = $("#page_wrapper");
+    scrollBox = $(".manga-wrapper");
     searchBox = $("#search_box");
 
     loginDialog = $("#login_dialog");
@@ -46,12 +50,35 @@ function onLoad() {
     loginDialogLogin = $("#login_dialog_login");
     dialogSpinner = $("#login_loading_spinner");
 
+    pageContent = $(".page-content");
+    toggleFiltersBtn = $("#hide_filter_menu_btn");
+    toggleFiltersBtnText = $("#hide_filter_menu_btn_txt");
+
+    setupFilterToggle();
     setupLoginDialog();
     setupSourcesSelect();
     setupScrollBox();
     setupSearchBox();
     setupFavoriteListener();
     refreshSources();
+}
+
+function setupFilterToggle() {
+    const FILTERS_OPEN_CLASS = "page-content-filters-open";
+
+    function updateFiltersBtnText() {
+        if(pageContent.hasClass(FILTERS_OPEN_CLASS))
+            toggleFiltersBtnText.html("&#x25C0;&nbsp; HIDE FILTERS &nbsp;&#x25C0;");
+        else
+            toggleFiltersBtnText.html("&#x25B6;&nbsp; SHOW FILTERS &nbsp;&#x25B6;");
+    }
+
+    toggleFiltersBtn.click(function() {
+        pageContent.toggleClass(FILTERS_OPEN_CLASS);
+        updateFiltersBtnText();
+    });
+
+    updateFiltersBtnText();
 }
 
 function setupLoginDialog() {

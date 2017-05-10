@@ -22,12 +22,6 @@
             <artifactId>androidcompat</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!-- TachiServer -->
-        <dependency>
-            <groupId>tachiweb-server</groupId>
-            <artifactId>tachiserver</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
         <!-- Injekt -->
         <dependency>
@@ -137,6 +131,12 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/compat</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
@@ -164,6 +164,24 @@
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/compat</source>
+                                <source>${project.basedir}/src/main/java</source>
+                            </sources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

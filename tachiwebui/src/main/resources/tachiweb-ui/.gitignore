@@ -1,2 +1,4 @@
 /.idea/workspace.xml
 /bower_components/
+/node_modules/
+!/build_scripts/prefx-materialize.js

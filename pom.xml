@@ -15,6 +15,7 @@
         <module>TachiServer</module>
         <module>junrarandroid</module>
         <module>tachiwebui</module>
+        <module>TachiyomiCompat</module>
     </modules>
 
     <properties>

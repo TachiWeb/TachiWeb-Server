@@ -201,7 +201,7 @@ class LibraryUpdateService : Service() {
         }
 
         if (!intent.getBooleanExtra(UPDATE_DETAILS, false) && preferences.updateOnlyNonCompleted()) {
-            listToUpdate = listToUpdate.filter { it.status != SManga.COMPLETED }
+            listToUpdate = listToUpdate.filter { it.status != SManga.Companion.COMPLETED }
         }
 
         return listToUpdate

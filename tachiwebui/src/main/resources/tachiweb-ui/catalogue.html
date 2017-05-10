@@ -7,6 +7,9 @@
     <!-- Material Lite -->
     <link href="css/material.min.css" rel="stylesheet">
     <script src="bower_components/material-design-lite/material.min.js"></script>
+    <!-- Material Web Components -->
+    <link href="node_modules/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="node_modules/material-components-web/dist/material-components-web.min.js"></script>
     <!-- Material SelectField -->
     <link href="bower_components/mdl-select-component/mdl-selectfield.min.css" rel="stylesheet">
     <script src="bower_components/mdl-select-component/mdl-selectfield.min.js"></script>
@@ -65,9 +68,26 @@
             <div class="mdl-spinner mdl-js-spinner is-active"></div>
         </div>
         <div class="page-content">
-            <!-- TODO Unread Manga counts -->
-            <div id="library_wrapper"></div>
-            <div id="manga_grid" class="mdl-grid">
+            <div class="manga-wrapper">
+                <div id="manga_grid" class="mdl-grid"></div>
+            </div>
+            <div id="filter_menu" class="mdc-elevation--z16">
+                <div id="hide_filter_menu_btn" class="mdc-ripple-surface" data-mdc-auto-init="MDCRipple">
+                    <div id="hide_filter_menu_btn_txt">LOADING...</div>
+                </div>
+                <div id="filters_menu_content">
+                    <div id="filters_menu_top_row" class="mdc-elevation--z2">
+                        <button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">
+                            Search
+                        </button>
+                        <button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">
+                            Reset
+                        </button>
+                    </div>
+                    <div id="filters_box">
+                        <!-- TODO Actual filters -->
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Snackbar -->

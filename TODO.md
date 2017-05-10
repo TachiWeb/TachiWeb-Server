@@ -1,4 +1,4 @@
 # TODO List
-- API currently seems to throw away manga thumbnails and statuses?
-- API cannot download chapter metadata
 - Add the ability to load extension sources
+- Dialog polyfill may not be loaded on all pages where it is required. Breaks app on firefox.
+- Filter sidebar does not render correctly in Firefox

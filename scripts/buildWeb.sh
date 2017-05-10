@@ -2,6 +2,7 @@
 echo "Building web components..."
 pushd tachiwebui/src/main/resources/tachiweb-ui
 bower install
+npm install
 
 echo "Removing unnecessary files..."
 pushd bower_components

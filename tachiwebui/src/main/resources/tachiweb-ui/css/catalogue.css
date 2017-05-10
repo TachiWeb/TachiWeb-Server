@@ -36,3 +36,96 @@
 .mdl-layout__header {
     overflow: visible; /** Source dropdown breaks without this for some weird reason **/
 }
+
+.page-content {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.manga-wrapper {
+    flex-grow: 1;
+    overflow: auto;
+    float: left;
+    /* Uncomment to put filters alongside manga grid instead of on top of it */
+    /*width: calc(100% - 300px);*/
+    width: calc(100% - 40px);
+    transition: width 0.5s;
+}
+
+/* Uncomment to put filters alongside manga grid instead of on top of it */
+/*.page-content-filters-closed .manga-wrapper {
+    width: calc(100% - 40px);
+}*/
+
+.page-content-filters-open #filter_menu {
+    width: 300px;
+}
+
+.page-content-filters-open #filters_menu_content {
+    opacity: 1;
+}
+
+#filter_menu {
+    float: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    transition: width 0.5s;
+    background-color: white;
+    z-index: 1000;
+}
+
+#hide_filter_menu_btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    cursor: pointer;
+    border-right: 1px solid #BDBDBD;
+    /*transition: background-color 0.25s;*/
+}
+
+#hide_filter_menu_btn:hover {
+    /*background-color: #F5F5F5;*/
+}
+
+#hide_filter_menu_btn_txt {
+    opacity: 0.87;
+    writing-mode: tb-rl;
+    transform: rotate(180deg);
+    text-align: center;
+    padding: 0 10px;
+    height: 100%;
+}
+
+#filters_menu_content {
+    position: absolute;
+    left: 41px;
+    right: 0;
+    height: 100%;
+    overflow: auto;
+    opacity: 0;
+    transition: opacity 0.5s;
+    display: flex;
+    flex-direction: column;
+}
+
+#filters_menu_top_row > button {
+    display: inline-block;
+    display: -moz-inline-box;
+    *display: inline; /* For IE7 */
+    zoom: 1; /* Trigger hasLayout */
+    width: calc(49% - 16px);
+    margin: 8px;
+    text-align: center;
+}
+
+#filters_box {
+    flex-grow: 1;
+    overflow: auto;
+}

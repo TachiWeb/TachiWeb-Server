@@ -11,7 +11,7 @@ import xyz.nulldev.ts.api.http.HttpModule
 /**
  */
 
-fun main(args: Array<String>){
+fun main(args: Array<String>) {
     TachiServer().main(args)
 }
 

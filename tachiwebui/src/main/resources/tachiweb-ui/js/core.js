@@ -86,6 +86,12 @@ window.onload = function () {
     if (elementExists(snackbar)) {
         snackbar = snackbar.MaterialSnackbar;
     }
+
+    //Auto init MDC
+    if(typeof mdc !== 'undefined') {
+        mdc.autoInit();
+    }
+
     //Call other onload listeners
     if (valid(onLoad)) {
         onLoad();
