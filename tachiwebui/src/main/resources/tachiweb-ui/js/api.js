@@ -1,4 +1,4 @@
-var TWApi = {
+let TWApi = {
     //Setup the API
     init: function () {
         this.Commands = this.Commands();
@@ -10,8 +10,8 @@ var TWApi = {
         Root: "/api"
     },
     Commands: function () {
-        var that = this;
-        var built = {};
+        let that = this;
+        let built = {};
 
         function ApiCommand(name, endpoint, customUrlBuilder) {
             endpoint = that.Endpoints.Root + endpoint;
@@ -20,7 +20,7 @@ var TWApi = {
             };
             that.Endpoints[name] = endpoint;
             built[name] = this;
-            var objectBeingConstructed = this;
+            let objectBeingConstructed = this;
             //Setup URL builder
             if (!customUrlBuilder) {
                 customUrlBuilder = function () {
@@ -30,17 +30,17 @@ var TWApi = {
             this.buildUrl = customUrlBuilder;
             //API Request function
             this.execute = function (onSuccess, onError, parameters, onComplete, rawResponseProcessor, preProcessor, xhrBuilder, xhrSender) {
-                var onSuccessWrapper = function(res, xhr) {
-                    if(onSuccess) onSuccess(res, xhr);
+                let onSuccessWrapper = function (res, xhr) {
+                    if (onSuccess) onSuccess(res, xhr);
                 };
-                var onErrorWrapper = function(e, xhr) {
-                    if(onError) onError(e, xhr);
+                let onErrorWrapper = function (e, xhr) {
+                    if (onError) onError(e, xhr);
                 };
-                var onCompleteWrapper = function() {
-                    if(onComplete) onComplete();
+                let onCompleteWrapper = function () {
+                    if (onComplete) onComplete();
                 };
-                var builtUrl = objectBeingConstructed.buildUrl(parameters);
-                var xhr;
+                let builtUrl = objectBeingConstructed.buildUrl(parameters);
+                let xhr;
                 //Override XHR creation
                 if(xhrBuilder) {
                     xhr = xhrBuilder(builtUrl);
@@ -54,7 +54,7 @@ var TWApi = {
                         if (rawResponseProcessor) {
                             rawResponseProcessor(xhr);
                         } else {
-                            var res = JSON.parse(xhr.responseText);
+                            let res = JSON.parse(xhr.responseText);
                             if (res.success) {
                                 onSuccessWrapper(res, xhr);
                             } else {
@@ -115,8 +115,8 @@ var TWApi = {
             return this.endpoint() + "/" + parameters.mangaId + "?fave=" + parameters.favorite;
         });
         new ApiCommand("ReadingStatus", "/reading_status", function(parameters) {
-            var currentUrl = this.endpoint() + "/" + parameters.mangaId + "/" + parameters.chapterId;
-            var usedQuestionMark = false;
+            let currentUrl = this.endpoint() + "/" + parameters.mangaId + "/" + parameters.chapterId;
+            let usedQuestionMark = false;
             if (parameters.read !== undefined && parameters.read !== null) {
                 currentUrl += usedQuestionMark ? "&" : "?";
                 currentUrl += "read=" + parameters.read;
@@ -133,7 +133,7 @@ var TWApi = {
         });
         new ApiCommand("Sources", "/sources");
         new ApiCommand("Catalogue", "/catalogue", function (parameters) {
-            var currentUrl = this.endpoint() + "/" + parameters.sourceId + "/" + parameters.page;
+            let currentUrl = this.endpoint() + "/" + parameters.sourceId + "/" + parameters.page;
             if (parameters.query) {
                 currentUrl += "?query=" + encodeURIComponent(parameters.query);
             }
@@ -146,7 +146,7 @@ var TWApi = {
                 + "&password=" + encodeURIComponent(parameters.password);
         });
         new ApiCommand("Download", "/download", function (parameters) {
-            var builtUrl = this.endpoint() + "/" + parameters.mangaId + "/" + parameters.chapterId;
+            let builtUrl = this.endpoint() + "/" + parameters.mangaId + "/" + parameters.chapterId;
             if (parameters.del) {
                 builtUrl += "?delete=true";
             }
@@ -161,7 +161,7 @@ var TWApi = {
         });
         new ApiCommand("GetPrefs", "/prefs");
         new ApiCommand("SetPref", "/set_pref", function (parameters) {
-            var string = this.endpoint() + "/" + parameters.key + "/" + parameters.type;
+            let string = this.endpoint() + "/" + parameters.key + "/" + parameters.type;
             if (parameters.value !== null && parameters.value !== undefined) {
                 string += "?value=" + encodeURIComponent(parameters.value);
             }
@@ -171,7 +171,7 @@ var TWApi = {
             return this.endpoint() + "?password=" + encodeURIComponent(parameters.password);
         });
         new ApiCommand("ClearSessions", "/clear_sessions");
-	new ApiCommand("GetCategories", "/get_categories");
+        new ApiCommand("GetCategories", "/get_categories");
         new ApiCommand("EditCategories", "/edit_categories", function(parameters) {
             let currentUrl = this.endpoint() + "/" + parameters.operation;
 
