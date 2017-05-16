@@ -37,7 +37,7 @@ class ListLoginSourceRoute : TachiWebRoute() {
     override fun handleReq(request: Request, response: Response): Any {
         val builtResponse = success()
         val content = JSONArray()
-        for (source in sourceManager.getOnlineSources()
+        for (source in sourceManager.getCatalogueSources()
                 .filter {
                     normalSource -> normalSource is LoginSource
                 }

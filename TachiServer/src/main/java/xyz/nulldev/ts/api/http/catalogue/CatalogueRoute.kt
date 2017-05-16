@@ -15,7 +15,8 @@
  */
 
 package xyz.nulldev.ts.api.http.catalogue
-
+import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.source.CatalogueSource
@@ -28,6 +29,7 @@ import rx.Observable
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
+import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import xyz.nulldev.ts.api.http.serializer.MangaSerializer
 import xyz.nulldev.ts.ext.kInstanceLazy
 
@@ -38,40 +40,44 @@ class CatalogueRoute : TachiWebRoute() {
 
     private val sourceManager: SourceManager by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
-    private val mangaSerializer = MangaSerializer()
+    private val mangaSerializer: MangaSerializer by kInstanceLazy()
+    private val filtersSerializer: FilterSerializer by kInstanceLazy()
+    private val jsonParser: JsonParser by kInstanceLazy()
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun handleReq(request: Request, response: Response): Any {
         try {
             //Get/parse parameters
-            val sourceId = request.params(":sourceId")?.toLong()
+            val parsedBody = jsonParser.parse(request.body()).nullObj
+                    ?: return error("Invalid request!")
+
+            val sourceId = parsedBody["sourceId"].nullLong
                     ?: return error("SourceID must be specified!")
-            val page = request.params(":page")?.toInt()
+            val page = parsedBody["page"].nullInt
                     ?: return error("Page must be specified!")
-            val query = request.queryParams("query")
+            val query = parsedBody["query"].nullString
+            val filters = parsedBody["filters"].nullArray
 
             //Try to resolve source
-            val onlineSource = sourceManager.get(sourceId)
+            val catalogueSource = sourceManager.get(sourceId)
                     ?: return error("The specified source does not exist!")
-            if(onlineSource !is CatalogueSource) {
+            if(catalogueSource !is CatalogueSource) {
                 return error("The specified source is not a CatalogueSource!")
             }
 
             //Parse filters
-            //TODO
-//            val filters = request.queryParamsValues("filter").map { id ->
-//                return onlineSource.getFilterList().find {
-//                    it.id == id
-//                } ?: return@map error("'$id' is not a valid filter ID!")
-//            }
+            val filtersObj = catalogueSource.getFilterList()
+            filters?.let {
+                filtersSerializer.deserialize(filtersObj, it)
+            }
 
             //Get catalogue from source
             val observable: Observable<MangasPage>
-            if (!query.isNullOrEmpty()) {
-                observable = onlineSource.fetchSearchManga(page, query, onlineSource.getFilterList())
+            if (!query.isNullOrEmpty() || filters != null) {
+                observable = catalogueSource.fetchSearchManga(page, query ?: "", filtersObj)
             } else {
-                observable = onlineSource.fetchPopularManga(page)
+                observable = catalogueSource.fetchPopularManga(page)
             }
             //Actually get manga from catalogue
             val pageObj = observable.toBlocking().first()
@@ -109,9 +115,6 @@ class CatalogueRoute : TachiWebRoute() {
 
     companion object {
         val KEY_CONTENT = "content"
-        val KEY_TITLE = "title"
-        val KEY_ID = "id"
         val KEY_HAS_NEXT_URL = "has_next"
-        val KEY_FAVORITE = "favorite"
     }
 }

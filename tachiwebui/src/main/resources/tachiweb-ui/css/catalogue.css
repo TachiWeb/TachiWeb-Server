@@ -101,6 +101,7 @@
     text-align: center;
     padding: 0 10px;
     height: 100%;
+    width: 20px;
 }
 
 #filters_menu_content {
@@ -128,4 +129,61 @@
 #filters_box {
     flex-grow: 1;
     overflow: auto;
+    padding: 16px;
+}
+
+.filters-separator {
+    height: 1px;
+    background-color: black;
+    opacity: 0.12;
+}
+
+.filters-textfield {
+    width: 100%;
+    margin-top: 0 !important;
+}
+
+.filters-textfield > .mdc-textfield__input {
+    width: 100%;
+}
+
+.filters-select {
+    width: 100%;
+}
+
+.filters-select-label {
+    padding-right: 8px;
+    padding-top: 10px;
+}
+
+.filters-select-wrapper {
+    display: flex;
+}
+
+.filters-fullwidth {
+    margin: 8px -16px;
+}
+
+.filters-group-header {
+    padding: 8px;
+    color: var(--mdc-theme-text-primary-on-primary);
+    background-color: var(--mdc-theme-primary);
+    cursor: pointer;
+}
+
+.filters-checkbox-wrapper {
+    width: 100%;
+}
+
+.filters-group-icon {
+    float: right;
+    transition: all 0.25s;
+}
+
+.filters-group-icon-closed {
+    transform: rotate(-90deg);
+}
+
+.filters-group-text {
+    display: inline-block;
 }

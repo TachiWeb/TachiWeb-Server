@@ -33,7 +33,7 @@ class ListSourcesRoute : TachiWebRoute() {
     private val sourceManager: SourceManager by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
-        val sources = sourceManager.getOnlineSources()
+        val sources = sourceManager.getCatalogueSources()
         val rootObject = success()
         val contentArray = JSONArray()
         for (source in sources) {

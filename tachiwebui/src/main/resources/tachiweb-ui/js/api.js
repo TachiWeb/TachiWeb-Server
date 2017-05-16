@@ -13,7 +13,7 @@ let TWApi = {
         let that = this;
         let built = {};
 
-        function ApiCommand(name, endpoint, customUrlBuilder) {
+        function ApiCommand(name, endpoint, customUrlBuilder, protocol = "GET") {
             endpoint = that.Endpoints.Root + endpoint;
             this.endpoint = function () {
                 return that.Endpoints[name];
@@ -47,7 +47,7 @@ let TWApi = {
                 }
                 if(!xhr) {
                     xhr = new XMLHttpRequest();
-                    xhr.open("GET", builtUrl, true);
+                    xhr.open(protocol, builtUrl, true);
                 }
                 xhr.onload = function () {
                     try {
@@ -132,13 +132,7 @@ let TWApi = {
             return this.endpoint() + "/" + parameters.mangaId + "/" + parameters.updateType;
         });
         new ApiCommand("Sources", "/sources");
-        new ApiCommand("Catalogue", "/catalogue", function (parameters) {
-            let currentUrl = this.endpoint() + "/" + parameters.sourceId + "/" + parameters.page;
-            if (parameters.query) {
-                currentUrl += "?query=" + encodeURIComponent(parameters.query);
-            }
-            return currentUrl;
-        });
+        new ApiCommand("Catalogue", "/catalogue", null, "POST");
         new ApiCommand("LoginSources", "/list_login_sources");
         new ApiCommand("SourceLogin", "/source_login", function (parameters) {
             return this.endpoint() + "/" + parameters.sourceId
@@ -192,6 +186,9 @@ let TWApi = {
             }
 
             return currentUrl;
+        });
+        new ApiCommand("GetFilters", "/get_filters", function(parameters) {
+            return this.endpoint() + "/" + parameters.id;
         });
         return built;
     }

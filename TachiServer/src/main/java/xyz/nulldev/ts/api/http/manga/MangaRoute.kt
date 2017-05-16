@@ -30,8 +30,8 @@ import xyz.nulldev.ts.ext.kInstanceLazy
  */
 class MangaRoute : TachiWebRoute() {
 
-    private val mangaSerializer = MangaSerializer()
     private val db: DatabaseHelper by kInstanceLazy()
+    private val mangaSerializer: MangaSerializer by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
         val mangaId = request.params(":mangaId")?.toLong()

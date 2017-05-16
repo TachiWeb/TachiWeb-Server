@@ -31,8 +31,8 @@ import xyz.nulldev.ts.ext.kInstanceLazy
  */
 class LibraryRoute : TachiWebRoute() {
 
-    private val mangaSerializer = MangaSerializer()
     private val db: DatabaseHelper by kInstanceLazy()
+    private val mangaSerializer: MangaSerializer by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
         val array = JSONArray()

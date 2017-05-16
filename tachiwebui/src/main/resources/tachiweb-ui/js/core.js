@@ -22,6 +22,13 @@ var QueryString = function () {
     return query_string;
 }();
 
+//MDC
+let MDCCheckbox;
+let MDCFormField;
+let MDCTextfield;
+let MDCSelect;
+let MDCRipple;
+
 //Remove all children from element
 function clearElement(myNode) {
     while (rawElement(myNode).firstChild) {
@@ -79,6 +86,15 @@ function arraymove(arr, fromIndex, toIndex) {
     arr.splice(toIndex, 0, element);
 }
 
+function setupMDC() {
+    mdc.autoInit();
+    MDCCheckbox = mdc.checkbox.MDCCheckbox;
+    MDCFormField = mdc.formField.MDCFormField;
+    MDCTextfield = mdc.textfield.MDCTextfield;
+    MDCSelect = mdc.select.MDCSelect;
+    MDCRipple = mdc.ripple.MDCRipple;
+}
+
 //Catch onload
 window.onload = function () {
     //Setup snackbar
@@ -89,7 +105,7 @@ window.onload = function () {
 
     //Auto init MDC
     if(typeof mdc !== 'undefined') {
-        mdc.autoInit();
+        setupMDC();
     }
 
     //Call other onload listeners

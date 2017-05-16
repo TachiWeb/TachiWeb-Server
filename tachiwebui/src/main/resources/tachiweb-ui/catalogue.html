@@ -45,6 +45,7 @@
         <!-- Top row, always visible -->
         <div class="mdl-layout__header-row">
             <!-- Title -->
+            <!-- TODO Replace with MDC selectfield -->
             <div class="mdl-selectfield mdl-js-selectfield">
                 <select id="sources_select" class="mdl-selectfield__select">
                     <option value="">Loading sources...</option>
@@ -77,10 +78,10 @@
                 </div>
                 <div id="filters_menu_content">
                     <div id="filters_menu_top_row" class="mdc-elevation--z2">
-                        <button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">
+                        <button id="filters_search_btn" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">
                             Search
                         </button>
-                        <button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">
+                        <button id="filters_reset_btn" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">
                             Reset
                         </button>
                     </div>
