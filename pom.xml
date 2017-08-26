@@ -11,17 +11,18 @@
     <modules>
         <module>Tachiyomi-App</module>
         <module>AndroidCompat</module>
-        <module>TSApi</module>
         <module>TachiServer</module>
         <module>junrarandroid</module>
         <module>tachiwebui</module>
-        <module>TachiyomiCompat</module>
     </modules>
 
     <properties>
-        <kotlin.version>1.1.0</kotlin.version>
+        <kotlin.version>1.1.4</kotlin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <buildPlugin.maven-compiler-plugin.version>3.6.2</buildPlugin.maven-compiler-plugin.version>
+        <buildPlugin.build-helper-maven-plugin.version>3.0.0</buildPlugin.build-helper-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -134,7 +135,7 @@
     <repositories>
         <repository>
             <id>local-repo</id>
-            <url>file://${basedir}/local-repo</url>
+            <url>file://${user.dir}/local-repo</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

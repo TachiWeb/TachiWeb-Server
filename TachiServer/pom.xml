@@ -11,10 +11,6 @@
 
     <artifactId>tachiserver</artifactId>
 
-    <properties>
-        <kotlin.version>1.1.0</kotlin.version>
-    </properties>
-
     <dependencies>
         <!-- AndroidCompat -->
         <dependency>
@@ -86,6 +82,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${buildPlugin.maven-compiler-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>compile</id>
