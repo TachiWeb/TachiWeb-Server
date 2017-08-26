@@ -26,6 +26,6 @@ Once the build completes, the binary can be found at: `TachiServer/target/tachis
 
 3. You can now try running the program:
 ```
-cd TachiServer/target/
-java -jar java -jar tachiserver-*-jar-with-dependencies.jar
+cd TachiServer/target
+java -jar tachiserver-*-jar-with-dependencies.jar
 ```
