@@ -23,6 +23,8 @@
 
         <buildPlugin.maven-compiler-plugin.version>3.6.2</buildPlugin.maven-compiler-plugin.version>
         <buildPlugin.build-helper-maven-plugin.version>3.0.0</buildPlugin.build-helper-maven-plugin.version>
+
+        <main.class>xyz.nulldev.ts.TachiServer</main.class>
     </properties>
 
     <dependencies>

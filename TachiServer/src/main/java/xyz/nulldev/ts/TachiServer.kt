@@ -9,17 +9,14 @@ import xyz.nulldev.ts.api.http.HttpAPI
 import xyz.nulldev.ts.api.http.HttpModule
 
 /**
+ * Server bootstrap class
  */
-
-fun main(args: Array<String>) {
-    TachiServer().main(args)
-}
 
 class TachiServer {
 
     val androidCompat by lazy { AndroidCompat() }
 
-    fun main(args: Array<String>) {
+    fun run(args: Array<String>) {
         //Load Android compatibility dependencies
         AndroidCompatInitializer().init()
         //Load TachiServer and Tachiyomi dependencies
@@ -35,5 +32,12 @@ class TachiServer {
 
         //Start HTTP API
         HttpAPI().start()
+    }
+
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            TachiServer().run(args)
+        }
     }
 }
