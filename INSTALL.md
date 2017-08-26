@@ -29,3 +29,4 @@ Once the build completes, the binary can be found at: `TachiServer/target/tachis
 cd TachiServer/target
 java -jar tachiserver-*-jar-with-dependencies.jar
 ```
+The web server runs on port `4567`. Access it in your browser here: http://127.0.0.1:4567/.
