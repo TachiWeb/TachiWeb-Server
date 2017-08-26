@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+
+# Check commands
+function checkCommand() {
+    command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 is required but it's not installed. Aborting!"; exit 1; }
+}
+
+checkCommand bower
+checkCommand npm
+checkCommand curl
+checkCommand zip
+checkCommand unzip
+checkCommand mvn
+
 # Build UI components
 chmod +x scripts/buildWeb.sh
 scripts/buildWeb.sh
@@ -14,4 +27,4 @@ chmod +x scripts/getAndroidLib.sh
 # Remove old build
 rm -rf target
 # Build and package server into JAR
-mvn clean package -U
+mvn clean package -U -Dmaven.repo.local=local-repo/
