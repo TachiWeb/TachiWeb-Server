@@ -1,0 +1,33 @@
+plugins {
+    id "application"
+}
+
+mainClassName = "xyz.nulldev.ts.TachiServer"
+
+dependencies {
+    // AndroidCompat
+    compile project(":AndroidCompat")
+
+    // Tachiyomi-App
+    compile project(":Tachiyomi-App")
+
+    // Tachiyomi API
+    compile project(":tachiwebui")
+
+    // Spark Web Framework
+    compile "com.sparkjava:spark-core:2.5.5"
+    compile "junit:junit:4.12"
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+assemble.dependsOn fatJar
+

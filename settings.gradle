@@ -1,0 +1,13 @@
+// Constants
+gradle.ext.kotlinVersion = "1.1.4-3"
+
+// Subprojects
+
+// JVM
+include 'AndroidCompat'
+include 'junrarandroid'
+include 'TachiServer'
+include 'Tachiyomi-App'
+
+//JS
+include 'tachiwebui'

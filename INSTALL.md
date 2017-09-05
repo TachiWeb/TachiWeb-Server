@@ -10,8 +10,10 @@
 - curl
 - zip
 - unzip
-- mvn >= 3.0.0
 - bash
+- java >= 8
+- grep
+- realpath
 
 ### Building
 1. Download the source code:
@@ -22,11 +24,11 @@ git clone https://github.com/null-dev/TW-Compat
 ```
 scripts/build.sh
 ```
-Once the build completes, the binary can be found at: `TachiServer/target/tachiserver-$VERSION-jar-with-dependencies.jar`
+Once the build completes, the binary can be found at: `TachiServer/build/libs/TachiServer-all-$VERSION.jar`
 
 3. You can now try running the program:
 ```
-cd TachiServer/target
-java -jar tachiserver-*-jar-with-dependencies.jar
+cd TachiServer/build/libs
+java -jar TachiServer-all-*.jar
 ```
 The web server runs on port `4567`. Access it in your browser here: http://127.0.0.1:4567/.

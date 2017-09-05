@@ -1,0 +1,13 @@
+dependencies {
+    // Android stub library
+    compile fileTree(dir: new File(rootProject.rootDir, "libs/android"), include: "*.jar")
+
+    // Android JAR libs
+    compile fileTree(dir: new File(rootProject.rootDir, "libs/other"), include: "*.jar")
+
+    // JSON
+    compile "org.json:json:20160810"
+
+    // Javassist
+    compile "org.javassist:javassist:3.21.0-GA"
+}

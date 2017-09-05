@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+echo "Checking if library folder initialized..."
+if [ ! -d "libs" ]; then
+    echo "Library folder not initialized!"
+    exit 1
+fi
 echo "Checking if local repo initialized..."
 if [ ! -d "local-repo" ]; then
     echo "Local repo not initialized!"
@@ -38,18 +43,40 @@ echo "Removing java..."
 zip --delete android.jar java/*
 
 echo "Removing overriden classes..."
+zip --delete android.jar android/app/Application.class
+zip --delete android.jar android/app/Service.class
 zip --delete android.jar android/net/Uri.class
 zip --delete android.jar 'android/net/Uri$Builder.class'
 zip --delete android.jar android/os/Environment.class
 zip --delete android.jar android/text/format/Formatter.class
 zip --delete android.jar android/text/Html.class
 
+# Dedup overriden Android classes
+ABS_JAR="$(realpath android.jar)"
+function dedup() {
+    pushd "$1"
+    CLASSES="$(find * - type f)"
+    echo "$CLASSES" | while read class
+    do
+        NAME="${class%.*}"
+        echo "Processing class: $NAME"
+        zip --delete "$ABS_JAR" "$NAME.class" "$NAME\$*.class" "${NAME}Kt.class" "${NAME}Kt\$*.class"
+    done
+    popd
+}
+
+pushd ..
+dedup AndroidCompat/src/main/java
+dedup junrarandroid/src/main/java
+dedup TachiServer/src/main/java
+dedup Tachiyomi-App/src/main/java
+dedup Tachiyomi-App/src/compat/java
 popd
-echo "Installing Android.jar to local repo..."
-mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
-                         -Dfile=tmp/android.jar -DgroupId=android \
-                         -DartifactId=android -Dversion=1.01 \
-                         -Dpackaging=jar -DlocalRepositoryPath=local-repo
+
+popd
+echo "Copying Android.jar to library folder..."
+mkdir -p libs/android
+cp tmp/android.jar libs/android/
 
 function prepareSupportAnnotations() {
     echo "Getting required support-annotations-$1.jar..."
@@ -63,6 +90,7 @@ function prepareSupportAnnotations() {
 }
 
 prepareSupportAnnotations "23.4.0"
+prepareSupportAnnotations "25.0.1"
 prepareSupportAnnotations "26.0.1"
 
 echo "Cleaning up..."

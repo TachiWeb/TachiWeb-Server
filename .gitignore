@@ -4,3 +4,6 @@ target
 build
 *.iml
 /test
+/.gradle/buildOutputCleanup
+package-lock.json
+/libs

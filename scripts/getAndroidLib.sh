@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Download and convert Android libraries to Java libraries
 
-echo "Checking if local repo initialized..."
-if [ ! -d "local-repo" ]; then
-    echo "Local repo not initialized!"
+echo "Checking if library folder initialized..."
+if [ ! -d "libs" ]; then
+    echo "Library folder not initialized!"
     exit 1
 fi
 
@@ -31,12 +31,10 @@ function downloadLib {
     curl "$URL" -o "$JARFILE"
     echo "Extracting classes.jar from $JARFILE"
     unzip "$JARFILE" "classes.jar"
-    echo "Installing library to local repo..."
+    echo "Installing library to library folder..."
     cd ..
-    mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
-                         -Dfile=tmp/classes.jar "-DgroupId=${splitPkg[0]}" \
-                         "-DartifactId=${splitPkg[1]}" "-Dversion=${splitPkg[2]}" \
-                         -Dpackaging=jar -DlocalRepositoryPath=local-repo
+    mkdir -p libs/other
+    cp tmp/classes.jar "libs/other/${splitPkg[0]}-${splitPkg[1]}-${splitPkg[2]}.jar"
     echo "Cleaning up..."
     rm -rf "tmp"
 }
