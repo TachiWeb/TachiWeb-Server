@@ -37,6 +37,7 @@ import java.io.FileFilter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Exposes methods to manage a SQLite database.
@@ -2040,6 +2041,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
     private Connection connection;
     private Deque<Transaction> transactionStack = new ArrayDeque<>();
     private boolean transactionStackInvalidated = false;
+    private ReentrantLock transactionLock = new ReentrantLock();
 
     private synchronized void B_initDriver() {
         try {
@@ -2133,10 +2135,14 @@ public final class SQLiteDatabase extends SQLiteClosable {
                 throw new SQLiteException("Failed to commit transaction!", e);
             }
         }
+        transactionLock.unlock();
     }
 
-    private synchronized void B_beginTransaction(SQLiteTransactionListener transactionListener,
+    //Do not synchronize this method as it conflicts with the transaction lock
+    private void B_beginTransaction(SQLiteTransactionListener transactionListener,
                                   boolean exclusive) { //TODO Deal with "exclusive" arg
+        transactionLock.lock();
+
         if(transactionListener == null)
             transactionListener = NoOpSQLiteTransactionListener.INSTANCE;
 
