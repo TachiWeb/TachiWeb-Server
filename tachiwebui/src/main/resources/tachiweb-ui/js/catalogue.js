@@ -89,7 +89,23 @@ function setupFilterToggle() {
         updateFiltersBtnText();
     });
 
+    //Workaround writing-mode bug
+    requestAnimationFrame(tryReflowFiltersBtnText);
+
     updateFiltersBtnText();
+}
+
+function tryReflowFiltersBtnText() {
+    if(toggleFiltersBtnText.height() <= 0) {
+        toggleFiltersBtnText.css("display", "none");
+        //Wait until browser has reflowed the page
+        requestAnimationFrame(function() {
+            toggleFiltersBtnText.css("display", "initial");
+            requestAnimationFrame(tryReflowFiltersBtnText);
+        });
+    } else {
+        requestAnimationFrame(tryReflowFiltersBtnText);
+    }
 }
 
 function setupLoginDialog() {
