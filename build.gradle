@@ -38,6 +38,9 @@ configure(javaProjects) {
     apply plugin: "org.jetbrains.kotlin.jvm"
 
     dependencies {
+        // Kotson
+        compile "com.github.salomonbrys.kotson:kotson:2.5.0"
+
         // JSoup
         compile "org.jsoup:jsoup:1.10.2"
 

@@ -10,6 +10,8 @@ class ChapterImpl : Chapter {
 
     override lateinit var name: String
 
+    override var scanlator: String? = null
+
     override var read: Boolean = false
 
     override var bookmark: Boolean = false
@@ -29,9 +31,7 @@ class ChapterImpl : Chapter {
         if (other == null || javaClass != other.javaClass) return false
 
         val chapter = other as Chapter
-
         return url == chapter.url
-
     }
 
     override fun hashCode(): Int {

@@ -22,9 +22,6 @@ dependencies {
     // Gson
     compile "com.google.code.gson:gson:2.8.0"
 
-    // Kotson
-    compile "com.github.salomonbrys.kotson:kotson:2.5.0"
-
     // DiskLRUCache
     compile "com.jakewharton:disklrucache:2.0.2"
 

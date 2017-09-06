@@ -16,8 +16,11 @@ import java.security.NoSuchAlgorithmException
 object DiskUtil {
 
     fun isImage(name: String, openStream: (() -> InputStream)? = null): Boolean {
-        val contentType = URLConnection.guessContentTypeFromName(name)
-                ?: openStream?.let { findImageMime(it) }
+        val contentType = try {
+            URLConnection.guessContentTypeFromName(name)
+        } catch (e: Exception) {
+            null
+        } ?: openStream?.let { findImageMime(it) }
 
         return contentType?.startsWith("image/") ?: false
     }
@@ -104,13 +107,20 @@ object DiskUtil {
      * Scans the given file so that it can be shown in gallery apps, for example.
      */
     fun scanMedia(context: Context, file: File) {
+        scanMedia(context, Uri.fromFile(file))
+    }
+
+    /**
+     * Scans the given file so that it can be shown in gallery apps, for example.
+     */
+    fun scanMedia(context: Context, uri: Uri) {
         val action = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             Intent.ACTION_MEDIA_MOUNTED
         } else {
             Intent.ACTION_MEDIA_SCANNER_SCAN_FILE
         }
         val mediaScanIntent = Intent(action)
-        mediaScanIntent.data = Uri.fromFile(file)
+        mediaScanIntent.data = uri
         context.sendBroadcast(mediaScanIntent)
     }
 

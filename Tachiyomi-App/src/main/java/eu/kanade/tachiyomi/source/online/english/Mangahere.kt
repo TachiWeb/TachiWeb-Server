@@ -57,7 +57,7 @@ class Mangahere : ParsedHttpSource() {
     override fun latestUpdatesNextPageSelector() = "div.next-page > a.next"
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
-        val url = HttpUrl.parse("$baseUrl/search.php?name_method=cw&author_method=cw&artist_method=cw&advopts=1").newBuilder().addQueryParameter("name", query)
+        val url = HttpUrl.parse("$baseUrl/search.php?name_method=cw&author_method=cw&artist_method=cw&advopts=1")!!.newBuilder().addQueryParameter("name", query)
         (if (filters.isEmpty()) getFilterList() else filters).forEach { filter ->
             when (filter) {
                 is Status -> url.addQueryParameter("is_completed", arrayOf("", "1", "0")[filter.state])
@@ -152,6 +152,11 @@ class Mangahere : ParsedHttpSource() {
     }
 
     override fun pageListParse(document: Document): List<Page> {
+        val licensedError = document.select(".mangaread_error > .mt10").first()
+        if (licensedError != null) {
+            throw Exception(licensedError.text())
+        }
+
         val pages = mutableListOf<Page>()
         document.select("select.wid60").first()?.getElementsByTag("option")?.forEach {
             pages.add(Page(pages.size, it.attr("value")))
