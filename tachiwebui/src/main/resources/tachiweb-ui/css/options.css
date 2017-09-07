@@ -17,3 +17,38 @@
 .mdl-radio {
     display: block;
 }
+
+/** Sources styles **/
+.sources-wrapper {
+    user-select: none;
+}
+
+.sources-group {
+    border-bottom: 1px solid #bdbdbd;
+}
+
+.sources-item {
+    position: relative;
+    height: 40px;
+    padding: 0 16px;
+}
+
+.sources-item-wrapper {
+    font-weight: bold;
+}
+
+.sources-item-label {
+    height: 40px;
+    line-height: 40px;
+}
+
+.sources-source-label {
+    padding-left: 8px;
+}
+
+.sources-item-switch {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+}

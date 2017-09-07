@@ -1,40 +1,40 @@
 /*
  * Simple MDL settings page generator
  */
-var Options = {};
+let Options = {};
 (function () {
     const PREFS_URL = "prefs/schema.json";
     const OPTION_ELEMENT_CLASSNAME = "option-list";
 
-    var errorHandlers = [];
-    var onError = function (error) {
-        for (var i = 0; i < errorHandlers.length; i++) {
+    let errorHandlers = [];
+    let onError = function (error) {
+        for (let i = 0; i < errorHandlers.length; i++) {
             errorHandlers[i](error);
         }
     };
 
     //Generators for each type of settings
-    var optionElementGenerators = {};
+    let optionElementGenerators = {};
 
-    var optionsData = null; //Local copy of preference states
-    var optionsSchema = null; //UI layout (stack)
-    var optionsTitles = ["Settings"]; //Header titles (stack)
+    let optionsData = null; //Local copy of preference states
+    let optionsSchema = null; //UI layout (stack)
+    let optionsTitles = ["Settings"]; //Header titles (stack)
 
-    var domInitialized = false; //For initializing components that cannot be initialized with the DOM being fully loaded
+    let domInitialized = false; //For initializing components that cannot be initialized with the DOM being fully loaded
 
-    var optionsElements = null; //Elements that the options menu is attached to (can be attached to multiple elements to mirror user actions across elements)
-    var ensureInitialized = function () {
+    let optionsElements = null; //Elements that the options menu is attached to (can be attached to multiple elements to mirror user actions across elements)
+    let ensureInitialized = function () {
         if (optionsElements === null) {
             throw "Options not initialized (ensure Options.registerJqueryElement was called)!";
         }
     };
 
     //Update title and back button
-    var updateHeader = function () {
+    let updateHeader = function () {
         //Update back button
-        var drawerButton = $(".mdl-layout__drawer-button");
-        var backButton = $(".back-button");
-        if (optionsSchema.length === null || optionsSchema.length <= 1) {
+        let drawerButton = $(".mdl-layout__drawer-button");
+        let backButton = $(".back-button");
+        if (optionsTitles.length === null || optionsTitles.length <= 1) {
             drawerButton.show();
             backButton.hide();
         } else {
@@ -46,13 +46,13 @@ var Options = {};
     };
 
     //Initialize components that require the DOM to be fully loaded (only called once)
-    var initialSetup = function () {
+    let initialSetup = function () {
         //Back button
         $(".back-button").click(function () {
             Options.popSchema();
         });
         //Dialog polyfills
-        var dialog = Options.getDialogElement();
+        let dialog = Options.getDialogElement();
         if (!dialog[0].showModal) {
             dialogPolyfill.registerDialog(dialog[0]);
         }
@@ -69,7 +69,7 @@ var Options = {};
             initialSetup();
         }
         //Create options list and append to inside of element
-        var optionElement = document.createElement("ul");
+        let optionElement = document.createElement("ul");
         optionElement.className = OPTION_ELEMENT_CLASSNAME + " mdl-list";
         componentHandler.upgradeElement(optionElement);
         optionElement = $(optionElement);
@@ -96,7 +96,7 @@ var Options = {};
      * Fetch the UI layout from the server
      */
     Options.refreshSchema = function () {
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.open("GET", PREFS_URL, true);
         xhr.onload = function () {
             optionsSchema = [JSON.parse(xhr.responseText)];
@@ -123,20 +123,41 @@ var Options = {};
         //Clear old render state
         optionsElements.empty();
         //Get UI layout at top of stack
-        var currentSchema = Options.getCurrentSchema();
-        for (var i = 0; i < currentSchema.length; i++) {
-            var optionSchema = currentSchema[i];
+        const currentSchema = Options.getCurrentSchema();
+        for (let i = 0; i < currentSchema.length; i++) {
+            const optionSchema = currentSchema[i];
             //Determine current value of this setting
-            var value = undefined;
+            let value = undefined;
             if (optionSchema.key !== null && optionSchema.key !== undefined) {
-                var optionsDataElement = optionsData[optionSchema.key];
-                if (optionsDataElement !== null && optionsDataElement !== undefined) {
-                    value = optionsDataElement.v;
+                //Support preferences mapping to multiple preference keys
+                if(Array.isArray(optionsSchema.key)) {
+                    value = {};
+                    optionsSchema.forEach(function(t) {
+                        const optionsDataElement = optionsData[t];
+                        if (optionsDataElement !== null && optionsDataElement !== undefined) {
+                            value[t] = optionsDataElement.v;
+                        } else {
+                            value[t] = optionSchema.default[t];
+                        }
+                        //Deep clone all arrays passed to preference
+                        if(value[t] != null && Array.isArray(value[t])) {
+                            value[t] = value[t].slice(0);
+                        }
+                    });
+                } else {
+                    const optionsDataElement = optionsData[optionSchema.key];
+                    if (optionsDataElement !== null && optionsDataElement !== undefined) {
+                        value = optionsDataElement.v;
+                    }
                 }
             }
             //Fallback to default if the value of this setting was not specified
             if (value === undefined || value === null) {
                 value = optionSchema.default;
+            }
+            //Deep clone all arrays passed to preference
+            if(value != null && Array.isArray(value)) {
+                value = value.slice(0);
             }
             //Render element and append to UI element list
             resolveOptionsElement(optionSchema.type, optionSchema, value).appendTo(optionsElements);
@@ -146,24 +167,65 @@ var Options = {};
 
     //Save data changes (and revert changes if the save failed)
     Options.saveDataChange = function (element, schemaEntry, oldValue, newValue) {
-        var generator = getElementGenerator(element);
-        TWApi.Commands.SetPref.execute(function () {
-            //Save changes to local data structure if it was successfully saved to the remote data structure
-            var prefObj = optionsData[schemaEntry.key];
-            if (prefObj === null || prefObj === undefined) {
-                prefObj = {};
-                optionsData[schemaEntry.key] = prefObj;
-            }
-            prefObj.v = newValue;
-        }, function () {
+        const generator = getElementGenerator(element);
+
+        let localNewValue;
+        let localOldValue;
+        let multipleKeyMapping = Array.isArray(schemaEntry.key);
+        const saveQueue = [];
+        if(multipleKeyMapping) {
+            schemaEntry.key.forEach(function(t) {
+                saveQueue.push(t);
+            });
+            // Shallow clone new value for reverting in the case of failure
+            localOldValue = Object.assign({}, newValue);
+            localNewValue = newValue;
+        } else {
+            saveQueue.push(schemaEntry.key);
+            localNewValue = {};
+            localNewValue[schemaEntry.key] = newValue;
+        }
+
+        function fail() {
             //Error saving changes, revert them on our side
             onError();
-            generator.setValue(element, oldValue);
-        }, {
-            key: schemaEntry.key,
-            type: generator.type,
-            value: newValue
-        });
+            //Update entries that have not been saved yet
+            if(multipleKeyMapping) {
+                saveQueue.forEach(function(t) {
+                    localOldValue[t] = oldValue[t];
+                });
+            }
+            generator.setValue(element, multipleKeyMapping ? localOldValue : oldValue);
+        }
+
+        function saveNext() {
+            if(saveQueue.length > 0) {
+                let key = saveQueue[saveQueue.length - 1];
+                let type = multipleKeyMapping ? schemaEntry.pref_types[key] : generator.type;
+                TWApi.Commands.SetPref.execute(function () {
+                    //Save changes to local data structure if it was successfully saved to the remote data structure
+                    let prefObj = optionsData[key];
+                    if (prefObj === null || prefObj === undefined) {
+                        prefObj = {};
+                        optionsData[key] = prefObj;
+                    }
+                    prefObj.v = localNewValue[key];
+                    //Set item as saved
+                    saveQueue.pop();
+                    //Save next item
+                    saveNext();
+                }, fail, {
+                    key: key,
+                    //Specify type in schema for multiple-key preferences
+                    type: type,
+                    //Convert string sets to JSON arrays
+                    value: type === "string_set" ? JSON.stringify(localNewValue[key]) : localNewValue[key]
+                });
+            }
+        }
+
+        //Save first item
+        saveNext();
     };
 
     /**
@@ -171,13 +233,13 @@ var Options = {};
      *
      * Get the generator responsible for generating the element for this type of setting
      */
-    var resolveOptionsElement = function (type, schema, value) {
-        var generator = optionElementGenerators[type];
+    let resolveOptionsElement = function (type, schema, value) {
+        const generator = optionElementGenerators[type];
         if (generator === null) {
             console.error("No generator found for this element!");
             return null;
         }
-        var element = generator.generate(schema);
+        const element = generator.generate(schema);
         if (value !== null && value !== undefined && generator.setValue) {
             generator.setValue(element, value);
         }
@@ -189,7 +251,7 @@ var Options = {};
      * Get the generator of an element
      * @param element The element
      */
-    var getElementGenerator = function (element) {
+    let getElementGenerator = function (element) {
         return element.data("generator");
     };
 
@@ -243,7 +305,7 @@ var Options = {};
      * Remove the topmost UI layout from the top of the stack (exiting submenu)
      */
     Options.popSchema = function () {
-        var newSchema = optionsSchema.pop();
+        const newSchema = optionsSchema.pop();
         optionsTitles.pop();
         Options.updateUI();
         return newSchema;
@@ -256,22 +318,22 @@ var Options = {};
      * @returns {{listItem: Element, title: Element, primaryContent: Element, secondaryContent: Element}}
      */
     Options.generateBaseItem = function (text, desc) {
-        var listItem = document.createElement("li");
+        const listItem = document.createElement("li");
         listItem.className = "mdl-list__item preference-item";
-        var primaryContent = document.createElement("span");
+        const primaryContent = document.createElement("span");
         primaryContent.className = "mdl-list__item-primary-content";
-        var title = document.createElement("span");
+        const title = document.createElement("span");
         title.textContent = text;
         primaryContent.appendChild(title);
         if (desc !== "" && desc !== null && desc !== undefined && desc.trim() !== "") {
             listItem.classList.add("mdl-list__item--two-line");
-            var description = document.createElement("span");
+            const description = document.createElement("span");
             description.className = "mdl-list__item-sub-title";
             description.textContent = desc;
             primaryContent.appendChild(description);
         }
         listItem.appendChild(primaryContent);
-        var secondaryContent = document.createElement("span");
+        const secondaryContent = document.createElement("span");
         secondaryContent.className = "mdl-list__item-secondary-action";
         listItem.appendChild(secondaryContent);
         return {
@@ -297,11 +359,11 @@ var Options = {};
      * @param onclick The action to execute on click
      * @returns {Element}
      */
-    var generateBaseButton = function (icon, onclick) {
-        var button = document.createElement("button");
+    const generateBaseButton = function (icon, onclick) {
+        const button = document.createElement("button");
         button.className = "mdl-button mdl-js-button mdl-button--icon mdl-button--colored";
         button.onclick = onclick;
-        var iconElement = document.createElement("i");
+        const iconElement = document.createElement("i");
         iconElement.className = "material-icons";
         iconElement.textContent = icon;
         button.appendChild(iconElement);
@@ -321,14 +383,14 @@ var Options = {};
          * @param type The type of toggle (TYPE_CHECKBOX/TYPE_SWITCH)
          * @returns {jQuery|HTMLElement}
          */
-        var generateBaseToggle = function (schema, type) {
-            var baseItem = Options.generateBaseItem(schema.label, schema.description);
-            var element = $(baseItem.listItem);
-            var checkboxId = schema.key;
-            var label = document.createElement("label");
+        const generateBaseToggle = function (schema, type) {
+            const baseItem = Options.generateBaseItem(schema.label, schema.description);
+            const element = $(baseItem.listItem);
+            const checkboxId = schema.key;
+            const label = document.createElement("label");
             label.classList.add("mdl-js-ripple-effect");
             label.setAttribute("for", checkboxId);
-            var toggle = document.createElement("input");
+            const toggle = document.createElement("input");
             toggle.setAttribute("type", "checkbox");
             toggle.id = checkboxId;
             toggle.onchange = function () {
@@ -355,7 +417,7 @@ var Options = {};
                 return generateBaseToggle(schema, TYPE_CHECKBOX);
             },
             setValue: function (element, value) {
-                var obj = element.find("label")[0].MaterialCheckbox;
+                const obj = element.find("label")[0].MaterialCheckbox;
                 if (value) {
                     obj.check();
                 } else {
@@ -370,7 +432,7 @@ var Options = {};
                 return generateBaseToggle(schema, TYPE_SWITCH);
             },
             setValue: function (element, value) {
-                var obj = element.find("label")[0].MaterialSwitch;
+                const obj = element.find("label")[0].MaterialSwitch;
                 if (value) {
                     obj.on();
                 } else {
@@ -392,8 +454,8 @@ var Options = {};
         /**
          * Show the dialog
          */
-        var showDialog = function () {
-            var dialog = Options.getDialogElement()[0];
+        const showDialog = function () {
+            const dialog = Options.getDialogElement()[0];
             componentHandler.upgradeElement(dialog);
             dialog.showModal();
         };
@@ -401,7 +463,7 @@ var Options = {};
         /**
          * Close the dialog
          */
-        var closeDialog = function () {
+        const closeDialog = function () {
             Options.getDialogElement()[0].close();
         };
 
@@ -409,7 +471,7 @@ var Options = {};
          * Get the dialog actions
          * @returns {jQuery|HTMLElement}
          */
-        var getDialogActions = function () {
+        const getDialogActions = function () {
             return $("#dialog_actions");
         };
 
@@ -418,8 +480,8 @@ var Options = {};
          * @param label The label of the button
          * @param onclick The action to perform when the button is clicked
          */
-        var appendDialogButton = function (label, onclick) {
-            var button = document.createElement("button");
+        const appendDialogButton = function (label, onclick) {
+            const button = document.createElement("button");
             button.classList = "mdl-button mdl-js-button mdl-js-ripple-effect";
             button.setAttribute("type", "button");
             button.onclick = onclick;
@@ -430,7 +492,7 @@ var Options = {};
         /**
          * Remove all buttons from the dialog
          */
-        var clearDialogButtons = function () {
+        const clearDialogButtons = function () {
             getDialogActions().empty();
         };
 
@@ -438,7 +500,7 @@ var Options = {};
          * Set the title of the dialog
          * @param title The new title of the dialog
          */
-        var setDialogTitle = function (title) {
+        const setDialogTitle = function (title) {
             $("#dialog_title").text(title);
         };
 
@@ -446,14 +508,14 @@ var Options = {};
          * Get the content of the dialog
          * @returns {jQuery|HTMLElement}
          */
-        var getDialogContent = function () {
+        const getDialogContent = function () {
             return $("#dialog_content");
         };
 
         /**
          * Remove all content from the dialog
          */
-        var clearDialogContent = function () {
+        const clearDialogContent = function () {
             getDialogContent().empty();
         };
 
@@ -465,11 +527,11 @@ var Options = {};
          * @param checked Whether or not the radio button should be checked
          * @returns {Element}
          */
-        var appendRadioButton = function (id, label, onselect, checked) {
-            var parent = document.createElement("label");
+        const appendRadioButton = function (id, label, onselect, checked) {
+            const parent = document.createElement("label");
             parent.className = "mdl-radio mdl-js-radio mdl-js-ripple-effect";
             parent.setAttribute("for", id);
-            var radio = document.createElement("input");
+            const radio = document.createElement("input");
             radio.setAttribute("type", "radio");
             radio.id = id;
             radio.className = "mdl-radio__button";
@@ -478,7 +540,7 @@ var Options = {};
                 onselect(id);
             };
             radio.checked = checked;
-            var labelElement = document.createElement("span");
+            const labelElement = document.createElement("span");
             labelElement.className = "mdl-radio__label";
             labelElement.textContent = label;
             parent.appendChild(radio);
@@ -488,10 +550,10 @@ var Options = {};
             return parent;
         };
 
-        var appendTextField = function (id, hint, initialValue, type, onchanged, rows) {
-            var parent = document.createElement("div");
+        const appendTextField = function (id, hint, initialValue, type, onchanged, rows) {
+            const parent = document.createElement("div");
             parent.className = "mdl-textfield mdl-js-textfield";
-            var input;
+            let input;
             if (type !== TYPE_MULTILINE) {
                 input = document.createElement("input");
                 if (type === TYPE_TEXT) {
@@ -512,7 +574,7 @@ var Options = {};
                 onchanged(input.value);
             };
             parent.appendChild(input);
-            var label = document.createElement("label");
+            const label = document.createElement("label");
             label.className = "mdl-textfield__label";
             label.setAttribute("for", id);
             label.textContent = hint;
@@ -524,15 +586,15 @@ var Options = {};
 
         Options.registerOptionsElement("select-single", {
             generate: function (schema) {
-                var that = this;
-                var baseItem = Options.generateBaseItem(schema.label, schema.description);
-                var element = $(baseItem.listItem);
-                var button = generateBaseButton("mode_edit", function () {
+                const that = this;
+                const baseItem = Options.generateBaseItem(schema.label, schema.description);
+                const element = $(baseItem.listItem);
+                const button = generateBaseButton("mode_edit", function () {
                     //Title
                     setDialogTitle(schema.label);
                     //Close button
                     clearDialogButtons();
-                    var listenerMap = {};
+                    let listenerMap = {};
                     appendDialogButton("Close", function () {
                         element.data("listener", null);
                         listenerMap = null;
@@ -541,12 +603,12 @@ var Options = {};
                     //Content
                     clearDialogContent();
                     //Append radio buttons
-                    var choices = Object.keys(schema.choices);
-                    for (var a = 0; a < choices.length; a++) {
-                        var key = choices[a];
-                        var choice = schema.choices[key];
+                    const choices = Object.keys(schema.choices);
+                    for (let a = 0; a < choices.length; a++) {
+                        const key = choices[a];
+                        const choice = schema.choices[key];
                         listenerMap[key] = appendRadioButton(key, choice, function (newValue) {
-                                var oldValue = element.data("curvalue");
+                                const oldValue = element.data("curvalue");
                                 that.setValue(element, newValue);
                                 Options.saveDataChange(element, schema, oldValue, newValue);
                             },
@@ -555,8 +617,8 @@ var Options = {};
                     }
                     //Allows setValue to operate when dialog is open
                     element.data("listener", function (id) {
-                        var keys = Object.keys(listenerMap);
-                        for (var i = 0; i < keys.length; i++) {
+                        const keys = Object.keys(listenerMap);
+                        for (let i = 0; i < keys.length; i++) {
                             listenerMap[keys[i]].MaterialRadio.uncheck();
                         }
                         listenerMap[id].MaterialRadio.check();
@@ -570,7 +632,7 @@ var Options = {};
             setValue: function (element, value) {
                 element.data("curvalue", value);
                 //Call listener (to update UI if the dialog is still open)
-                var listener = element.data("listener");
+                const listener = element.data("listener");
                 if (listener !== undefined && listener !== null) {
                     listener(value);
                 }
@@ -578,18 +640,18 @@ var Options = {};
             type: "string"
         });
 
-        var registerText = function (name, type) {
+        const registerText = function (name, type) {
             Options.registerOptionsElement(name, {
                 generate: function (schema) {
-                    var that = this;
-                    var baseItem = Options.generateBaseItem(schema.label, schema.description);
-                    var element = $(baseItem.listItem);
-                    var button = generateBaseButton("mode_edit", function () {
+                    const that = this;
+                    const baseItem = Options.generateBaseItem(schema.label, schema.description);
+                    const element = $(baseItem.listItem);
+                    const button = generateBaseButton("mode_edit", function () {
                         //Title
                         setDialogTitle(schema.label);
                         //Close button
                         clearDialogButtons();
-                        var listener = {};
+                        let listener = {};
                         appendDialogButton("Close", function () {
                             element.data("listener", null);
                             listener = null;
@@ -599,7 +661,7 @@ var Options = {};
                         clearDialogContent();
                         //Append textfield
                         listener = appendTextField(schema.key, schema.hint, element.data("curvalue"), type, function (newValue) {
-                            var oldValue = element.data("curvalue");
+                            const oldValue = element.data("curvalue");
                             that.setValue(element, newValue);
                             Options.saveDataChange(element, schema, oldValue, newValue);
                         }, schema.rows);
@@ -616,7 +678,7 @@ var Options = {};
                 setValue: function (element, value) {
                     element.data("curvalue", value);
                     //Call listener (to update UI if the dialog is still open)
-                    var listener = element.data("listener");
+                    const listener = element.data("listener");
                     if (listener !== undefined && listener !== null) {
                         listener(value);
                     }
@@ -633,8 +695,8 @@ var Options = {};
     //Nested preferences support
     Options.registerOptionsElement("nested", {
         generate: function (schema) {
-            var baseItem = Options.generateBaseItem(schema.label, schema.description);
-            var button = generateBaseButton("chevron_right", function () {
+            const baseItem = Options.generateBaseItem(schema.label, schema.description);
+            const button = generateBaseButton("chevron_right", function () {
                 Options.pushSchema(schema.prefs, schema.label);
             });
             baseItem.secondaryContent.appendChild(button);
@@ -645,8 +707,8 @@ var Options = {};
     //API call support
     Options.registerOptionsElement("api-call", {
         generate: function (schema) {
-            var baseItem = Options.generateBaseItem(schema.label, schema.description);
-            var button = generateBaseButton(schema.button_icon, function () {
+            const baseItem = Options.generateBaseItem(schema.label, schema.description);
+            const button = generateBaseButton(schema.button_icon, function () {
                 TWApi.Commands[schema.command].execute(function () {
                     if (valid(schema.success_message)) {
                         snackbar.showSnackbar({
@@ -669,8 +731,176 @@ var Options = {};
     });
 })();
 
+//Sources option
+Options.registerOptionsElement("sources", {
+    generateSourceUi: function(element) {
+        let sources = this.sources;
+        let prefs = this.prefs;
+        let schema = this.schema;
+        if(sources == null || prefs == null || schema == null)
+            return;
+
+        //Clear current UI
+        element.empty();
+
+        let sourceDb = {};
+
+        sources.forEach(function(source) {
+            let langItem = sourceDb[source.lang.name];
+            if(langItem == null) {
+                langItem = [source.lang, []];
+                sourceDb[source.lang.name] = langItem;
+            }
+            langItem[1].push(source);
+        });
+
+        function genSwitch() {
+            let rootSwitch = $('<div class="mdc-switch"><div/>');
+            let checkbox = $('<input type="checkbox" class="mdc-switch__native-control" />');
+            let background = $('<div class="mdc-switch__background">');
+            let knob = $('<div class="mdc-switch__knob"></div>');
+            background.append(knob);
+            rootSwitch.append(checkbox);
+            rootSwitch.append(background);
+            // Prevent switch click from clicking background
+            rootSwitch.click(function(e) {
+                e.stopPropagation();
+            });
+            return rootSwitch;
+        }
+
+        function genCheckbox() {
+            let checkbox = $(`
+                <div class="mdc-checkbox" data-mdc-auto-init="MDCCheckbox">
+                  <input type="checkbox"
+                         class="mdc-checkbox__native-control"/>
+                  <div class="mdc-checkbox__background">
+                    <svg class="mdc-checkbox__checkmark"
+                         viewBox="0 0 24 24">
+                      <path class="mdc-checkbox__checkmark__path"
+                            fill="none"
+                            stroke="white"
+                            d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                    </svg>
+                    <div class="mdc-checkbox__mixedmark"></div>
+                  </div>
+                </div>
+            `);
+            // Prevent checkbox click from clicking background
+            checkbox.click(function(e) {
+                e.stopPropagation();
+            });
+            return checkbox;
+        }
+
+        for(let lang in sourceDb) {
+            let langItem = sourceDb[lang];
+            //Gen lang switch
+            let wrapper = $('<div class="sources-group">');
+            let langSwitchWrapper = $('<div class="sources-item sources-item-wrapper mdc-ripple-surface" data-mdc-auto-init="MDCRipple"></div>');
+            let label = $('<label class="sources-item-label">');
+            label.text(langItem[0].display_name);
+            let langSwitch = genSwitch();
+            langSwitch.addClass("sources-item-switch");
+            let langSwitchCheckbox = langSwitch.find("input");
+            //Propagate background clicks to switch
+            langSwitchWrapper.click(function() {
+                langSwitchCheckbox.click();
+            });
+
+            let sourceWrapper = $("<div/>");
+
+            //Handle clicks
+            langSwitchCheckbox.change(function() {
+                let clonedOldPrefs = $.extend(true, {}, prefs);
+                if(this.checked) {
+                    prefs.source_languages.push(langItem[0].name);
+                    sourceWrapper.slideDown();
+                } else {
+                    prefs.source_languages.splice(prefs.source_languages.indexOf(langItem[0].name), 1);
+                    sourceWrapper.slideUp();
+                }
+                Options.saveDataChange(element, schema, clonedOldPrefs, prefs)
+            });
+
+            //Set intial value
+            if(prefs.source_languages.includes(langItem[0].name)) {
+                langSwitchCheckbox.prop('checked', true);
+            } else {
+                sourceWrapper.hide();
+            }
+            langSwitchWrapper.append(label);
+            langSwitchWrapper.append(langSwitch);
+            wrapper.append(langSwitchWrapper);
+
+            //Gen source checkboxes
+            langItem[1].forEach(function(source) {
+                let checkBoxWrapper = $('<div class="sources-item mdc-ripple-surface" data-mdc-auto-init="MDCRipple"></div>');
+                let checkbox = genCheckbox();
+                let cbLabel = $('<label class="sources-item-label sources-source-label">');
+                cbLabel.text(source.name);
+                let realCheckbox = checkbox.find("input");
+                //Propagate background clicks to checkbox
+                checkBoxWrapper.click(function() {
+                    realCheckbox.click();
+                });
+
+                let sourceIdString = source.id.toString();
+
+                //Handle clicks
+                realCheckbox.change(function() {
+                    let clonedOldPrefs = $.extend(true, {}, prefs);
+                    if(this.checked) {
+                        prefs.hidden_catalogues.splice(prefs.hidden_catalogues.indexOf(sourceIdString), 1);
+                    } else {
+                        prefs.hidden_catalogues.push(sourceIdString);
+                    }
+                    Options.saveDataChange(element, schema, clonedOldPrefs, prefs)
+                });
+
+                //Set intial value
+                if(!prefs.hidden_catalogues.includes(sourceIdString)) {
+                    realCheckbox.prop('checked', true);
+                }
+                checkBoxWrapper.append(checkbox);
+                checkBoxWrapper.append(cbLabel);
+                sourceWrapper.append(checkBoxWrapper);
+            });
+
+            wrapper.append(sourceWrapper);
+            element.append(wrapper);
+        }
+
+        mdc.autoInit(element[0]);
+    },
+    generate: function(schema) {
+        let that = this;
+        this.schema = schema;
+        let element = $(document.createElement("div"));
+        element.addClass("sources-wrapper");
+        TWApi.Commands.Sources.execute(function(res) {
+            that.sources = res.content.filter(function(source) {
+                return source.name !== "LocalSource";
+            });
+            that.generateSourceUi(element);
+        }, function() {
+            //TODO Handle error
+            snackbar.showSnackbar({
+                message: schema.error_message,
+                timeout: 2000
+            });
+        });
+        return element;
+    },
+    setValue(element, value) {
+        this.prefs = value;
+        this.generateSourceUi(element);
+    }
+});
+
 //Setup options
-var optionsBody;
+let optionsBody;
+
 function onLoad() {
     optionsBody = $("#options_body");
 

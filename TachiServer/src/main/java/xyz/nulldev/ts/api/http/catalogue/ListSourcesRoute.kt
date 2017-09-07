@@ -24,6 +24,7 @@ import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
 import xyz.nulldev.ts.ext.kInstanceLazy
+import java.util.*
 
 /**
  * List the available sources.
@@ -40,6 +41,11 @@ class ListSourcesRoute : TachiWebRoute() {
             val sourceObj = JSONObject()
             sourceObj.put(KEY_ID, source.id)
             sourceObj.put(KEY_NAME, source.name)
+            val langObj = JSONObject()
+            langObj.put(KEY_LANG_NAME, source.lang)
+            langObj.put(KEY_LANG_DISPLAY_NAME, Locale(source.lang).displayName)
+            sourceObj.put(KEY_LANG, langObj)
+            sourceObj.put(KEY_SUPPORTS_LATEST, source.supportsLatest)
             if (source is LoginSource) {
                 sourceObj.put(KEY_LOGGED_IN, source.isLogged())
             }
@@ -53,6 +59,10 @@ class ListSourcesRoute : TachiWebRoute() {
         val KEY_CONTENT = "content"
         val KEY_NAME = "name"
         val KEY_ID = "id"
+        val KEY_LANG = "lang"
+        val KEY_LANG_NAME = "name"
+        val KEY_LANG_DISPLAY_NAME = "display_name"
+        val KEY_SUPPORTS_LATEST = "supports_latest"
         val KEY_LOGGED_IN = "logged_in"
     }
 }

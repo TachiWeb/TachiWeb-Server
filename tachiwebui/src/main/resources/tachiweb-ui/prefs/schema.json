@@ -69,7 +69,24 @@
   {
     "label": "Sources",
     "type": "nested",
-    "prefs": []
+    "prefs": [
+      {
+        "key": [
+          "source_languages",
+          "hidden_catalogues"
+        ],
+        "type": "sources",
+        "pref_types": {
+          "source_languages": "string_set",
+          "hidden_catalogues": "string_set"
+        },
+        "error_message": "Unable to fetch source list!",
+        "default": {
+          "source_languages": ["en"],
+          "hidden_catalogues": []
+        }
+      }
+    ]
   },
   {
     "label": "Sync",
