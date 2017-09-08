@@ -131,7 +131,13 @@ let TWApi = {
         new ApiCommand("Update", "/update", function(parameters) {
             return this.endpoint() + "/" + parameters.mangaId + "/" + parameters.updateType;
         });
-        new ApiCommand("Sources", "/sources");
+        new ApiCommand("Sources", "/sources", function(parameters) {
+            let builtUrl = this.endpoint();
+            if(parameters != null && parameters.enabled === true) {
+                builtUrl += "?enabled=true"
+            }
+            return builtUrl;
+        });
         new ApiCommand("Catalogue", "/catalogue", null, "POST");
         new ApiCommand("LoginSources", "/list_login_sources");
         new ApiCommand("SourceLogin", "/source_login", function (parameters) {
@@ -156,8 +162,12 @@ let TWApi = {
         new ApiCommand("GetPrefs", "/prefs");
         new ApiCommand("SetPref", "/set_pref", function (parameters) {
             let string = this.endpoint() + "/" + parameters.key + "/" + parameters.type;
-            if (parameters.value !== null && parameters.value !== undefined) {
-                string += "?value=" + encodeURIComponent(parameters.value);
+            let value = parameters.value;
+            if (value != null) {
+                // Convert arrays to JSON
+                if(parameters.type === "string_set")
+                    value = JSON.stringify(value);
+                string += "?value=" + encodeURIComponent(value);
             }
             return string;
         });

@@ -16,6 +16,10 @@
 
 package xyz.nulldev.ts.api.http.catalogue
 
+import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.data.preference.getOrDefault
+import eu.kanade.tachiyomi.source.CatalogueSource
+import eu.kanade.tachiyomi.source.LocalSource
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.online.LoginSource
 import org.json.JSONArray
@@ -33,8 +37,13 @@ class ListSourcesRoute : TachiWebRoute() {
 
     private val sourceManager: SourceManager by kInstanceLazy()
 
+    private val prefs: PreferencesHelper by kInstanceLazy()
+
     override fun handleReq(request: Request, response: Response): Any {
-        val sources = sourceManager.getCatalogueSources()
+        val sources = if(request.queryParams("enabled").equals("true", true))
+            getEnabledSources()
+        else sourceManager.getCatalogueSources()
+
         val rootObject = success()
         val contentArray = JSONArray()
         for (source in sources) {
@@ -53,6 +62,17 @@ class ListSourcesRoute : TachiWebRoute() {
         }
         rootObject.put(KEY_CONTENT, contentArray)
         return rootObject
+    }
+
+    fun getEnabledSources(): List<CatalogueSource> {
+        val languages = prefs.enabledLanguages().getOrDefault()
+        val hiddenCatalogues = prefs.hiddenCatalogues().getOrDefault()
+
+        return sourceManager.getCatalogueSources()
+                .filter { it.lang in languages }
+                .filterNot { it.id.toString() in hiddenCatalogues }
+                .sortedBy { "(${it.lang}) ${it.name}" } +
+                sourceManager.get(LocalSource.ID) as LocalSource
     }
 
     companion object {

@@ -280,7 +280,9 @@ function refreshSources() {
             updateSourcesUI();
             selectLoggedInSource();
         }, sourcesRefreshError,
-        null,
+        {
+            enabled: true //Only get enabled sources
+        },
         hideSpinner);
 }
 
@@ -339,9 +341,12 @@ function refreshCatalogue(oldRequest) {
 function updateSourcesUI() {
     clearElement(sourcesSelect);
     $.each(currentSources, function (index, value) {
+        let displayText = value.name;
+        if(value.lang.name.length > 0)
+            displayText = value.lang.name.toUpperCase() + " - " + displayText;
         sourcesSelect.append($('<option/>', {
             value: value.id,
-            text: value.name
+            text: displayText
         }));
     });
 }

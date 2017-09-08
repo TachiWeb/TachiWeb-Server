@@ -130,9 +130,9 @@ let Options = {};
             let value = undefined;
             if (optionSchema.key !== null && optionSchema.key !== undefined) {
                 //Support preferences mapping to multiple preference keys
-                if(Array.isArray(optionsSchema.key)) {
+                if(Array.isArray(optionSchema.key)) {
                     value = {};
-                    optionsSchema.forEach(function(t) {
+                    optionSchema.key.forEach(function(t) {
                         const optionsDataElement = optionsData[t];
                         if (optionsDataElement !== null && optionsDataElement !== undefined) {
                             value[t] = optionsDataElement.v;
@@ -218,8 +218,7 @@ let Options = {};
                     key: key,
                     //Specify type in schema for multiple-key preferences
                     type: type,
-                    //Convert string sets to JSON arrays
-                    value: type === "string_set" ? JSON.stringify(localNewValue[key]) : localNewValue[key]
+                    value: localNewValue[key]
                 });
             }
         }
