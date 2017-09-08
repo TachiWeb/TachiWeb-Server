@@ -44,7 +44,7 @@ class TachiyomiKodeinModule {
         bind<Gson>() with singleton { Injekt.get<Gson>() }
 
         //Custom dependencies
-        bind<BackupManager>() with singleton { BackupManager(Injekt.get()) }
+        bind<BackupManager>() with singleton { BackupManager(context) }
 
         bind<LibraryUpdater>() with singleton { LibraryUpdater() }
     }
