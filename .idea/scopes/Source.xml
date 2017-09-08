@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="Source" pattern="src[SyncClient]:xyz..*||src[TachiServer]:xyz..*||src[TachiServer]:eu.kanade.tachiyomi.R" />
-</component>
