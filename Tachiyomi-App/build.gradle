@@ -13,8 +13,10 @@ sourceSets {
 
 dependencies {
     // AndroidCompat
-//    compile("tachiweb-server:androidcompat:1.0-SNAPSHOT")
     compile project(":AndroidCompat")
+
+    // Kotson
+    compile "com.github.salomonbrys.kotson:kotson:2.5.0"
 
     // Injekt
     compile "uy.kohesive.injekt:injekt-core:[1.16.0,1.17.0)"
@@ -43,7 +45,6 @@ dependencies {
     compile "xmlpull:xmlpull:1.1.3.1"
 
     // Java UnRAR Android
-//    compile("tachiweb-server:junrar-android:1.0-SNAPSHOT")
     compile project(":junrarandroid")
 
     // Java Natural Sort

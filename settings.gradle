@@ -4,10 +4,20 @@ gradle.ext.kotlinVersion = "1.1.4-3"
 // Subprojects
 
 // JVM
+// Android support suite
 include 'AndroidCompat'
+
+// UnRAR library use in Tachiyomi
 include 'junrarandroid'
-include 'TachiServer'
+
+// Original Tachiyomi source code (along with Android -> Server bridge code)
 include 'Tachiyomi-App'
 
+// Core server code (API handlers)
+include 'TachiServer'
+// Sync data structures
+include 'TachiServer/SyncStruct'
+
 //JS
+// Web UI
 include 'tachiwebui'

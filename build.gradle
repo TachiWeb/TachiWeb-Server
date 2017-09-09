@@ -26,6 +26,7 @@ ext.javaProjects = [
         project(":AndroidCompat"),
         project(":junrarandroid"),
         project(":TachiServer"),
+        project(":TachiServer/SyncStruct"),
         project(":Tachiyomi-App")
 ]
 
@@ -38,22 +39,21 @@ configure(javaProjects) {
     apply plugin: "org.jetbrains.kotlin.jvm"
 
     dependencies {
-        // Kotson
-        compile "com.github.salomonbrys.kotson:kotson:2.5.0"
+        // Kotlin
+        compile "org.jetbrains.kotlin:kotlin-stdlib:${gradle.kotlinVersion}"
+        testCompile "org.jetbrains.kotlin:kotlin-test:${gradle.kotlinVersion}"
+    }
+}
 
-        // JSoup
-        compile "org.jsoup:jsoup:1.10.2"
+configure(jsProjects) {
+    apply plugin: "java"
+}
 
-        // RxJava
-        compile "io.reactivex:rxjava:1.2.7"
-        compile "io.reactivex:rxkotlin:1.0.0"
-
-        // Config API
-        compile "com.typesafe:config:1.3.1"
-
-        // Database
-        compile "org.xerial:sqlite-jdbc:3.16.1"
-
+configure([
+        project(":AndroidCompat"),
+        project(":TachiServer")
+]) {
+    dependencies {
         // Dependency Injection
         compile "com.github.salomonbrys.kodein:kodein:3.2.0"
         compile "com.github.salomonbrys.kodein:kodein-conf:3.2.0"
@@ -63,13 +63,18 @@ configure(javaProjects) {
         compile "org.slf4j:slf4j-simple:1.7.22"
         compile "io.github.microutils:kotlin-logging:1.4.3"
 
+        // Config API
+        compile "com.typesafe:config:1.3.1"
+
+        // RxJava
+        compile "io.reactivex:rxjava:1.2.7"
+        compile "io.reactivex:rxkotlin:1.0.0"
+
+        // JSoup
+        compile "org.jsoup:jsoup:1.10.2"
+
         // Kotlin
         compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:${gradle.kotlinVersion}"
         compile "org.jetbrains.kotlin:kotlin-reflect:${gradle.kotlinVersion}"
-        testCompile "org.jetbrains.kotlin:kotlin-test:${gradle.kotlinVersion}"
     }
-}
-
-configure(jsProjects) {
-    apply plugin: "java"
 }

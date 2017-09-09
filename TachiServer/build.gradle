@@ -17,6 +17,9 @@ dependencies {
     // Spark Web Framework
     compile "com.sparkjava:spark-core:2.5.5"
     compile "junit:junit:4.12"
+
+    // Database
+    compile "org.xerial:sqlite-jdbc:3.16.1"
 }
 
 task fatJar(type: Jar) {
