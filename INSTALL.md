@@ -29,6 +29,8 @@ git clone https://github.com/null-dev/TW-Compat
 ```
 scripts/build.sh
 ```
+**NOTE:** You may encounter many "zip errors" when building. These errors can be safely ignored.
+
 Once the build completes, the binary can be found at: `TachiServer/build/libs/TachiServer-all-$VERSION.jar`
 
 3. You can now try running the program:

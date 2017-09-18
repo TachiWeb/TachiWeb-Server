@@ -24,10 +24,10 @@ function onLoad() {
 }
 function setupButtons() {
     pauseBtn.click(function () {
-        downloadsOperation(paused ? "RESUME" : "PAUSE", paused ? "resume" : "pause");
+        downloadsOperation(paused ? "RESUME" : "PAUSE", paused ? "resuming" : "pausing");
     });
     clearBtn.click(function () {
-        downloadsOperation("CLEAR", "clear");
+        downloadsOperation("CLEAR", "clearing");
     });
 }
 function startUpdatingDownloads() {

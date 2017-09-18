@@ -26,6 +26,7 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.*;
 import android.view.Display;
@@ -56,6 +57,12 @@ public class CustomContext extends Context {
     private ServiceSupport serviceSupport = KodeinGlobalHelper.Companion.instance(ServiceSupport.class);
 
     private Logger logger = LoggerFactory.getLogger(CustomContext.class);
+
+    private Map<String, Object> serviceMap = new HashMap<>();
+    {
+        serviceMap.put(Context.CONNECTIVITY_SERVICE, ConnectivityManager.INSTANCE);
+        serviceMap.put(Context.POWER_SERVICE, PowerManager.INSTANCE);
+    }
 
     @Override
     public AssetManager getAssets() {
@@ -529,7 +536,7 @@ public class CustomContext extends Context {
 
     @Override
     public Object getSystemService(String s) {
-        return null;
+        return serviceMap.get(s);
     }
 
     @Override

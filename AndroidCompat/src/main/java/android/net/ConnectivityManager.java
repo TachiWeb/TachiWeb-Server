@@ -1,12 +1,6 @@
-package android.os;
+package android.net;
 
 import android.app.PendingIntent;
-import android.net.LinkProperties;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.net.NetworkRequest;
-import android.net.ProxyInfo;
 import kotlin.NotImplementedError;
 
 public class ConnectivityManager {
