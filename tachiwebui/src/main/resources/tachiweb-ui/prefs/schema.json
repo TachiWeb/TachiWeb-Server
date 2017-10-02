@@ -105,7 +105,7 @@
             "label": "Password authentication",
             "type": "text-password",
             "default": "",
-            "key": "pref_server_password",
+            "key": "pref_ts_server_password",
             "hint": "Enter a password"
           },
           {

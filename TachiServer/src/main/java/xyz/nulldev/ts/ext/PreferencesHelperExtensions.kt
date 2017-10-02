@@ -10,4 +10,4 @@ import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 private val prefs = PreferenceManager.getDefaultSharedPreferences(Kodein.global.instance())
 private val rxPrefs = RxSharedPreferences.create(prefs)
 
-fun PreferencesHelper.authPassword() = rxPrefs.getString("pref_ts_auth_password", "")
+fun PreferencesHelper.authPassword() = rxPrefs.getString("pref_ts_server_password", "")

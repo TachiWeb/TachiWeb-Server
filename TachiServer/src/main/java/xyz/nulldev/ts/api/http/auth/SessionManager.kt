@@ -64,7 +64,7 @@ class SessionManager {
         }
 
         fun authEnabled(): Boolean {
-            return !authPassword().isEmpty()
+            return authPassword().isNotEmpty()
         }
 
         fun authPassword(): String {

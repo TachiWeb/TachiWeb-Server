@@ -21,9 +21,6 @@ dependencies {
     // Injekt
     compile "uy.kohesive.injekt:injekt-core:[1.16.0,1.17.0)"
 
-    // Gson
-    compile "com.google.code.gson:gson:2.8.0"
-
     // DiskLRUCache
     compile "com.jakewharton:disklrucache:2.0.2"
 

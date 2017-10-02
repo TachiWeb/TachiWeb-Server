@@ -65,7 +65,7 @@ class CoverRoute : TachiWebRoute() {
                 url = manga.thumbnail_url
             }
         } catch (e: Exception) {
-            logger.info("Failed to update manga (No thumbnail)!")
+            logger.info("Failed to update manga (no thumbnail)!")
         }
 
         if (url.isNullOrEmpty()) {

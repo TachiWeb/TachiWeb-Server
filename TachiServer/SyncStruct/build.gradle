@@ -1,5 +1,5 @@
 dependencies {
-    // Tachiyomi-App
+    // Server
     compile project(":TachiServer")
 }
 
