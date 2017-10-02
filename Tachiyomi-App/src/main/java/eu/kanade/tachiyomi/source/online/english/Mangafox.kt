@@ -96,7 +96,13 @@ class Mangafox : ParsedHttpSource() {
         manga.artist = rowElement.select("td:eq(2)").first()?.text()
         manga.genre = rowElement.select("td:eq(3)").first()?.text()
         manga.description = infoElement.select("p.summary").first()?.text()
-        manga.status = licensedElement?.let { SManga.LICENSED } ?: sideInfoElement.select(".data").first()?.text().orEmpty().let { parseStatus(it) }
+        val isLicensed = licensedElement?.text()?.contains("licensed")
+        if (isLicensed == true) {
+            manga.status = SManga.LICENSED
+        } else {
+            manga.status = sideInfoElement.select(".data").first()?.text().orEmpty().let { parseStatus(it) }
+        }
+
         manga.thumbnail_url = sideInfoElement.select("div.cover > img").first()?.attr("src")
         return manga
     }
