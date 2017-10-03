@@ -10,4 +10,7 @@ dependencies {
 
     // Javassist
     compile "org.javassist:javassist:3.21.0-GA"
+
+    // ICU Library
+    compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
 }
