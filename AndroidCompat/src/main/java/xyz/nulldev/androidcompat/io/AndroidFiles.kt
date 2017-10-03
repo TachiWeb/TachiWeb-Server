@@ -2,8 +2,8 @@ package xyz.nulldev.androidcompat.io
 
 import com.github.salomonbrys.kodein.conf.KodeinGlobalAware
 import com.github.salomonbrys.kodein.instance
-import xyz.nulldev.androidcompat.config.ConfigManager
-import xyz.nulldev.androidcompat.config.mods.FilesConfigModule
+import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.androidcompat.config.FilesConfigModule
 import java.io.File
 
 /**
@@ -13,7 +13,7 @@ class AndroidFiles : KodeinGlobalAware {
     val configManager: ConfigManager = kodein.instance()
 
     val filesConfig: FilesConfigModule
-        get() = configManager.module(FilesConfigModule::class.java)
+        get() = configManager.module()
 
     val dataDir: File get() = registerFile(filesConfig.dataDir)
     val filesDir: File get() = registerFile(filesConfig.filesDir)

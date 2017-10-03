@@ -3,6 +3,7 @@ local-repo
 target
 build
 *.iml
+*.jar
 /test
 /.gradle/buildOutputCleanup
 /libs

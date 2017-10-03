@@ -1,7 +1,7 @@
 package android.os;
 
-import xyz.nulldev.androidcompat.config.ConfigManager;
-import xyz.nulldev.androidcompat.config.mods.SystemConfigModule;
+import xyz.nulldev.ts.config.ConfigManager;
+import xyz.nulldev.androidcompat.config.SystemConfigModule;
 import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
 
 /**

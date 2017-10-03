@@ -1,20 +1,22 @@
-package xyz.nulldev.androidcompat.config
+package xyz.nulldev.ts.config
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import mu.KotlinLogging
-import xyz.nulldev.androidcompat.config.mods.ApplicationInfoConfigModule
-import xyz.nulldev.androidcompat.config.mods.FilesConfigModule
-import xyz.nulldev.androidcompat.config.mods.SystemConfigModule
 import java.io.File
 
 /**
  * Manages app config.
  */
-class ConfigManager {
-    lateinit var generatedModules: Map<Class<out ConfigModule>, ConfigModule>
+object ConfigManager {
+    private val generatedModules
+            = mutableMapOf<Class<out ConfigModule>, ConfigModule>()
     lateinit var config: Config
+
+    //Public read-only view of modules
+    val loadedModules: Map<Class<out ConfigModule>, ConfigModule>
+        get() = generatedModules
 
     val configFolder: String
         get() = System.getProperty("compat-configdirs") ?: "config"
@@ -24,7 +26,14 @@ class ConfigManager {
     /**
      * Get a config module
      */
-    fun <T : ConfigModule> module(type: Class<T>): T = generatedModules[type] as T
+    inline fun <reified T : ConfigModule> module(): T
+            = loadedModules[T::class.java] as T
+
+    /**
+     * Get a config module (Java API)
+     */
+    fun <T : ConfigModule> module(type: Class<T>): T
+            = loadedModules[type] as T
 
     /**
      * Load configs
@@ -51,23 +60,17 @@ class ConfigManager {
         return config
     }
 
-    /**
-     * Generate the config modules from each file
-     */
-    fun configToModules(config: Config) = mutableListOf(
-            FilesConfigModule(config.getConfig("files")),
-            ApplicationInfoConfigModule(config.getConfig("app")),
-            SystemConfigModule(config.getConfig("system"))
-    )
+    fun registerModule(module: ConfigModule) {
+        generatedModules.put(module.javaClass, module)
+    }
 
-    /**
-     * Setup and load configs
-     */
-    fun setup(): ConfigManager {
-        config = loadConfigs()
-        generatedModules = configToModules(config).associateBy {
-            it.javaClass
+    fun registerModules(vararg modules: ConfigModule) {
+        modules.forEach {
+            registerModule(it)
         }
-        return this
+    }
+
+    init {
+        config = loadConfigs()
     }
 }

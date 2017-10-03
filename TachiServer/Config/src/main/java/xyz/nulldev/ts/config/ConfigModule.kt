@@ -1,4 +1,4 @@
-package xyz.nulldev.androidcompat.config
+package xyz.nulldev.ts.config
 
 import com.typesafe.config.Config
 

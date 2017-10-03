@@ -1,0 +1,17 @@
+apply plugin: "java"
+
+dependencies {
+    // ICU Library
+    compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Version': version
+    }
+    archiveName = 'java.base-patch.jar'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+assemble.dependsOn fatJar

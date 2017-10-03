@@ -1,7 +1,7 @@
-package xyz.nulldev.androidcompat.config.mods
+package xyz.nulldev.androidcompat.config
 
 import com.typesafe.config.Config
-import xyz.nulldev.androidcompat.config.ConfigModule
+import xyz.nulldev.ts.config.ConfigModule
 
 class SystemConfigModule(val config: Config) : ConfigModule(config) {
     val isDebuggable = config.getBoolean("isDebuggable")

@@ -11,8 +11,11 @@ dependencies {
     // Tachiyomi-App
     compile project(":Tachiyomi-App")
 
-    // Tachiyomi API
+    // Tachiyomi web UI
     compile project(":tachiwebui")
+
+    // Config API
+    compile project(":TachiServer/Config")
 
     // Spark Web Framework
     compile "com.sparkjava:spark-core:2.5.5"

@@ -5,7 +5,6 @@ import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.Currency;
 import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.ULocale;
-import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -233,7 +232,7 @@ public class NumberFormatDelegate extends java.text.NumberFormat {
         return delegate.getLocale(type);
     }
 
-    public AttributedCharacterIterator formatToCharacterIterator(@NotNull Object obj) {
+    public AttributedCharacterIterator formatToCharacterIterator(Object obj) {
         return delegate.formatToCharacterIterator(obj);
     }
 

@@ -11,6 +11,18 @@ dependencies {
     // Javassist
     compile "org.javassist:javassist:3.21.0-GA"
 
-    // ICU Library
-    compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
+    // Config API
+    compile project(":TachiServer/Config")
 }
+
+def fatJarTask = tasks.getByPath(':AndroidCompat/JVMPatch:fatJar')
+
+// Copy JVM core patches
+task copyJVMPatches(type: Copy) {
+    from fatJarTask.outputs.files
+    into 'src/main/resources/patches'
+}
+
+compileJava.dependsOn copyJVMPatches
+copyJVMPatches.dependsOn fatJarTask
+

@@ -7,6 +7,9 @@ import xyz.nulldev.androidcompat.AndroidCompat
 import xyz.nulldev.androidcompat.AndroidCompatInitializer
 import xyz.nulldev.ts.api.http.HttpAPI
 import xyz.nulldev.ts.api.http.HttpModule
+import xyz.nulldev.ts.config.ConfigKodeinModule
+import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.ServerConfig
 import java.lang.management.ManagementFactory
 import java.io.File
 
@@ -19,6 +22,8 @@ class TachiServer {
     val androidCompat by lazy { AndroidCompat() }
 
     fun initInternals() {
+        //Load config API
+        Kodein.global.addImport(ConfigKodeinModule().create())
         //Load Android compatibility dependencies
         AndroidCompatInitializer().init()
         //Load TachiServer and Tachiyomi dependencies
@@ -41,18 +46,31 @@ class TachiServer {
         HttpAPI().start()
     }
 
+    fun registerConfigModules() {
+        ConfigManager.registerModules(
+                ServerConfig(ConfigManager.config.getConfig("ts.server"))
+        )
+    }
+
     companion object {
-        private const val JVM_PROPERTY = "ts.jvm"
+        private const val BOOTSTRAP_STATUS_PROPERTY = "ts.bootstrap.active"
+        private const val JVM_PATCH = "java.base-patch.jar"
 
         @JvmStatic
         fun main(args: Array<String>) {
+            val server = TachiServer()
+            //Register config modules early
+            server.registerConfigModules()
+
             //Check if JVM booted with bootstrap classpath
-            if(!System.getProperty(JVM_PROPERTY).equals("true", true)) {
+            if(!System.getProperty(BOOTSTRAP_STATUS_PROPERTY).equals("true", true)) {
                 try {
-                    println("JVM not booted with bootstrap classpath! Attempting to boot new JVM...")
+                    println("JVM not booted with bootstrap classpath/patched modules! Attempting to boot new JVM...")
+                    println("\tExtracting patches...")
+                    extractPatch(JVM_PATCH)
                     println("\tAssembling command line...")
                     val jvmArgs = assembleBootCommand()
-                    println("\tCommand line: ${jvmArgs.joinToString(separator = " ")}")
+                    println("\t\tCommand line: ${jvmArgs.joinToString(separator = " ")}")
                     val exitCode = bootNewJvm(jvmArgs)
                     println("\tJVM finished with exit code $exitCode")
                     return
@@ -62,18 +80,40 @@ class TachiServer {
                 }
             }
 
-            TachiServer().run(args)
+            server.run(args)
         }
 
-        fun assembleBootCommand(): List<String> {
-            val classpath = System.getProperty("java.class.path")
-            val classpathEntries = classpath.split(File.pathSeparator)
+        private val patchesDir
+                get() = ConfigManager.module<ServerConfig>().patchesDir
 
+        private fun extractPatch(file: String) {
+            println("\t\tExtracting patch: $file")
+            TachiServer::class.java.getResourceAsStream("/patches/$file")?.use { input ->
+                val outputDir = patchesDir
+                outputDir.mkdirs()
+                val outputFile = File(outputDir, file)
+                outputFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }
+
+        private fun assembleBootCommand(): List<String> {
             val bean = ManagementFactory.getRuntimeMXBean()
-            // Add boot classpath to JVM arguments
-            val jvmArgs = (bean.inputArguments + classpathEntries.map {
-                "-Xbootclasspath/p:$it"
-            }).toMutableList()
+            val jvmArgs = bean.inputArguments.toMutableList()
+
+            //Add bootstrap classpath/module patch
+            val patchPath = patchesDir.absolutePath + "/" + JVM_PATCH
+            val vmVersion = ManagementFactory.getRuntimeMXBean().specVersion.toDouble()
+            jvmArgs += if(vmVersion >= 1.9) {
+                "--patch-module java.base=$patchPath"
+            } else {
+                "-Xbootclasspath/p:$patchPath"
+            }
+
+            //Add classpath
+            jvmArgs += "-cp"
+            jvmArgs += System.getProperty("java.class.path")
 
             //Check if JVM booted in debug mode
             if(bean.inputArguments.any {
@@ -99,10 +139,10 @@ class TachiServer {
                 else -> throw RuntimeException("Cannot find JVM binary!")
             })
 
-            return jvmArgs + "-D$JVM_PROPERTY=true" + programArgs.split(" ")
+            return jvmArgs + "-D$BOOTSTRAP_STATUS_PROPERTY=true" + programArgs.split(" ")
         }
 
-        fun bootNewJvm(args: List<String>)
+        private fun bootNewJvm(args: List<String>)
                 = ProcessBuilder()
                 .command(args)
                 .inheritIO()

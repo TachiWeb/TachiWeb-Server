@@ -1,7 +1,7 @@
-package xyz.nulldev.androidcompat.config.mods
+package xyz.nulldev.androidcompat.config
 
 import com.typesafe.config.Config
-import xyz.nulldev.androidcompat.config.ConfigModule
+import xyz.nulldev.ts.config.ConfigModule
 
 /**
  * Application info config.
