@@ -108,6 +108,8 @@ class TachiServer {
             if(vmVersion >= 1.9) {
                 jvmArgs += "--patch-module"
                 jvmArgs += "java.base=$patchPath"
+                jvmArgs += "--add-reads"
+                jvmArgs += "java.base=java.logging"
             } else {
                 jvmArgs += "-Xbootclasspath/p:$patchPath"
             }

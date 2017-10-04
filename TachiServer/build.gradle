@@ -23,6 +23,9 @@ dependencies {
 
     // Database
     compile "org.xerial:sqlite-jdbc:3.16.1"
+
+    // ICU Library (duplicated here from JVMPatch to fix resource bundle issues)
+    compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
 }
 
 task fatJar(type: Jar) {
