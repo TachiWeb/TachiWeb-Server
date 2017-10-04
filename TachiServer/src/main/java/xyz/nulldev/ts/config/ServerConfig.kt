@@ -1,12 +1,11 @@
 package xyz.nulldev.ts.config
 
 import com.typesafe.config.Config
-import xyz.nulldev.ts.config.util.get
 import java.io.File
 
 class ServerConfig(config: Config) : ConfigModule(config) {
-    val rootDir = registerFile(config["rootDir"])
-    val patchesDir = registerFile(config["patchesDir"])
+    val rootDir = registerFile(config.getString("rootDir"))
+    val patchesDir = registerFile(config.getString("patchesDir"))
 
     fun registerFile(file: String): File {
         return File(file).apply {
