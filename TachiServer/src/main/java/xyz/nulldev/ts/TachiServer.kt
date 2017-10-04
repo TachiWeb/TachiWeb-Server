@@ -105,10 +105,11 @@ class TachiServer {
             //Add bootstrap classpath/module patch
             val patchPath = patchesDir.absolutePath + "/" + JVM_PATCH
             val vmVersion = ManagementFactory.getRuntimeMXBean().specVersion.toDouble()
-            jvmArgs += if(vmVersion >= 1.9) {
-                "--patch-module java.base=$patchPath"
+            if(vmVersion >= 1.9) {
+                jvmArgs += "--patch-module"
+                jvmArgs += "java.base=$patchPath"
             } else {
-                "-Xbootclasspath/p:$patchPath"
+                jvmArgs += "-Xbootclasspath/p:$patchPath"
             }
 
             //Add classpath
