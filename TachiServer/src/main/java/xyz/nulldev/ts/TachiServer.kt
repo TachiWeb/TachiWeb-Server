@@ -21,7 +21,19 @@ class TachiServer {
 
     val androidCompat by lazy { AndroidCompat() }
 
+    var initialized = false
+        private set
+
+    var configModulesRegistered = false
+        private set
+
     fun initInternals() {
+        if(initialized) return
+        initialized = true
+
+        //Ensure config modules registered
+        registerConfigModules()
+
         //Load config API
         Kodein.global.addImport(ConfigKodeinModule().create())
         //Load Android compatibility dependencies
@@ -47,6 +59,9 @@ class TachiServer {
     }
 
     fun registerConfigModules() {
+        if(configModulesRegistered) return
+        configModulesRegistered = true
+
         ConfigManager.registerModules(
                 ServerConfig(ConfigManager.config.getConfig("ts.server"))
         )
