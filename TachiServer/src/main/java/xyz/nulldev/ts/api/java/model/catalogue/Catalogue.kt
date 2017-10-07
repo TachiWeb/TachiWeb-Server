@@ -52,6 +52,11 @@ interface Catalogue {
     fun getSource(id: Long): Source?
 
     /**
+     * Register a source
+     */
+    fun registerSource(source: CatalogueSource)
+
+    /**
      * Update a manga's info
      *
      * @param manga The manga to update

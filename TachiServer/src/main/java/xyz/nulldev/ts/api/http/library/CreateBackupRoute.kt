@@ -19,7 +19,7 @@ package xyz.nulldev.ts.api.http.library
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import eu.kanade.tachiyomi.BackupManagerInternalForwarder
+import eu.kanade.tachiyomi.data.backup.BackupManagerInternalForwarder
 import eu.kanade.tachiyomi.data.backup.BackupCreateService
 import eu.kanade.tachiyomi.data.backup.BackupManager
 import eu.kanade.tachiyomi.data.backup.models.Backup

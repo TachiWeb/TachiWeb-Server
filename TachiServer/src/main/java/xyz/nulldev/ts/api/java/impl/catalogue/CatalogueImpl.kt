@@ -6,9 +6,7 @@ import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.preference.getOrDefault
-import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.LocalSource
-import eu.kanade.tachiyomi.source.SourceManager
+import eu.kanade.tachiyomi.source.*
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SManga
@@ -24,6 +22,9 @@ import java.util.*
 
 class CatalogueImpl : Catalogue {
     private val sourceManager: SourceManager by kInstanceLazy()
+    private val sourceInjector by lazy {
+        SourceInjector(sourceManager)
+    }
     private val downloadManager: DownloadManager by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
     private val prefs: PreferencesHelper by kInstanceLazy()
@@ -74,6 +75,10 @@ class CatalogueImpl : Catalogue {
     }
 
     override fun getSource(id: Long) = sourceManager.get(id)
+
+    override fun registerSource(source: CatalogueSource) {
+        sourceInjector.registerSource(source)
+    }
 
     override fun updateMangaInfo(manga: Manga): Manga {
         manga.copyFrom(manga.sourceObj.ensureLoaded().fetchMangaDetails(manga).toBlocking().first())

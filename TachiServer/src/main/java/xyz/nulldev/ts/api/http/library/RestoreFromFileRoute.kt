@@ -21,7 +21,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import eu.kanade.tachiyomi.BackupManagerInternalForwarder
+import eu.kanade.tachiyomi.data.backup.BackupManagerInternalForwarder
 import eu.kanade.tachiyomi.data.backup.BackupManager
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.backup.models.DHistory

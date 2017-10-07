@@ -1,5 +1,7 @@
 plugins {
     id "application"
+    id "com.jfrog.bintray" version "1.7.3"
+    id 'maven-publish'
 }
 
 mainClassName = "xyz.nulldev.ts.TachiServer"
@@ -28,6 +30,44 @@ dependencies {
     compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
 }
 
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['SnapshotPublication']
+    publish = true
+    pkg {
+        repo = 'tachiweb'
+        name = 'tachiweb-server-snapshots'
+        version {
+            name = "${getGitHash()}-DEV"
+            desc = 'TachiWeb-Server development build'
+            released  = new Date()
+        }
+    }
+}
+
+publishing {
+    publications {
+        SnapshotPublication(MavenPublication) {
+            groupId 'xyz.nulldev.ts'
+            artifactId 'tachiweb-server-snapshots'
+            artifact(fatJar.archivePath) {
+                builtBy assemble
+            }
+            version "${getGitHash()}-DEV"
+        }
+    }
+}
+
 task fatJar(type: Jar) {
     manifest {
         attributes 'Implementation-Version': version,
@@ -39,4 +79,3 @@ task fatJar(type: Jar) {
 }
 
 assemble.dependsOn fatJar
-

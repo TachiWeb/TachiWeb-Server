@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi
+package eu.kanade.tachiyomi.data.backup
 
 import com.google.gson.JsonArray
 import eu.kanade.tachiyomi.data.backup.BackupManager
