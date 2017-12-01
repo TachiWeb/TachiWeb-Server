@@ -35,6 +35,7 @@ import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute
 import xyz.nulldev.ts.api.http.settings.PreferencesRoute
 import xyz.nulldev.ts.api.http.settings.SetPreferenceRoute
 import xyz.nulldev.ts.api.http.settings.SourceLoginRoute
+import xyz.nulldev.ts.api.http.sync.SyncRoute
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute
 
 /**
@@ -133,6 +134,9 @@ class HttpAPI {
         getAPIRoute("/edit_categories/:operation", editCategoriesRoute)
         //Get filters
         getAPIRoute("/get_filters/:sourceId", getFiltersRoute)
+
+        //Sync route
+        getAPIRoute("/sync", SyncRoute())
     }
 
     private fun buildAPIPath(path: String): String {

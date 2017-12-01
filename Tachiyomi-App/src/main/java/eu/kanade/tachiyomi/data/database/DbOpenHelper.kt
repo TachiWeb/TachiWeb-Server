@@ -4,6 +4,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import eu.kanade.tachiyomi.data.database.tables.*
+import xyz.nulldev.ts.sync.database.SyncUpdatesTable
+import xyz.nulldev.ts.sync.database.TriggerGenerator
+import xyz.nulldev.ts.sync.database.models.UpdateTarget
 
 class DbOpenHelper(context: Context)
 : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -27,12 +30,23 @@ class DbOpenHelper(context: Context)
         execSQL(CategoryTable.createTableQuery)
         execSQL(MangaCategoryTable.createTableQuery)
         execSQL(HistoryTable.createTableQuery)
+        execSQL(SyncUpdatesTable.createTableQuery)
 
         // DB indexes
         execSQL(MangaTable.createUrlIndexQuery)
         execSQL(MangaTable.createFavoriteIndexQuery)
         execSQL(ChapterTable.createMangaIdIndexQuery)
         execSQL(HistoryTable.createChapterIdIndexQuery)
+
+        // Gen triggers
+        val triggerGen = TriggerGenerator()
+        UpdateTarget.registeredObjects.forEach {
+            it.fields.forEach {
+                triggerGen.genTriggers(it).forEach {
+                    execSQL(it)
+                }
+            }
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
