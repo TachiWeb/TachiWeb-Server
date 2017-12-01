@@ -16,7 +16,6 @@
 
 package xyz.nulldev.ts.api.http.library
 
-import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import org.json.JSONArray
 import spark.Request
 import spark.Response
@@ -31,12 +30,11 @@ import xyz.nulldev.ts.ext.kInstanceLazy
  */
 class LibraryRoute : TachiWebRoute() {
 
-    private val db: DatabaseHelper by kInstanceLazy()
     private val mangaSerializer: MangaSerializer by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
         val array = JSONArray()
-        for (manga in db.getLibraryMangas().executeAsBlocking()) {
+        for (manga in api.database.getLibraryMangas().executeAsBlocking()) {
             array.put(mangaSerializer.serialize(manga, true))
         }
         return success().put(KEY_CONTENT, array)

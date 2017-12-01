@@ -16,7 +16,6 @@
 
 package xyz.nulldev.ts.api.http.download
 
-import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadService
 import eu.kanade.tachiyomi.source.model.Page
 import org.json.JSONArray
@@ -24,43 +23,24 @@ import org.json.JSONObject
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
  * Get download statuses
  */
 class GetDownloadStatusRoute : TachiWebRoute() {
 
-    private val downloadManager: DownloadManager by kInstanceLazy()
-
     override fun handleReq(request: Request, response: Response): Any {
         val builtResponse = success()
         val array = JSONArray()
-        for (download in downloadManager.queue) {
+        for (download in api.downloads.downloads) {
             val downloadJson = JSONObject()
 
-            val downloadPages = download.pages
-            val downloadProgressMax: Float
-            var downloadProgress: Float
-            //Manually calculate download progress
-            if (downloadPages != null) {
-                downloadProgressMax = (downloadPages.size * 100).toFloat()
-                downloadProgress = 0f
-                var downloadedImages = 0
-                for (page in download.pages!!) {
-                    if (page.status == Page.READY) {
-                        downloadedImages++
-                    }
-                    downloadProgress += page.progress.toFloat()
-                }
-                downloadJson.put(KEY_DOWNLOADED_IMAGES, downloadedImages)
-                        .put(KEY_TOTAL_IMAGES, downloadPages.size)
-            } else {
-                downloadProgressMax = 1f
-                downloadProgress = 0f
-            }
-            downloadJson.put(KEY_PROGRESS, (downloadProgress / downloadProgressMax).toDouble())
-                    .put(KEY_MANGA_TITLE, download.manga.title)
+            downloadJson.put(KEY_DOWNLOADED_IMAGES, download.pages?.filter {
+                it.status == Page.READY
+            }?.count() ?: 0)
+            downloadJson.put(KEY_TOTAL_IMAGES, download.pages?.size ?: 0)
+            downloadJson.put(KEY_PROGRESS, download.progress)
+                    .put(KEY_MANGA_TITLE, api.database.getManga(download.chapter.manga_id!!).executeAsBlocking()!!.title)
                     .put(KEY_CHAPTER_NAME, download.chapter.name)
             array.put(downloadJson)
         }

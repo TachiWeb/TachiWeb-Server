@@ -16,21 +16,14 @@
 
 package xyz.nulldev.ts.api.http.download
 
-import android.content.Context
-import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.data.download.DownloadService
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
  * Pause/resume/clear downloads.
  */
 class DownloadsOperationRoute : TachiWebRoute() {
-
-    private val downloadManager: DownloadManager by kInstanceLazy()
-    private val context : Context by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
         //Get and parse operation
@@ -44,20 +37,19 @@ class DownloadsOperationRoute : TachiWebRoute() {
         //Perform operation
         when (operation) {
             Operation.PAUSE -> {
-                if (!downloadManager.runningRelay.value) {
+                if (!api.downloads.running) {
                     return error("Download manager is already paused!")
                 }
-                DownloadService.stop(context)
+                api.downloads.running = false
             }
             Operation.RESUME -> {
-                if (downloadManager.runningRelay.value) {
+                if (api.downloads.running) {
                     return error("Download manager is not paused!")
                 }
-                DownloadService.start(context)
+                api.downloads.running = true
             }
             Operation.CLEAR -> {
-                DownloadService.stop(context)
-                downloadManager.clearQueue()
+                api.downloads.clear()
             }
         }
         return success()

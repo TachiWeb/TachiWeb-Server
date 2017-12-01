@@ -16,30 +16,14 @@
 
 package xyz.nulldev.ts.api.http.download
 
-import android.content.Context
-import eu.kanade.tachiyomi.data.database.DatabaseHelper
-import eu.kanade.tachiyomi.data.database.models.Chapter
-import eu.kanade.tachiyomi.data.database.models.Manga
-import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.data.download.DownloadService
-import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.SourceManager
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.getDownload
-import xyz.nulldev.ts.ext.isDownloaded
-import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
  * Download a chapter
  */
 class DownloadChapterRoute : TachiWebRoute() {
-
-    private val sourceManager: SourceManager by kInstanceLazy()
-    private val downloadManager: DownloadManager by kInstanceLazy()
-    private val context : Context by kInstanceLazy()
-    private val db: DatabaseHelper by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
         //Get params
@@ -49,17 +33,17 @@ class DownloadChapterRoute : TachiWebRoute() {
                 ?: return error("ChapterID must be specified!")
 
         //Resolve objects and parse params
-        val manga = db.getManga(mangaId).executeAsBlocking()
+        val manga = api.database.getManga(mangaId).executeAsBlocking()
                 ?: return error("The specified manga does not exist!")
-        val source = sourceManager.get(manga.source)
+        val source = api.catalogue.getSource(manga.source)
                 ?: throw IllegalArgumentException()
-        val chapter = db.getChapter(chapterId).executeAsBlocking()
+        val chapter = api.database.getChapter(chapterId).executeAsBlocking()
                 ?: return error("The specified chapter does not exist!")
         val delete = "true".equals(request.queryParams("delete"), ignoreCase = true)
 
         //Check for active download
         //TODO Handle other download statuses
-        val activeDownload = downloadManager.getDownload(chapter)
+        val activeDownload = api.downloads.downloads.find { it.chapter.id == chapter.id }
         if (activeDownload != null) {
             if (delete) {
                 return error("This chapter is currently being downloaded!")
@@ -69,7 +53,7 @@ class DownloadChapterRoute : TachiWebRoute() {
         }
 
         //Check if chapter is downloaded
-        val isChapterDownloaded = chapter.isDownloaded(source, manga)
+        val isChapterDownloaded = api.downloads.isDownloaded(chapter)
         if (!delete && isChapterDownloaded) {
             return error("This chapter is already downloaded!")
         }
@@ -79,21 +63,11 @@ class DownloadChapterRoute : TachiWebRoute() {
 
         if (delete) {
             //This is a delete request! Delete the chapter!
-            deleteChapter(source, manga, chapter)
+            api.downloads.delete(chapter)
         } else {
             //Download the chapter
-            downloadChapters(manga, listOf(chapter))
+            api.downloads.add(chapter)
         }
         return success()
-    }
-
-    private fun deleteChapter(source: Source, manga: Manga, chapter: Chapter) {
-        downloadManager.queue.remove(chapter)
-        downloadManager.deleteChapter(source, manga, chapter)
-    }
-
-    private fun downloadChapters(manga: Manga, chapters: List<Chapter>) {
-        DownloadService.start(context)
-        downloadManager.downloadChapters(manga, chapters)
     }
 }

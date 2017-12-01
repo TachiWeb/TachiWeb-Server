@@ -22,6 +22,8 @@ import spark.Request
 import spark.Response
 import spark.Route
 import xyz.nulldev.ts.api.http.auth.SessionManager
+import xyz.nulldev.ts.api.java.TachiyomiAPI
+import xyz.nulldev.ts.api.java.model.ServerAPIInterface
 
 /**
  * Project: TachiServer
@@ -31,6 +33,7 @@ import xyz.nulldev.ts.api.http.auth.SessionManager
 abstract class TachiWebRoute : Route {
 
     private val requiresAuth: Boolean
+    protected val api: ServerAPIInterface = TachiyomiAPI
 
     constructor() {
         requiresAuth = true

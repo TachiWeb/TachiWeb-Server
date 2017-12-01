@@ -37,12 +37,12 @@ class PreferencesRoute : TachiWebRoute() {
 
     override fun handleReq(request: Request, response: Response): Any {
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        if (preferences is JsonSharedPreferences) {
+        return if (preferences is JsonSharedPreferences) {
             val parent = success()
             parent.put(KEY_PREFS, preferences.saveToJSONObject())
-            return parent
+            parent
         } else {
-            return error("Preferences is not an instance of JsonSharedPreferences (internal server error).")
+            error("Preferences is not an instance of JsonSharedPreferences (internal server error).")
         }
     }
 
