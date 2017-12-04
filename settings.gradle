@@ -1,5 +1,5 @@
 // Constants
-gradle.ext.kotlinVersion = "1.1.51"
+gradle.ext.kotlinVersion = "1.2.0"
 
 // Subprojects
 
@@ -17,8 +17,6 @@ include 'Tachiyomi-App'
 
 // Core server code (API handlers)
 include 'TachiServer'
-// Sync data structures
-include 'TachiServer/SyncStruct'
 // Config API
 include 'TachiServer/Config'
 

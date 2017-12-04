@@ -39,6 +39,11 @@ def getGitHash = { ->
     return stdout.toString().trim()
 }
 
+//Set application run dir
+def runningDir = new File("build/app-run")
+runningDir.mkdirs()
+tasks.run.workingDir = runningDir.absolutePath
+
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')

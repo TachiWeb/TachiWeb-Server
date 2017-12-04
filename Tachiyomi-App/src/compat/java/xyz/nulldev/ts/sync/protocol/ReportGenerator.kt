@@ -124,6 +124,7 @@ class ReportGenerator {
             this.manga = manga.getRef()
             this.chapterNum = chapter.chapter_number
             this.sourceOrder = chapter.source_order
+            this.url = chapter.url
             this.name = chapter.name
 
             report.entities.add(this)

@@ -15,6 +15,9 @@ class SyncReport {
     // Sync all entities up to this date
     var to: Long = -1 //Datetime in millis since epoch in UTC
 
-    inline fun <reified M : SyncEntity<*>> findEntity(filter: (M) -> Boolean)
-        = entities.filterIsInstance<M>().find(filter)
+    inline fun <reified M : SyncEntity<*>> findEntities()
+        = entities.filterIsInstance<M>()
+
+    inline fun <reified M : SyncEntity<*>> findEntity(filter: (M) -> Boolean): M?
+        = findEntities<M>().find(filter)
 }

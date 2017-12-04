@@ -10,8 +10,8 @@ import xyz.nulldev.ts.api.http.HttpModule
 import xyz.nulldev.ts.config.ConfigKodeinModule
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
-import java.lang.management.ManagementFactory
 import java.io.File
+import java.lang.management.ManagementFactory
 
 /**
  * Server bootstrap class
