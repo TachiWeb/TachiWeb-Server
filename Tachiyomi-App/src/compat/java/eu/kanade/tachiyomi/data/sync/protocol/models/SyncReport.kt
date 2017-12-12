@@ -1,6 +1,6 @@
-package xyz.nulldev.ts.sync.protocol.models
+package eu.kanade.tachiyomi.data.sync.protocol.models
 
-import xyz.nulldev.ts.sync.protocol.models.common.SyncEntity
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncEntity
 
 class SyncReport {
     // Used when building report

@@ -26,11 +26,13 @@ class TriggerGenerator {
 
     private fun genTrigger(type: String, field: UpdatableField): String {
         val type = type.toUpperCase()
+        val triggerType: String
 
         val conditionBuilder = mutableListOf<String>()
         if(type == "UPDATE") {
             // language=sql
             conditionBuilder += "old.${field.field} != new.${field.field}"
+            triggerType = "AFTER UPDATE"
         } else if(type == "INSERT") {
             //Ignore inserts if inserted values are the same as the default values
             conditionBuilder += "new.${field.field} != " + when(field.defValue) {
@@ -45,7 +47,10 @@ class TriggerGenerator {
 
                 else -> throw IllegalArgumentException("Unknown default value type: ${field.defValue::class.java.simpleName}!")
             }
-        }
+            triggerType = "AFTER INSERT"
+        } else if(type == "DELETE") {
+            triggerType = "BEFORE DELETE"
+        } else throw IllegalArgumentException("Unknown query type: $type!")
 
         val condition = if(conditionBuilder.isNotEmpty())
             conditionBuilder.joinToString(prefix = "WHEN ", separator = " AND ")
@@ -56,7 +61,7 @@ class TriggerGenerator {
         // language=sql
         return """
             CREATE TRIGGER IF NOT EXISTS ${triggerName(type, field)}
-              BEFORE $type ON ${field.parent.tableName}
+              $triggerType ON ${field.parent.tableName}
               $condition
               BEGIN
                 /* Delete old entry update */
@@ -71,7 +76,7 @@ class TriggerGenerator {
                     ${SyncUpdatesTable.COL_FIELD}
                 ) VALUES (
                     $entry.${field.parent.idColumn},
-                    $CURRENT_TIME_SQL,
+                    ${CURRENT_TIME_SQL},
                     ${field.id}
                 );
               END;

@@ -1,15 +1,15 @@
-package xyz.nulldev.ts.sync.protocol
+package eu.kanade.tachiyomi.data.sync.protocol
 
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.History
 import eu.kanade.tachiyomi.data.database.models.Manga
+import eu.kanade.tachiyomi.data.sync.protocol.models.*
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.ChangedField
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import uy.kohesive.injekt.injectLazy
 import xyz.nulldev.ts.sync.database.models.UpdateTarget
-import xyz.nulldev.ts.sync.protocol.models.*
-import xyz.nulldev.ts.sync.protocol.models.common.ChangedField
 
 class ReportGenerator {
     private val db: DatabaseHelper by injectLazy()
@@ -104,9 +104,10 @@ class ReportGenerator {
         } ?: SyncManga().apply {
             this.syncId = report.lastId++
 
+            this.source = source.getRef()
             this.url = manga.url
             this.name = manga.title
-            this.source = source.getRef()
+            this.thumbnailUrl = manga.thumbnail_url
 
             report.entities.add(this)
         }, manga)
@@ -117,7 +118,7 @@ class ReportGenerator {
         val manga = findOrGenManga(chapter.manga_id!!, report)!!.first
 
         return Pair(report.findEntity {
-            it.manga.targetId == manga.syncId
+            it.manga.targetId == manga.syncId && it.url == chapter.url
         } ?: SyncChapter().apply {
             this.syncId = report.lastId++
 

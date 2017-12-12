@@ -137,6 +137,7 @@ class HttpAPI {
 
         //Sync route
         getAPIRoute("/sync", SyncRoute())
+        postAPIRoute("/sync", SyncRoute())
     }
 
     private fun buildAPIPath(path: String): String {

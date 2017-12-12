@@ -8,7 +8,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonSerializer
-import xyz.nulldev.ts.sync.protocol.models.common.SyncEntity
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncEntity
 import java.lang.reflect.Type
 
 class SyncEntityAdapter : JsonSerializer<SyncEntity<*>>, JsonDeserializer<SyncEntity<*>> {

@@ -1,9 +1,9 @@
-package xyz.nulldev.ts.sync.protocol
+package eu.kanade.tachiyomi.data.sync.protocol
 
-import xyz.nulldev.ts.sync.protocol.models.SyncCategory
-import xyz.nulldev.ts.sync.protocol.models.SyncChapter
-import xyz.nulldev.ts.sync.protocol.models.SyncManga
-import xyz.nulldev.ts.sync.protocol.models.SyncReport
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncCategory
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncChapter
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncManga
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncReport
 
 class ReportDeduplicator {
     /**

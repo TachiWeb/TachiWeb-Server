@@ -1,7 +1,7 @@
 package xyz.nulldev.ts.sync.gson
 
 import com.google.gson.GsonBuilder
-import xyz.nulldev.ts.sync.protocol.models.common.SyncEntity
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncEntity
 
 object GsonProvider {
     val gson = GsonBuilder()

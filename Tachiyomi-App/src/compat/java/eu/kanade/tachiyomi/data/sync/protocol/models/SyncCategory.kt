@@ -1,8 +1,8 @@
-package xyz.nulldev.ts.sync.protocol.models
+package eu.kanade.tachiyomi.data.sync.protocol.models
 
-import xyz.nulldev.ts.sync.protocol.models.common.ChangedField
-import xyz.nulldev.ts.sync.protocol.models.common.SyncEntity
-import xyz.nulldev.ts.sync.protocol.models.common.SyncRef
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.ChangedField
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncEntity
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncRef
 
 class SyncCategory : SyncEntity<SyncCategory>() {
     // Changes

@@ -1,15 +1,18 @@
-package xyz.nulldev.ts.sync.protocol
+package eu.kanade.tachiyomi.data.sync.protocol
 
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.History
 import eu.kanade.tachiyomi.data.database.models.Manga
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncChapter
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncHistory
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncManga
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncReport
+import eu.kanade.tachiyomi.data.sync.protocol.models.common.ChangedField
 import eu.kanade.tachiyomi.source.SourceManager
 import uy.kohesive.injekt.injectLazy
-import xyz.nulldev.ts.sync.protocol.models.SyncChapter
-import xyz.nulldev.ts.sync.protocol.models.SyncHistory
-import xyz.nulldev.ts.sync.protocol.models.SyncManga
-import xyz.nulldev.ts.sync.protocol.models.SyncReport
+import xyz.nulldev.ts.sync.database.models.UpdatableField
+import xyz.nulldev.ts.sync.database.models.UpdateTarget
 
 class ReportApplier {
     private val db: DatabaseHelper by injectLazy()
@@ -28,17 +31,23 @@ class ReportApplier {
 
     private fun applyManga(report: SyncReport) {
         report.findEntities<SyncManga>().forEach {
+            //Attempt to resolve previous update and only apply if new entry is newer
             val source = it.source.resolve(report)
             val dbManga = db.getManga(it.url, source.id).executeAsBlocking() ?: Manga.create(source.id).apply {
                 url = it.url
                 title = it.name
+                thumbnail_url = it.thumbnailUrl
+
+                this.initialized = false //New manga, fetch metadata next time we view it in UI
             }
 
-            it.favorite?.let { dbManga.favorite = it.value }
-            it.viewer?.let { dbManga.viewer = it.value }
-            it.chapterFlags?.let { dbManga.chapter_flags = it.value }
+            val id = dbManga.id
 
-            db.insertManga(dbManga)
+            it.favorite.applyIfNewer(id, UpdateTarget.Manga.favorite) { dbManga.favorite = it }
+            it.viewer.applyIfNewer(id, UpdateTarget.Manga.viewer) { dbManga.viewer = it }
+            it.chapterFlags.applyIfNewer(id, UpdateTarget.Manga.chapterFlags) { dbManga.chapter_flags = it }
+
+            db.insertManga(dbManga).executeAsBlocking()
         }
     }
 
@@ -56,11 +65,13 @@ class ReportApplier {
                 source_order = it.sourceOrder
             }
 
-            it.read?.let { dbChapter.read = it.value }
-            it.bookmark?.let { dbChapter.bookmark = it.value }
-            it.lastPageRead?.let { dbChapter.last_page_read = it.value }
+            val id = dbChapter.id
 
-            db.insertChapter(dbChapter)
+            it.read.applyIfNewer(id, UpdateTarget.Chapter.read) { dbChapter.read = it }
+            it.bookmark.applyIfNewer(id, UpdateTarget.Chapter.bookmark) { dbChapter.bookmark = it }
+            it.lastPageRead.applyIfNewer(id, UpdateTarget.Chapter.lastPageRead) { dbChapter.last_page_read = it }
+
+            db.insertChapter(dbChapter).executeAsBlocking()
         }
     }
 
@@ -72,9 +83,21 @@ class ReportApplier {
                 History.create(dbChapter)
             }
 
-            it.lastRead?.let { dbHistory.last_read = it.value }
+            val id = dbHistory.id
 
-            db.insertHistory(dbHistory)
+            it.lastRead.applyIfNewer(id, UpdateTarget.History.lastRead) { dbHistory.last_read = it }
+
+            db.insertHistory(dbHistory).executeAsBlocking()
+        }
+    }
+
+    private fun <T> ChangedField<T>?.applyIfNewer(id: Long?,
+                                                  field: UpdatableField,
+                                                  exec: (T) -> Unit) {
+        if(this != null
+                && (id == null
+                || db.getNewerEntryUpdates(id, field, this).executeAsBlocking().isEmpty())) {
+            exec(value)
         }
     }
 }
