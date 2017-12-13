@@ -26,7 +26,6 @@ ext.javaProjects = [
         project(":AndroidCompat"),
         project(":junrarandroid"),
         project(":TachiServer"),
-        project(":TachiServer/SyncStruct"),
         project(":TachiServer/Config"),
         project(":Tachiyomi-App")
 ]
@@ -79,8 +78,7 @@ configure([
 }
 
 configure([
-        project(":Tachiyomi-App"),
-        project(":TachiServer/SyncStruct")
+        project(":Tachiyomi-App")
 ]) {
     dependencies {
         // Gson
