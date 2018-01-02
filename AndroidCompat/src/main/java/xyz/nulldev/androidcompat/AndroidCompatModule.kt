@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 import xyz.nulldev.androidcompat.androidimpl.CustomContext
+import xyz.nulldev.androidcompat.androidimpl.FakePackageManager
 import xyz.nulldev.androidcompat.info.ApplicationInfoImpl
 import xyz.nulldev.androidcompat.io.AndroidFiles
 import xyz.nulldev.androidcompat.service.ServiceSupport
@@ -22,6 +23,8 @@ class AndroidCompatModule {
         bind<ApplicationInfoImpl>() with singleton { ApplicationInfoImpl() }
 
         bind<ServiceSupport>() with singleton { ServiceSupport() }
+
+        bind<FakePackageManager>() with singleton { FakePackageManager() }
 
         //Context
         bind<CustomContext>() with singleton { CustomContext() }

@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import eu.kanade.tachiyomi.data.database.models.Updatable
 import eu.kanade.tachiyomi.data.database.tables.*
 import eu.kanade.tachiyomi.data.database.models.UpdateTarget
-import eu.kanade.tachiyomi.data.database.queries.cloneMangaCategoriesQuery
-import eu.kanade.tachiyomi.data.sync.LibrarySyncManager
 
 class DbOpenHelper(context: Context)
 : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {

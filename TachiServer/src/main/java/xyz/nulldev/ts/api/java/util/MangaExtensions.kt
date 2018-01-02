@@ -28,3 +28,6 @@ val Manga.chapters
 
 val Manga.isDownloaded
     get() = TachiyomiAPI.downloads.isDownloaded(this)
+
+val Manga.unread
+    get() = chapters.count { !it.read }

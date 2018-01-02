@@ -26,6 +26,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import xyz.nulldev.ts.api.http.manga.MangaFlag
 import xyz.nulldev.ts.api.java.util.isDownloaded
+import xyz.nulldev.ts.api.java.util.unread
 import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
@@ -47,7 +48,7 @@ class MangaSerializer {
                 .put(KEY_ID, manga.id)
 
         if(fromLibrary)
-                builtResponse.put(KEY_UNREAD, manga)
+                builtResponse.put(KEY_UNREAD, manga.unread)
 
         val source = sourceManager.get(manga.source)
         var url = ""

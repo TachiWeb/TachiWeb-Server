@@ -13,7 +13,7 @@ echo "Getting required Android.jar..."
 rm -rf "tmp"
 mkdir -p "tmp"
 pushd "tmp"
-curl "https://chromium.googlesource.com/android_tools/+/e429db7f48cd615b0b408cda259ffbc17d3945bb/sdk/platforms/android-24/android.jar?format=TEXT" | base64 -d > android.jar
+curl "https://android.googlesource.com/platform/prebuilts/sdk/+/master/27/android.jar?format=TEXT" | base64 -d > android.jar
 
 # We need to remove any stub classes that we might use
 echo "Patching JAR..."

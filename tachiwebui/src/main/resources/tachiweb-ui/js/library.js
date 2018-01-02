@@ -192,11 +192,11 @@ function updateLibraryUI(mangas) {
         var manga = mangas[i];
         var mCategories = manga.categories.slice(0);
         if (mCategories.length <= 0) {
-            mCategories.push("Default");
+            mCategories.push({id: -1, name: "Default"});
         }
         for (var a = 0; a < mCategories.length; a++) {
-            var categoryName = mCategories[a];
-            let categoryId = mCategories[a];
+            var categoryName = mCategories[a].name;
+            let categoryId = mCategories[a].id;
             var category = categories[categoryId];
             if (!category) {
                 category = {

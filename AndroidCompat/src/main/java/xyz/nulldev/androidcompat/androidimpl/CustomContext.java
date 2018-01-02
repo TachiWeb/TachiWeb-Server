@@ -56,6 +56,8 @@ public class CustomContext extends Context {
 
     private ServiceSupport serviceSupport = KodeinGlobalHelper.Companion.instance(ServiceSupport.class);
 
+    private FakePackageManager fakePackageManager = KodeinGlobalHelper.Companion.instance(FakePackageManager.class);
+
     private Logger logger = LoggerFactory.getLogger(CustomContext.class);
 
     private Map<String, Object> serviceMap = new HashMap<>();
@@ -76,7 +78,7 @@ public class CustomContext extends Context {
 
     @Override
     public PackageManager getPackageManager() {
-        return null;
+        return fakePackageManager;
     }
 
     @Override
