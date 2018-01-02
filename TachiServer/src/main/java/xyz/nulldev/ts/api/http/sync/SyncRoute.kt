@@ -5,9 +5,9 @@ import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.sync.gson.SyncGsonProvider
 import eu.kanade.tachiyomi.data.sync.protocol.ReportApplier
 import eu.kanade.tachiyomi.data.sync.protocol.ReportGenerator
-import eu.kanade.tachiyomi.data.sync.protocol.category.CategorySnapshotHelper
 import eu.kanade.tachiyomi.data.sync.protocol.models.SyncReport
 import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncResponse
+import eu.kanade.tachiyomi.data.sync.protocol.snapshot.SnapshotHelper
 import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
@@ -17,7 +17,7 @@ import xyz.nulldev.ts.ext.kInstanceLazy
 class SyncRoute : TachiWebRoute() {
     private val context: Context by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
-    private val categorySnapshots by lazy { CategorySnapshotHelper(context) }
+    private val snapshots by lazy { SnapshotHelper(context) }
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -38,7 +38,7 @@ class SyncRoute : TachiWebRoute() {
 
                 db.deleteMangaCategoriesSnapshot(dId).executeAsBlocking()
                 db.takeMangaCategoriesSnapshot(dId).executeAsBlocking()
-                categorySnapshots.takeCategorySnapshots(dId)
+                snapshots.takeSnapshots(dId)
             }
 
             val startTime = request.queryParams("from")?.toLongOrNull() ?: 0L

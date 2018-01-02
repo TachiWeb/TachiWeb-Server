@@ -34,13 +34,15 @@ function excludeFolder() {
     rm -rf "$TARGET/$PP"
 }
 
+# Enter tmp folder
+rm -rf tmp
+mkdir tmp
+pushd tmp
+
 echo "Removing old source files..."
 rm -rf "$TARGET"
 
 echo "Downloading Tachiyomi source code..."
-rm -rf tmp
-mkdir tmp
-pushd tmp
 # git clone https://github.com/inorichi/tachiyomi
 # TODO Remove
 # Pull from fork

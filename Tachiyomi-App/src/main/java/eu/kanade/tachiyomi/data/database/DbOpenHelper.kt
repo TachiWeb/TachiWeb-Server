@@ -4,8 +4,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import eu.kanade.tachiyomi.data.database.models.Updatable
-import eu.kanade.tachiyomi.data.database.tables.*
 import eu.kanade.tachiyomi.data.database.models.UpdateTarget
+import eu.kanade.tachiyomi.data.database.tables.*
 
 class DbOpenHelper(context: Context)
 : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
