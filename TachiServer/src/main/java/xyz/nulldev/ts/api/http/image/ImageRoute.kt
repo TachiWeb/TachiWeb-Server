@@ -30,8 +30,8 @@ import spark.utils.IOUtils
 import xyz.nulldev.androidcompat.util.file
 import xyz.nulldev.androidcompat.util.java
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.getPageList
-import xyz.nulldev.ts.ext.isDownloaded
+import xyz.nulldev.ts.api.java.util.isDownloaded
+import xyz.nulldev.ts.api.java.util.pageList
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.io.FileInputStream
 import java.nio.file.Files
@@ -77,12 +77,11 @@ class ImageRoute : TachiWebRoute() {
         val chapter = db.getChapter(chapterId).executeAsBlocking()
                 ?: return error("The specified chapter does not exist!")
         //TODO Error handling
-        val pages = chapter.getPageList(source, manga)
-                ?: return error("Failed to fetch page list!")
+        val pages = chapter.pageList
         var pageObj: Page? = pages.firstOrNull { it.index == page } ?: return error("Could not find specified page!")
 
         //Get downloaded image if downloaded
-        if (chapter.isDownloaded(source, manga)) {
+        if (chapter.isDownloaded) {
             pageObj = downloadManager.buildPageList(source, manga, chapter)
                     .toBlocking()
                     .first()

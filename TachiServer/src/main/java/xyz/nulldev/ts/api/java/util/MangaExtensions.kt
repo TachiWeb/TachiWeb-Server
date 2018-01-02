@@ -25,3 +25,6 @@ fun Manga.updateChapters() = TachiyomiAPI.catalogue.updateMangaChapters(this)
  */
 val Manga.chapters
     get() = TachiyomiAPI.database.getChapters(this).executeAsBlocking()
+
+val Manga.isDownloaded
+    get() = TachiyomiAPI.downloads.isDownloaded(this)

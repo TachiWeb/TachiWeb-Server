@@ -27,8 +27,8 @@ import org.json.JSONObject
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.getDownload
-import xyz.nulldev.ts.ext.isDownloaded
+import xyz.nulldev.ts.api.java.util.download
+import xyz.nulldev.ts.api.java.util.isDownloaded
 import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
@@ -68,12 +68,12 @@ class ChaptersRoute : TachiWebRoute() {
     }
 
     private fun getDownloadStatus(source: Source, manga: Manga, chapter: Chapter): String {
-        val isDownloaded = chapter.isDownloaded(source, manga)
+        val isDownloaded = chapter.isDownloaded
         if (isDownloaded) {
             return STATUS_DOWNLOADED
         } else {
             //TODO Handle other download statuses
-            return if (downloadManager.getDownload(chapter) != null) STATUS_DOWNLOADING else STATUS_NOT_DOWNLOADED
+            return if (chapter.download != null) STATUS_DOWNLOADING else STATUS_NOT_DOWNLOADED
         }
     }
 

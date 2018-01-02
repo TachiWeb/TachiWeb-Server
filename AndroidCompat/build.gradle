@@ -11,6 +11,9 @@ dependencies {
     // Javassist
     compile "org.javassist:javassist:3.21.0-GA"
 
+    // Coroutines
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21'
+
     // Config API
     compile project(":TachiServer/Config")
 }

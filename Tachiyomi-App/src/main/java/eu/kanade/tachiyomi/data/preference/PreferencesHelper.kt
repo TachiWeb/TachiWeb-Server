@@ -141,6 +141,8 @@ class PreferencesHelper(val context: Context) {
 
     fun libraryAsList() = rxPrefs.getBoolean(Keys.libraryAsList, false)
 
+    fun downloadBadge() = rxPrefs.getBoolean(Keys.downloadBadge, false)
+
     fun filterDownloaded() = rxPrefs.getBoolean(Keys.filterDownloaded, false)
 
     fun filterUnread() = rxPrefs.getBoolean(Keys.filterUnread, false)
@@ -158,9 +160,12 @@ class PreferencesHelper(val context: Context) {
     fun downloadNew() = rxPrefs.getBoolean(Keys.downloadNew, false)
 
     fun downloadNewCategories() = rxPrefs.getStringSet(Keys.downloadNewCategories, emptySet())
+    
+    fun syncId() = rxPrefs.getString(Keys.syncId, null)
+    
+    fun lastSync() = rxPrefs.getLong(Keys.lastSync, 0)
 
     fun lang() = prefs.getString(Keys.lang, "")
 
     fun defaultCategory() = prefs.getInt(Keys.defaultCategory, -1)
-
 }

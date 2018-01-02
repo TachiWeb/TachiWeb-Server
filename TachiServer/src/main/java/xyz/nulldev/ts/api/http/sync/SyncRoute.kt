@@ -1,34 +1,55 @@
 package xyz.nulldev.ts.api.http.sync
 
+import android.content.Context
+import eu.kanade.tachiyomi.data.database.DatabaseHelper
+import eu.kanade.tachiyomi.data.sync.gson.SyncGsonProvider
 import eu.kanade.tachiyomi.data.sync.protocol.ReportApplier
 import eu.kanade.tachiyomi.data.sync.protocol.ReportGenerator
+import eu.kanade.tachiyomi.data.sync.protocol.category.CategorySnapshotHelper
 import eu.kanade.tachiyomi.data.sync.protocol.models.SyncReport
 import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncResponse
 import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.sync.gson.GsonProvider
+import xyz.nulldev.ts.ext.kInstanceLazy
 
 class SyncRoute : TachiWebRoute() {
+    private val context: Context by kInstanceLazy()
+    private val db: DatabaseHelper by kInstanceLazy()
+    private val categorySnapshots by lazy { CategorySnapshotHelper(context) }
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun handleReq(request: Request, response: Response): Any {
-        fun SyncResponse.toJson() = GsonProvider.gson.toJson(this)
+        fun SyncResponse.toJson() = SyncGsonProvider.gson.toJson(this)
 
         try {
+            var dId = INITAL_SNAPSHOT_NAME
+
             //If has write=false or request is GET, then do not expect any sync input
             if (request.queryParams("write")?.toLowerCase() != "false"
                     && request.requestMethod() == "POST") {
                 //Apply client report
                 val body = request.body()
-                val report = GsonProvider.gson.fromJson(body, SyncReport::class.java)
-                ReportApplier().apply(report)
+                val report = SyncGsonProvider.gson.fromJson(body, SyncReport::class.java)
+                ReportApplier(context).apply(report)
+                dId = report.deviceId
+
+                db.deleteMangaCategoriesSnapshot(dId).executeAsBlocking()
+                db.takeMangaCategoriesSnapshot(dId).executeAsBlocking()
+                categorySnapshots.takeCategorySnapshots(dId)
             }
 
+            val startTime = request.queryParams("from")?.toLongOrNull() ?: 0L
+
+            //Ensure initial snapshot is taken
+            db.takeEmptyMangaCategoriesSnapshot(dId).executeAsBlocking()
+
             //Generate server report
-            val report = ReportGenerator().gen(0L)
+            val report = ReportGenerator(context).gen(LOCAL_DEVICE_NAME,
+                    dId,
+                    startTime)
             response.status(200)
             return SyncResponse().apply {
                 this.serverChanges = report
@@ -40,5 +61,10 @@ class SyncRoute : TachiWebRoute() {
                 this.error = "Internal error: ${t.message}"
             }.toJson()
         }
+    }
+
+    companion object {
+        private val LOCAL_DEVICE_NAME = "server"
+        private val INITAL_SNAPSHOT_NAME = "initial"
     }
 }

@@ -19,13 +19,13 @@ package xyz.nulldev.ts.api.http.serializer
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
 import org.json.JSONArray
 import org.json.JSONObject
 import xyz.nulldev.ts.api.http.manga.MangaFlag
+import xyz.nulldev.ts.api.java.util.isDownloaded
 import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
@@ -47,7 +47,7 @@ class MangaSerializer {
                 .put(KEY_ID, manga.id)
 
         if(fromLibrary)
-                builtResponse.put(KEY_UNREAD, manga.unread)
+                builtResponse.put(KEY_UNREAD, manga)
 
         val source = sourceManager.get(manga.source)
         var url = ""
@@ -56,7 +56,7 @@ class MangaSerializer {
             if (source is HttpSource) {
                 url = source.baseUrl + manga.url
             }
-            builtResponse.put(KEY_DOWNLOADED, isMangaDownloaded(source, manga))
+            builtResponse.put(KEY_DOWNLOADED, manga.isDownloaded)
         }
         builtResponse.put(KEY_BROWSER_URL, url)
         if (!manga.artist.isNullOrEmpty()) {
@@ -94,15 +94,6 @@ class MangaSerializer {
         return builtResponse
     }
 
-    private fun isMangaDownloaded(source: Source, manga: Manga): Boolean {
-        val mangaDirs = downloadManager.findSourceDir(source)?.listFiles() ?: emptyArray()
-
-        val mangaDirName = downloadManager.getMangaDirName(manga)
-        val mangaDir = mangaDirs.find { it.name == mangaDirName } ?: return false
-
-        return (mangaDir.listFiles() ?: emptyArray()).isNotEmpty()
-    }
-
     companion object {
         val KEY_ID = "id"
         val KEY_THUMBNAIL_URL = "thumbnail_url"
@@ -125,12 +116,12 @@ class MangaSerializer {
         val KEY_CATEGORY_NAME = "name"
 
         private fun statusToString(i: Int): String {
-            when (i) {
-                SManga.ONGOING -> return "Ongoing"
-                SManga.COMPLETED -> return "Completed"
-                SManga.LICENSED -> return "Licensed"
-                SManga.UNKNOWN -> return "Unknown"
-                else -> return "Unknown"
+            return when (i) {
+                SManga.ONGOING -> "Ongoing"
+                SManga.COMPLETED -> "Completed"
+                SManga.LICENSED -> "Licensed"
+                SManga.UNKNOWN -> "Unknown"
+                else -> "Unknown"
             }
         }
     }

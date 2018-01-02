@@ -1,6 +1,7 @@
 package xyz.nulldev.ts.api.java.model.downloads
 
 import eu.kanade.tachiyomi.data.database.models.Chapter
+import eu.kanade.tachiyomi.data.database.models.Manga
 
 interface DownloadController {
     /**
@@ -35,4 +36,12 @@ interface DownloadController {
      * @return Whether or not the chapter is downloaded
      */
     fun isDownloaded(chapter: Chapter): Boolean
+
+    /**
+     * Check if a manga is downloaded
+     *
+     * @param manga The manga to check
+     * @return Whether or not the manga is downloaded
+     */
+    fun isDownloaded(manga: Manga): Boolean
 }

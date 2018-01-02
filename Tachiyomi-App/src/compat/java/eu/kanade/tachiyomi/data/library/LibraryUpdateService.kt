@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.data.library
 
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -9,22 +8,27 @@ import android.os.PowerManager
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Category
 import eu.kanade.tachiyomi.data.database.models.Chapter
+import eu.kanade.tachiyomi.data.database.models.LibraryManga
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadService
 import eu.kanade.tachiyomi.data.library.LibraryUpdateService.Companion.start
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.preference.getOrDefault
+import eu.kanade.tachiyomi.data.track.TrackManager
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.util.AndroidComponentUtil
+import eu.kanade.tachiyomi.util.isServiceRunning
 import eu.kanade.tachiyomi.util.syncChaptersWithSource
 import rx.Observable
 import rx.Subscription
 import rx.schedulers.Schedulers
-import uy.kohesive.injekt.injectLazy
+import timber.log.Timber
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This class will take care of updating the chapters of the manga from the library. It can be
@@ -34,27 +38,13 @@ import java.util.*
  * progress of the update, and if case of an unexpected error, this service will be silently
  * destroyed.
  */
-class LibraryUpdateService : Service() {
-
-    /**
-     * Database helper.
-     */
-    val db: DatabaseHelper by injectLazy()
-
-    /**
-     * Source manager.
-     */
-    val sourceManager: SourceManager by injectLazy()
-
-    /**
-     * Preferences.
-     */
-    val preferences: PreferencesHelper by injectLazy()
-
-    /**
-     * Download Manager
-     */
-    val downloadManager: DownloadManager by injectLazy()
+class LibraryUpdateService(
+        val db: DatabaseHelper = Injekt.get(),
+        val sourceManager: SourceManager = Injekt.get(),
+        val preferences: PreferencesHelper = Injekt.get(),
+        val downloadManager: DownloadManager = Injekt.get(),
+        val trackManager: TrackManager = Injekt.get()
+) : Service() {
 
     /**
      * Wake lock that will be held until the service is destroyed.
@@ -66,17 +56,26 @@ class LibraryUpdateService : Service() {
      */
     private var subscription: Subscription? = null
 
+    /**
+     * Defines what should be updated within a service execution.
+     */
+    enum class Target {
+        CHAPTERS, // Manga chapters
+        DETAILS,  // Manga metadata
+        TRACKING  // Tracking metadata
+    }
+
     companion object {
 
         /**
          * Key for category to update.
          */
-        const val UPDATE_CATEGORY = "category"
+        const val KEY_CATEGORY = "category"
 
         /**
-         * Key for updating the details instead of the chapters.
+         * Key that defines what should be updated.
          */
-        const val UPDATE_DETAILS = "details"
+        const val KEY_TARGET = "target"
 
         /**
          * Returns the status of the service.
@@ -85,7 +84,7 @@ class LibraryUpdateService : Service() {
          * @return true if the service is running, false otherwise.
          */
         fun isRunning(context: Context): Boolean {
-            return AndroidComponentUtil.isServiceRunning(context, LibraryUpdateService::class.java)
+            return context.isServiceRunning(LibraryUpdateService::class.java)
         }
 
         /**
@@ -94,13 +93,13 @@ class LibraryUpdateService : Service() {
          *
          * @param context the application context.
          * @param category a specific category to update, or null for global update.
-         * @param details whether to update the details instead of the list of chapters.
+         * @param target defines what should be updated.
          */
-        fun start(context: Context, category: Category? = null, details: Boolean = false) {
+        fun start(context: Context, category: Category? = null, target: Target = Target.CHAPTERS) {
             if (!isRunning(context)) {
                 val intent = Intent(context, LibraryUpdateService::class.java).apply {
-                    putExtra(UPDATE_DETAILS, details)
-                    category?.let { putExtra(UPDATE_CATEGORY, it.id) }
+                    putExtra(KEY_TARGET, target)
+                    category?.let { putExtra(KEY_CATEGORY, it.id) }
                 }
                 context.startService(intent)
             }
@@ -123,16 +122,20 @@ class LibraryUpdateService : Service() {
      */
     override fun onCreate() {
         super.onCreate()
-        createAndAcquireWakeLock()
+        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK, "LibraryUpdateService:WakeLock")
+        wakeLock.acquire()
     }
 
     /**
-     * Method called when the service is destroyed. It destroys the running subscription, resets
-     * the alarm and release the wake lock.
+     * Method called when the service is destroyed. It destroys subscriptions and releases the wake
+     * lock.
      */
     override fun onDestroy() {
         subscription?.unsubscribe()
-        destroyWakeLock()
+        if (wakeLock.isHeld) {
+            wakeLock.release()
+        }
         super.onDestroy()
     }
 
@@ -153,6 +156,8 @@ class LibraryUpdateService : Service() {
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) return Service.START_NOT_STICKY
+        val target = intent.getSerializableExtra(KEY_TARGET) as? Target
+                ?: return Service.START_NOT_STICKY
 
         // Unsubscribe from any previous subscription if needed.
         subscription?.unsubscribe()
@@ -160,17 +165,19 @@ class LibraryUpdateService : Service() {
         // Update favorite manga. Destroy service when completed or in case of an error.
         subscription = Observable
                 .defer {
-                    val mangaList = getMangaToUpdate(intent)
+                    val mangaList = getMangaToUpdate(intent, target)
 
                     // Update either chapter list or manga details.
-                    if (!intent.getBooleanExtra(UPDATE_DETAILS, false))
-                        updateChapterList(mangaList)
-                    else
-                        updateDetails(mangaList)
+                    when (target) {
+                        Target.CHAPTERS -> updateChapterList(mangaList)
+                        Target.DETAILS -> updateDetails(mangaList)
+                        Target.TRACKING -> updateTrackings(mangaList)
+                    }
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                 }, {
+                    Timber.e(it)
                     stopSelf(startId)
                 }, {
                     stopSelf(startId)
@@ -183,15 +190,16 @@ class LibraryUpdateService : Service() {
      * Returns the list of manga to be updated.
      *
      * @param intent the update intent.
+     * @param target the target to update.
      * @return a list of manga to update
      */
-    fun getMangaToUpdate(intent: Intent): List<Manga> {
-        val categoryId = intent.getIntExtra(UPDATE_CATEGORY, -1)
+    fun getMangaToUpdate(intent: Intent, target: Target): List<LibraryManga> {
+        val categoryId = intent.getIntExtra(KEY_CATEGORY, -1)
 
         var listToUpdate = if (categoryId != -1)
             db.getLibraryMangas().executeAsBlocking().filter { it.category == categoryId }
         else {
-            val categoriesToUpdate = preferences.libraryUpdateCategories().getOrDefault().map { it.toInt() }
+            val categoriesToUpdate = preferences.libraryUpdateCategories().getOrDefault().map(String::toInt)
             if (categoriesToUpdate.isNotEmpty())
                 db.getLibraryMangas().executeAsBlocking()
                         .filter { it.category in categoriesToUpdate }
@@ -200,8 +208,8 @@ class LibraryUpdateService : Service() {
                 db.getLibraryMangas().executeAsBlocking().distinctBy { it.id }
         }
 
-        if (!intent.getBooleanExtra(UPDATE_DETAILS, false) && preferences.updateOnlyNonCompleted()) {
-            listToUpdate = listToUpdate.filter { it.status != SManga.Companion.COMPLETED }
+        if (target == Target.CHAPTERS && preferences.updateOnlyNonCompleted()) {
+            listToUpdate = listToUpdate.filter { it.status != SManga.COMPLETED }
         }
 
         return listToUpdate
@@ -216,7 +224,9 @@ class LibraryUpdateService : Service() {
      * @param mangaToUpdate the list to update
      * @return an observable delivering the progress of each update.
      */
-    fun updateChapterList(mangaToUpdate: List<Manga>): Observable<Manga> {
+    fun updateChapterList(mangaToUpdate: List<LibraryManga>): Observable<LibraryManga> {
+        // Initialize the variables holding the progress of the updates.
+        val count = AtomicInteger(0)
         // List containing new updates
         val newUpdates = ArrayList<Manga>()
         // list containing failed updates
@@ -230,22 +240,24 @@ class LibraryUpdateService : Service() {
 
         // Emit each manga and update it sequentially.
         return Observable.from(mangaToUpdate)
+                // Notify manga that will update.
+                .doOnNext { showProgressNotification(it, count.andIncrement, mangaToUpdate.size) }
                 // Update the chapters of the manga.
                 .concatMap { manga ->
                     updateManga(manga)
                             // If there's any error, return empty update and continue.
                             .onErrorReturn {
                                 failedUpdates.add(manga)
-                                Pair(emptyList<Chapter>(), emptyList<Chapter>())
+                                Pair(emptyList(), emptyList())
                             }
                             // Filter out mangas without new chapters (or failed).
                             .filter { pair -> pair.first.isNotEmpty() }
                             .doOnNext {
-                                if (downloadNew) {
-                                    if (categoriesToDownload.isEmpty() || manga.category in categoriesToDownload) {
-                                        downloadChapters(manga, it.first)
-                                        hasDownloads = true
-                                    }
+                                if (downloadNew && (categoriesToDownload.isEmpty() ||
+                                        manga.category in categoriesToDownload)) {
+
+                                    downloadChapters(manga, it.first)
+                                    hasDownloads = true
                                 }
                             }
                             // Convert to the manga that contains new chapters.
@@ -261,16 +273,18 @@ class LibraryUpdateService : Service() {
                 }
                 // Notify result of the overall update.
                 .doOnCompleted {
-                    if (newUpdates.isEmpty()) {
-                        cancelNotification()
-                    } else {
-                        showResultNotification(newUpdates, failedUpdates)
-                        if (downloadNew) {
-                            if (hasDownloads) {
-                                DownloadService.start(this)
-                            }
+                    if (newUpdates.isNotEmpty()) {
+                        showResultNotification(newUpdates)
+                        if (downloadNew && hasDownloads) {
+                            DownloadService.start(this)
                         }
                     }
+
+                    if (failedUpdates.isNotEmpty()) {
+                        Timber.e("Failed updating: ${failedUpdates.map { it.title }}")
+                    }
+
+                    cancelProgressNotification()
                 }
     }
 
@@ -280,7 +294,9 @@ class LibraryUpdateService : Service() {
         val dbChapters = chapters.map {
             mangaChapters.find { mangaChapter -> mangaChapter.url == it.url }!!
         }
-        downloadManager.downloadChapters(manga, dbChapters)
+        // We don't want to start downloading while the library is updating, because websites
+        // may don't like it and they could ban the user.
+        downloadManager.downloadChapters(manga, dbChapters, false)
     }
 
     /**
@@ -298,19 +314,22 @@ class LibraryUpdateService : Service() {
     /**
      * Method that updates the details of the given list of manga. It's called in a background
      * thread, so it's safe to do heavy operations or network calls here.
-     * For each manga it calls [updateManga] and updates the notification showing the current
-     * progress.
      *
      * @param mangaToUpdate the list to update
      * @return an observable delivering the progress of each update.
      */
-    fun updateDetails(mangaToUpdate: List<Manga>): Observable<Manga> {
+    fun updateDetails(mangaToUpdate: List<LibraryManga>): Observable<LibraryManga> {
+        // Initialize the variables holding the progress of the updates.
+        val count = AtomicInteger(0)
+
         // Emit each manga and update it sequentially.
         return Observable.from(mangaToUpdate)
+                // Notify manga that will update.
+                .doOnNext { showProgressNotification(it, count.andIncrement, mangaToUpdate.size) }
                 // Update the details of the manga.
                 .concatMap { manga ->
                     val source = sourceManager.get(manga.source) as? HttpSource
-                            ?: return@concatMap Observable.empty<Manga>()
+                            ?: return@concatMap Observable.empty<LibraryManga>()
 
                     source.fetchMangaDetails(manga)
                             .map { networkManga ->
@@ -321,35 +340,44 @@ class LibraryUpdateService : Service() {
                             .onErrorReturn { manga }
                 }
                 .doOnCompleted {
-                    cancelNotification()
+                    cancelProgressNotification()
                 }
     }
 
     /**
-     * Creates and acquires a wake lock until the library is updated.
+     * Method that updates the metadata of the connected tracking services. It's called in a
+     * background thread, so it's safe to do heavy operations or network calls here.
      */
-    private fun createAndAcquireWakeLock() {
-        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK, "LibraryUpdateService:WakeLock")
-        wakeLock.acquire()
-    }
+    private fun updateTrackings(mangaToUpdate: List<LibraryManga>): Observable<LibraryManga> {
+        // Initialize the variables holding the progress of the updates.
+        var count = 0
 
-    /**
-     * Releases the wake lock if it's held.
-     */
-    private fun destroyWakeLock() {
-        if (wakeLock.isHeld) {
-            wakeLock.release()
-        }
-    }
+        val loggedServices = trackManager.services.filter { it.isLogged }
 
-    /**
-     * Shows the notification with the given title and body.
-     *
-     * @param title the title of the notification.
-     * @param body the body of the notification.
-     */
-    private fun showNotification(title: String, body: String) {
+        // Emit each manga and update it sequentially.
+        return Observable.from(mangaToUpdate)
+                // Notify manga that will update.
+                .doOnNext { showProgressNotification(it, count++, mangaToUpdate.size) }
+                // Update the tracking details.
+                .concatMap { manga ->
+                    val tracks = db.getTracks(manga).executeAsBlocking()
+
+                    Observable.from(tracks)
+                            .concatMap { track ->
+                                val service = trackManager.getService(track.sync_id)
+                                if (service != null && service in loggedServices) {
+                                    service.refresh(track)
+                                            .doOnNext { db.insertTrack(it).executeAsBlocking() }
+                                            .onErrorReturn { track }
+                                } else {
+                                    Observable.empty()
+                                }
+                            }
+                            .map { manga }
+                }
+                .doOnCompleted {
+                    cancelProgressNotification()
+                }
     }
 
     /**
@@ -359,22 +387,20 @@ class LibraryUpdateService : Service() {
      * @param current the current progress.
      * @param total the total progress.
      */
-    private fun showProgressNotification(manga: Manga, current: Int, total: Int, cancelIntent: PendingIntent) {
+    private fun showProgressNotification(manga: Manga, current: Int, total: Int) {
     }
-
 
     /**
      * Shows the notification containing the result of the update done by the service.
      *
      * @param updates a list of manga with new updates.
-     * @param failed a list of manga that failed to update.
      */
-    private fun showResultNotification(updates: List<Manga>, failed: List<Manga>) {
+    private fun showResultNotification(updates: List<Manga>) {
     }
 
     /**
-     * Cancels the notification.
+     * Cancels the progress notification.
      */
-    private fun cancelNotification() {
+    private fun cancelProgressNotification() {
     }
 }

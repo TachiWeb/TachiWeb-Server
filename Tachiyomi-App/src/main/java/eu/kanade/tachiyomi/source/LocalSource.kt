@@ -56,7 +56,7 @@ class LocalSource(private val context: Context) : CatalogueSource {
     }
 
     override val id = ID
-    override val name = "LocalSource"
+    override val name = context.getString(R.string.local_source)
     override val lang = ""
     override val supportsLatest = true
 
@@ -76,13 +76,13 @@ class LocalSource(private val context: Context) : CatalogueSource {
         val state = ((if (filters.isEmpty()) POPULAR_FILTERS else filters)[0] as OrderBy).state
         when (state?.index) {
             0 -> {
-                if (state!!.ascending)
+                if (state.ascending)
                     mangaDirs = mangaDirs.sortedBy { it.name.toLowerCase(Locale.ENGLISH) }
                 else
                     mangaDirs = mangaDirs.sortedByDescending { it.name.toLowerCase(Locale.ENGLISH) }
             }
             1 -> {
-                if (state!!.ascending)
+                if (state.ascending)
                     mangaDirs = mangaDirs.sortedBy(File::lastModified)
                 else
                     mangaDirs = mangaDirs.sortedByDescending(File::lastModified)

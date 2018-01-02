@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.getPageList
+import xyz.nulldev.ts.api.java.util.pageList
 import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
@@ -63,8 +63,7 @@ class PageCountRoute : TachiWebRoute() {
         val chapter = db.getChapter(chapterId).executeAsBlocking()
                 ?: return error("The specified chapter does not exist!")
         //Probably should handle exception here instead
-        val pages = chapter.getPageList(source, manga)
-                ?: return error("Failed to fetch page list!")
+        val pages = chapter.pageList
         return success().put(KEY_PAGE_COUNT, pages.size)
     }
 

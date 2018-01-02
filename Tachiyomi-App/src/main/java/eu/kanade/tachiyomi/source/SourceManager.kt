@@ -36,8 +36,7 @@ open class SourceManager(private val context: Context) {
     fun getCatalogueSources() = sourcesMap.values.filterIsInstance<CatalogueSource>()
 
     private fun createSources() {
-        //TODO
-//        createExtensionSources().forEach { registerSource(it) }
+        createExtensionSources().forEach { registerSource(it) }
         createYamlSources().forEach { registerSource(it) }
         createInternalSources().forEach { registerSource(it) }
     }

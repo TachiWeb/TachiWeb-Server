@@ -111,8 +111,8 @@ class Mangahere : ParsedHttpSource() {
         val infoElement = detailElement.select(".detail_topText").first()
 
         val manga = SManga.create()
-        manga.author = infoElement.select("a[href^=http://www.mangahere.co/author/]").first()?.text()
-        manga.artist = infoElement.select("a[href^=http://www.mangahere.co/artist/]").first()?.text()
+        manga.author = infoElement.select("a[href^=//www.mangahere.co/author/]").first()?.text()
+        manga.artist = infoElement.select("a[href^=//www.mangahere.co/artist/]").first()?.text()
         manga.genre = infoElement.select("li:eq(3)").first()?.text()?.substringAfter("Genre(s):")
         manga.description = infoElement.select("#show").first()?.text()?.substringBeforeLast("Show less")
         manga.status = infoElement.select("li:eq(6)").first()?.text().orEmpty().let { parseStatus(it) }
@@ -183,7 +183,9 @@ class Mangahere : ParsedHttpSource() {
 
         val pages = mutableListOf<Page>()
         document.select("select.wid60").first()?.getElementsByTag("option")?.forEach {
-            pages.add(Page(pages.size, "http:" + it.attr("value")))
+            if (!it.attr("value").contains("featured.html")) {
+                pages.add(Page(pages.size, "http:" + it.attr("value")))
+            }
         }
         pages.getOrNull(0)?.imageUrl = imageUrlParse(document)
         return pages

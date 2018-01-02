@@ -41,7 +41,10 @@ echo "Downloading Tachiyomi source code..."
 rm -rf tmp
 mkdir tmp
 pushd tmp
-git clone https://github.com/inorichi/tachiyomi
+# git clone https://github.com/inorichi/tachiyomi
+# TODO Remove
+# Pull from fork
+git clone https://github.com/null-dev/tachiyomi
 
 echo "Filtering source code..."
 # Include
@@ -58,6 +61,9 @@ keepFolder "network"
 excludeFolder "data.glide"
 excludeFolder "data.updater"
 excludeFolder "data.notification"
+excludeFolder "data.sync.account"
+excludeFolder "data.sync.api"
+excludeFolder "data.sync.provider"
 excludeFile "util" "ContextExtensions.kt"
 excludeFile "util" "GLUtil.java"
 excludeFile "util" "ImageViewExtensions.kt"
@@ -69,6 +75,8 @@ excludeFile "data.backup" "BackupRestoreService.kt"
 excludeFile "data.library" "LibraryUpdateJob.kt"
 excludeFile "data.library" "LibraryUpdateService.kt"
 excludeFile "data.download" "DownloadNotifier.kt"
+excludeFile "data.sync" "LibrarySyncAdapter.kt"
+excludeFile "data.sync" "LibrarySyncService.kt"
 
 echo "Downloading JunRAR source code..."
 git clone "https://github.com/inorichi/junrar-android"

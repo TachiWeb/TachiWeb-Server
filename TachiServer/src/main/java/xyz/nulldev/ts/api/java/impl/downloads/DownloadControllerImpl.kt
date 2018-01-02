@@ -5,24 +5,27 @@ import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
+import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.data.download.DownloadService
-import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import xyz.nulldev.ts.api.java.model.downloads.DownloadController
 import xyz.nulldev.ts.api.java.model.downloads.DownloadTask
-import xyz.nulldev.ts.api.java.util.ensureInDatabase
-import xyz.nulldev.ts.api.java.util.ensureLoaded
-import xyz.nulldev.ts.api.java.util.manga
-import xyz.nulldev.ts.api.java.util.sourceObj
-import xyz.nulldev.ts.ext.getDownload
-import xyz.nulldev.ts.ext.isDownloaded
+import xyz.nulldev.ts.api.java.util.*
 import xyz.nulldev.ts.ext.kInstanceLazy
+import kotlin.reflect.jvm.isAccessible
 
 class DownloadControllerImpl : DownloadController {
     private val sourceManager: SourceManager by kInstanceLazy()
     private val downloadManager: DownloadManager by kInstanceLazy()
     private val context : Context by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
+    internal val downloadProvider by lazy {
+        val field = DownloadManager::class.members.find {
+            it.name == "provider"
+        }!!
+        field.isAccessible = true
+        field.call(downloadManager) as DownloadProvider
+    }
 
     override var running: Boolean
         get() = downloadManager.runningRelay.value
@@ -47,7 +50,7 @@ class DownloadControllerImpl : DownloadController {
         val manga = db.getManga(chapter.manga_id!!).executeAsBlocking().ensureInDatabase()
         val source = sourceManager.get(manga.source).ensureLoaded()
 
-        validateOperation(chapter, manga, source, false)
+        validateOperation(chapter, false)
 
         DownloadService.start(context)
         downloadManager.downloadChapters(manga, listOf(chapter))
@@ -60,19 +63,17 @@ class DownloadControllerImpl : DownloadController {
         val manga = db.getManga(chapter.manga_id!!).executeAsBlocking().ensureInDatabase()
         val source = sourceManager.get(manga.source).ensureLoaded()
 
-        validateOperation(chapter, manga, source, true)
+        validateOperation(chapter, true)
 
         downloadManager.queue.remove(chapter)
-        downloadManager.deleteChapter(source, manga, chapter)
+        downloadManager.deleteChapter(chapter, manga, source)
     }
 
     private fun validateOperation(chapter: Chapter,
-                                  manga: Manga,
-                                  source: Source,
                                   delete: Boolean) {
         //Check for active download
         //TODO Handle other download statuses
-        val activeDownload = downloadManager.getDownload(chapter)
+        val activeDownload = chapter.download
         if (activeDownload != null) {
             if (delete) {
                 throw IllegalStateException("This chapter is currently being downloaded!")
@@ -82,7 +83,7 @@ class DownloadControllerImpl : DownloadController {
         }
 
         //Check if chapter is downloaded
-        val isChapterDownloaded = chapter.isDownloaded(source, manga)
+        val isChapterDownloaded = isDownloaded(chapter)
         if (!delete && isChapterDownloaded) {
             throw IllegalStateException("This chapter is already downloaded!")
         }
@@ -99,6 +100,15 @@ class DownloadControllerImpl : DownloadController {
     override fun isDownloaded(chapter: Chapter): Boolean {
         val manga = chapter.manga.ensureInDatabase()
         val source = manga.sourceObj.ensureLoaded()
-        return downloadManager.findChapterDir(source, manga, chapter) != null
+        return downloadProvider.findChapterDir(chapter, manga, source) != null
+    }
+
+    override fun isDownloaded(manga: Manga): Boolean {
+        val mangaDirs = downloadProvider.findSourceDir(manga.sourceObj.ensureLoaded())?.listFiles() ?: emptyArray()
+
+        val mangaDirName = downloadProvider.getMangaDirName(manga)
+        val mangaDir = mangaDirs.find { it.name == mangaDirName } ?: return false
+
+        return (mangaDir.listFiles() ?: emptyArray()).isNotEmpty()
     }
 }

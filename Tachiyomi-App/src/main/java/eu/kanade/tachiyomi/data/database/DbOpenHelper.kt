@@ -3,10 +3,11 @@ package eu.kanade.tachiyomi.data.database
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import eu.kanade.tachiyomi.data.database.models.Updatable
 import eu.kanade.tachiyomi.data.database.tables.*
-import xyz.nulldev.ts.sync.database.SyncUpdatesTable
-import xyz.nulldev.ts.sync.database.TriggerGenerator
-import xyz.nulldev.ts.sync.database.models.UpdateTarget
+import eu.kanade.tachiyomi.data.database.models.UpdateTarget
+import eu.kanade.tachiyomi.data.database.queries.cloneMangaCategoriesQuery
+import eu.kanade.tachiyomi.data.sync.LibrarySyncManager
 
 class DbOpenHelper(context: Context)
 : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -37,22 +38,17 @@ class DbOpenHelper(context: Context)
         execSQL(MangaTable.createFavoriteIndexQuery)
         execSQL(ChapterTable.createMangaIdIndexQuery)
         execSQL(HistoryTable.createChapterIdIndexQuery)
-
+    
         // Gen triggers
-        val triggerGen = TriggerGenerator()
-        UpdateTarget.registeredObjects.forEach {
-            it.fields.forEach {
-                triggerGen.genTriggers(it).forEach {
-                    execSQL(it)
-                }
-            }
+        UpdateTarget.registeredObjects.flatMap(Updatable::getTriggers).forEach {
+            execSQL(it)
         }
     }
-
+    
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) {
             db.execSQL(ChapterTable.sourceOrderUpdateQuery)
-
+            
             // Fix kissmanga covers after supporting cloudflare
             db.execSQL("""UPDATE mangas SET thumbnail_url =
                     REPLACE(thumbnail_url, '93.174.95.110', 'kissmanga.com') WHERE source = 4""")
@@ -69,9 +65,9 @@ class DbOpenHelper(context: Context)
             db.execSQL(ChapterTable.addScanlator)
         }
     }
-
+    
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
     }
-
+    
 }

@@ -84,7 +84,7 @@ interface HistoryQueries : DbProvider {
                     .whereArgs(0)
                     .build())
             .prepare()
-
+    
     fun getHistory(id: Long) = db.get()
             .`object`(History::class.java)
             .withQuery(Query.builder()

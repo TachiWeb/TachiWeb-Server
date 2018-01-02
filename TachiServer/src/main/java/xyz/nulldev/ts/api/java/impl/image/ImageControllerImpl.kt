@@ -6,12 +6,10 @@ import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.fetchImageFromCacheThenNet
-import sun.misc.IOUtils
 import xyz.nulldev.androidcompat.util.file
 import xyz.nulldev.androidcompat.util.java
 import xyz.nulldev.ts.api.java.model.image.ImageController
 import xyz.nulldev.ts.api.java.util.*
-import xyz.nulldev.ts.ext.getPageList
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.io.FileInputStream
 import java.io.FileOutputStream
