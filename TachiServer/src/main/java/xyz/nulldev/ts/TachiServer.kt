@@ -3,6 +3,7 @@ package xyz.nulldev.ts
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import eu.kanade.tachiyomi.App
+import spark.Spark
 import xyz.nulldev.androidcompat.AndroidCompat
 import xyz.nulldev.androidcompat.AndroidCompatInitializer
 import xyz.nulldev.ts.api.http.HttpAPI
@@ -26,6 +27,8 @@ class TachiServer {
 
     var configModulesRegistered = false
         private set
+
+    val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
 
     fun initInternals() {
         if(initialized) return
@@ -51,8 +54,13 @@ class TachiServer {
         //Initialize internals
         initInternals()
 
+        //Setup HTTP server
+        Spark.port(serverConfig.port)
+        Spark.ipAddress(serverConfig.ip)
+
         //Start UI server
-        TachiWebUIServer().start()
+        if(serverConfig.enableWebUi)
+            TachiWebUIServer().start()
 
         //Start HTTP API
         HttpAPI().start()

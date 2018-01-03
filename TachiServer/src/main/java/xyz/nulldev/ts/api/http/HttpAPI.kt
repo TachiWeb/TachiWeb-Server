@@ -37,6 +37,8 @@ import xyz.nulldev.ts.api.http.settings.SetPreferenceRoute
 import xyz.nulldev.ts.api.http.settings.SourceLoginRoute
 import xyz.nulldev.ts.api.http.sync.SyncRoute
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute
+import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.ServerConfig
 
 /**
  * Project: TachiServer
@@ -44,100 +46,104 @@ import xyz.nulldev.ts.api.http.task.TaskStatusRoute
  * Creation Date: 30/09/16
  */
 class HttpAPI {
-    private val imageRoute = ImageRoute()
-    private val coverRoute = CoverRoute()
-    private val libraryRoute = LibraryRoute()
-    private val mangaRoute = MangaRoute()
-    private val chapterRoute = ChaptersRoute()
-    private val pageCountRoute = PageCountRoute()
-    private val createBackupRoute = CreateBackupRoute()
-    private val restoreFromFileRoute = RestoreFromFileRoute()
-    private val faveRoute = FaveRoute()
-    private val readingStatusRoute = ReadingStatusRoute()
-    private val updateRoute = UpdateRoute()
-    private val listSourcesRoute = ListSourcesRoute()
-    private val catalogueRoute = CatalogueRoute()
-    private val listLoginSourceRoute = ListLoginSourceRoute()
-    private val sourceLoginRoute = SourceLoginRoute()
-    private val downloadChapterRoute = DownloadChapterRoute()
-    private val downloadsOperationRoute = DownloadsOperationRoute()
-    private val getDownloadStatusRoute = GetDownloadStatusRoute()
-    private val setFlagRoute = SetFlagRoute()
-    private val preferencesRoute = PreferencesRoute()
-    private val setPreferenceRoute = SetPreferenceRoute()
-    private val taskStatusRoute = TaskStatusRoute()
-    private val checkSessionRoute = CheckSessionRoute()
-    private val clearSessionsRoute = ClearSessionsRoute()
-    private val testAuthRoute = TestAuthenticatedRoute()
-    private val getCategoriesRoute = GetCategoriesRoute()
-    private val editCategoriesRoute = EditCategoriesRoute()
-    private val getFiltersRoute = GetFiltersRoute()
+    private val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
 
     fun start() {
         //Get an image from a chapter
+        val imageRoute = ImageRoute()
         getAPIRoute("/img/:mangaId/:chapterId/:page", imageRoute)
         //Get the cover of a manga
+        val coverRoute = CoverRoute()
         getAPIRoute("/cover/:mangaId", coverRoute)
         //Get the library
+        val libraryRoute = LibraryRoute()
         getAPIRoute("/library", libraryRoute)
         //Get details about a manga
+        val mangaRoute = MangaRoute()
         getAPIRoute("/manga_info/:mangaId", mangaRoute)
         //Get the chapters of a manga
+        val chapterRoute = ChaptersRoute()
         getAPIRoute("/chapters/:mangaId", chapterRoute)
         //Get the page count of a chapter
+        val pageCountRoute = PageCountRoute()
         getAPIRoute("/page_count/:mangaId/:chapterId", pageCountRoute)
         //Backup the library
+        val createBackupRoute = CreateBackupRoute()
         getAPIRoute("/backup", createBackupRoute)
         //Restore the library
+        val restoreFromFileRoute = RestoreFromFileRoute()
         postAPIRoute("/restore_file", restoreFromFileRoute)
         //Favorite/unfavorite a manga
+        val faveRoute = FaveRoute()
         getAPIRoute("/fave/:mangaId", faveRoute)
         //Set the reading status of a chapter
+        val readingStatusRoute = ReadingStatusRoute()
         getAPIRoute("/reading_status/:mangaId/:chapterId", readingStatusRoute)
         //Update a manga/chapter
+        val updateRoute = UpdateRoute()
         getAPIRoute("/update/:mangaId/:updateType", updateRoute)
         //Source list
+        val listSourcesRoute = ListSourcesRoute()
         getAPIRoute("/sources", listSourcesRoute)
         //Catalogue
+        val catalogueRoute = CatalogueRoute()
         postAPIRoute("/catalogue", catalogueRoute)
         //Login source list
+        val listLoginSourceRoute = ListLoginSourceRoute()
         getAPIRoute("/list_login_sources", listLoginSourceRoute)
         //Login route
+        val sourceLoginRoute = SourceLoginRoute()
         getAPIRoute("/source_login/:sourceId", sourceLoginRoute)
         //Download
+        val downloadChapterRoute = DownloadChapterRoute()
         getAPIRoute("/download/:mangaId/:chapterId", downloadChapterRoute)
         //Downloads operation
+        val downloadsOperationRoute = DownloadsOperationRoute()
         getAPIRoute("/downloads_op/:operation", downloadsOperationRoute)
         //Get downloads
+        val getDownloadStatusRoute = GetDownloadStatusRoute()
         getAPIRoute("/get_downloads", getDownloadStatusRoute)
         //Set flags
+        val setFlagRoute = SetFlagRoute()
         getAPIRoute("/set_flag/:mangaId/:flag/:state", setFlagRoute)
         //Preferences route
+        val preferencesRoute = PreferencesRoute()
         getAPIRoute("/prefs", preferencesRoute)
         //Set preferences route
+        val setPreferenceRoute = SetPreferenceRoute()
         getAPIRoute("/set_pref/:key/:type", setPreferenceRoute)
-        //Sync route (TODO)
-//        postAPIRoute("/sync", syncRoute)
         //Task status route
+        val taskStatusRoute = TaskStatusRoute()
         getAPIRoute("/task/:taskId", taskStatusRoute)
         //Check session
+        val checkSessionRoute = CheckSessionRoute()
         getAPIRoute("/auth", checkSessionRoute)
         //Clear sessions
+        val clearSessionsRoute = ClearSessionsRoute()
         getAPIRoute("/clear_sessions", clearSessionsRoute)
-        //Diff sync route (TODO)
-//        postAPIRoute("/diff_sync", diffSyncRoute)
         //Test auth route
+        val testAuthRoute = TestAuthenticatedRoute()
         getAPIRoute("/test_auth", testAuthRoute)
         //Get categories
+        val getCategoriesRoute = GetCategoriesRoute()
         getAPIRoute("/get_categories", getCategoriesRoute)
         //Edit categories
+        val editCategoriesRoute = EditCategoriesRoute()
         getAPIRoute("/edit_categories/:operation", editCategoriesRoute)
         //Get filters
+        val getFiltersRoute = GetFiltersRoute()
         getAPIRoute("/get_filters/:sourceId", getFiltersRoute)
 
         //Sync route
-        getAPIRoute("/sync", SyncRoute())
-        postAPIRoute("/sync", SyncRoute())
+        val syncRoute = SyncRoute()
+        getAPIRoute("/sync", syncRoute)
+        postAPIRoute("/sync", syncRoute)
+
+        //Wait for WebUI to initialize
+        if(serverConfig.httpInitializedPrintMessage.isNotBlank()) {
+            Spark.awaitInitialization()
+            println(serverConfig.httpInitializedPrintMessage)
+        }
     }
 
     private fun buildAPIPath(path: String): String {
@@ -146,14 +152,28 @@ class HttpAPI {
 
     private fun getAPIRoute(path: String, route: Route) {
         val builtPath = buildAPIPath(path)
+        if(!checkApi(path)) return
         Spark.get(builtPath, route)
         Spark.get(builtPath + "/", route)
     }
 
     private fun postAPIRoute(path: String, route: Route) {
         val builtPath = buildAPIPath(path)
+        if(!checkApi(path)) return
         Spark.post(builtPath, route)
         Spark.post(builtPath + "/", route)
+    }
+
+    fun checkApi(path: String): Boolean {
+        val endpoint = path.split("/").filterNot(String::isBlank).first().trim().toLowerCase()
+
+        if(endpoint in serverConfig.disabledApiEndpoints) return false
+
+        if(serverConfig.enabledApiEndpoints.isNotEmpty()) {
+            if(endpoint !in serverConfig.enabledApiEndpoints) return false
+        }
+
+        return true
     }
 
     companion object {

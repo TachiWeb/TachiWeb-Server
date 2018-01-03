@@ -18,12 +18,16 @@ package xyz.nulldev.ts.api.http.settings
 
 import android.content.Context
 import android.preference.PreferenceManager
+import eu.kanade.tachiyomi.data.preference.PreferenceKeys
 import org.json.JSONArray
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
+import xyz.nulldev.ts.api.http.auth.PasswordHasher
+import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.ServerConfig
+import xyz.nulldev.ts.ext.authPassword
 import xyz.nulldev.ts.ext.kInstanceLazy
-import java.util.*
 
 /**
  * Project: TachiServer
@@ -33,12 +37,13 @@ import java.util.*
 class SetPreferenceRoute : TachiWebRoute() {
     private val context: Context by kInstanceLazy()
 
+    private val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+
     override fun handleReq(request: Request, response: Response): Any {
         //Do not allow changing configuration in demo mode
-        //TODO
-//        if (TachiServer.configuration.isDemoMode) {
-//            return error("The configuration cannot be changed in demo mode!")
-//        }
+        if (!serverConfig.allowConfigChanges) {
+            return error("The configuration cannot be changed in demo mode!")
+        }
         val type = request.params(":type")
         val key = request.params(":key")
         val value = request.queryParams("value")
@@ -57,22 +62,35 @@ class SetPreferenceRoute : TachiWebRoute() {
             }
         } else {
             try {
-                when (type.toLowerCase()) {
-                    "boolean" -> preferences.putBoolean(key, java.lang.Boolean.parseBoolean(value))
-                    "string" -> preferences.putString(key, value)
-                    "float" -> preferences.putFloat(key, java.lang.Float.parseFloat(value))
-                    "int" -> preferences.putInt(key, Integer.parseInt(value))
-                    "long" -> preferences.putLong(key, java.lang.Long.parseLong(value))
-                    "string_set" -> {
-                        //Stringset is assumed to be in Json array format
-                        val array = JSONArray(value)
-                        val generatedSet = HashSet<String>()
-                        for (i in 0..array.length() - 1) {
-                            generatedSet.add(array.getString(i))
-                        }
-                        preferences.putStringSet(key, generatedSet)
+                //Special case server password
+                when(key) {
+                    PreferenceKeys.authPassword -> {
+                        preferences.putString(key,
+                                if(value.isNotEmpty())
+                                    PasswordHasher.getSaltedHash(value)
+                                else ""
+                        )
                     }
-                    else -> throw IllegalArgumentException("Invalid/unsupported type!")
+
+                    else -> {
+                        //Map value to type
+                        when (type.toLowerCase()) {
+                            "boolean" -> preferences.putBoolean(key, java.lang.Boolean.parseBoolean(value))
+                            "string" -> preferences.putString(key, value)
+                            "float" -> preferences.putFloat(key, java.lang.Float.parseFloat(value))
+                            "int" -> preferences.putInt(key, Integer.parseInt(value))
+                            "long" -> preferences.putLong(key, java.lang.Long.parseLong(value))
+                            "string_set" -> {
+                                //Stringset is assumed to be in Json array format
+                                val array = JSONArray(value)
+                                val generatedSet = (0 until array.length())
+                                        .map { array.getString(it) }
+                                        .toSet()
+                                preferences.putStringSet(key, generatedSet)
+                            }
+                            else -> throw IllegalArgumentException("Invalid/unsupported type!")
+                        }
+                    }
                 }
             } catch (t: Throwable) {
                 return error("Invalid type/value!")

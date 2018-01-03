@@ -20,19 +20,29 @@ package xyz.nulldev.ts
 import spark.Redirect
 import spark.Spark.redirect
 import spark.Spark.staticFiles
+import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.ServerConfig
+import java.io.File
 
 /**
  * UI Server
  */
 class TachiWebUIServer {
+    val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+
     fun start() {
         staticFiles.header("Access-Control-Allow-Origin", "*")
         //Use external static files if specified
-//        if(TachiServer.configuration.staticFilesFolder != null) {
-//            staticFiles.externalLocation(TachiServer.configuration.staticFilesFolder)
-//        } else {
+        if(serverConfig.useExternalStaticFiles) {
+            val externalLoc = File(serverConfig.externalStaticFilesFolder)
+
+            if(!externalLoc.exists())
+                throw RuntimeException("External static files folder does not exist!")
+
+            staticFiles.externalLocation(externalLoc.absolutePath)
+        } else {
             staticFiles.location("/tachiweb-ui")
-//        }
+        }
         redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
         redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
     }

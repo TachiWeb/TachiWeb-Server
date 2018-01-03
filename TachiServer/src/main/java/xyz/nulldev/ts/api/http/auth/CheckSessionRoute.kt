@@ -29,11 +29,11 @@ class CheckSessionRoute: TachiWebRoute(false /* No auth */) {
     override fun handleReq(request: Request, response: Response): Any {
         val session: String = request.attribute("session")
         val password = request.queryParams("password")
-        if (SessionManager.authPassword() == password) {
+        return if (PasswordHasher.check(password, SessionManager.authPassword())) {
             sessionManager.authenticateSession(session)
-            return success().put(KEY_TOKEN, session)
+            success().put(KEY_TOKEN, session)
         } else {
-            return error("Incorrect password!")
+            error("Incorrect password!")
         }
     }
 
