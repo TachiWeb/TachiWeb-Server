@@ -27,33 +27,44 @@ class SyncRoute : TachiWebRoute() {
         try {
             var dId = INITAL_SNAPSHOT_NAME
 
-            //If has write=false or request is GET, then do not expect any sync input
-            if (request.queryParams("write")?.toLowerCase() != "false"
-                    && request.requestMethod() == "POST") {
-                //Apply client report
-                val body = request.body()
-                val report = SyncGsonProvider.gson.fromJson(body, SyncReport::class.java)
-                ReportApplier(context).apply(report)
-                dId = report.deviceId
+            return db.inTransaction {
+                var takeSnapshots = false
 
-                db.deleteMangaCategoriesSnapshot(dId).executeAsBlocking()
-                db.takeMangaCategoriesSnapshot(dId).executeAsBlocking()
-                snapshots.takeSnapshots(dId)
+                //If has write=false or request is GET, then do not expect any sync input
+                if (request.queryParams("write")?.toLowerCase() != "false"
+                        && request.requestMethod() == "POST") {
+                    //Apply client report
+                    val body = request.body()
+                    val report = SyncGsonProvider.gson.fromJson(body, SyncReport::class.java)
+                    ReportApplier(context).apply(report)
+                    dId = report.deviceId
+
+                    takeSnapshots = true
+                }
+
+                val startTime = request.queryParams("from")?.toLongOrNull() ?: 0L
+
+                //Ensure initial snapshot is taken
+                db.takeEmptyMangaCategoriesSnapshot(dId).executeAsBlocking()
+
+                //Generate server report
+                val report = ReportGenerator(context).gen(LOCAL_DEVICE_NAME,
+                        dId,
+                        startTime)
+
+                //Taking snapshots after the sync will cause incoming changes to be repeated
+                //back to the client (but there is no easy way around this)
+                if(takeSnapshots) {
+                    db.deleteMangaCategoriesSnapshot(dId).executeAsBlocking()
+                    db.takeMangaCategoriesSnapshot(dId).executeAsBlocking()
+                    snapshots.takeSnapshots(dId)
+                }
+
+                response.status(200)
+                SyncResponse().apply {
+                    this.serverChanges = report
+                }.toJson()
             }
-
-            val startTime = request.queryParams("from")?.toLongOrNull() ?: 0L
-
-            //Ensure initial snapshot is taken
-            db.takeEmptyMangaCategoriesSnapshot(dId).executeAsBlocking()
-
-            //Generate server report
-            val report = ReportGenerator(context).gen(LOCAL_DEVICE_NAME,
-                    dId,
-                    startTime)
-            response.status(200)
-            return SyncResponse().apply {
-                this.serverChanges = report
-            }.toJson()
         } catch(t: Throwable) {
             logger.error("Could not perform sync!", t)
             response.status(500)

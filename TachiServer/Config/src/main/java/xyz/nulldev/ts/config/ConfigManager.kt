@@ -12,7 +12,7 @@ import java.io.File
 object ConfigManager {
     private val generatedModules
             = mutableMapOf<Class<out ConfigModule>, ConfigModule>()
-    lateinit var config: Config
+    var config: Config
 
     //Public read-only view of modules
     val loadedModules: Map<Class<out ConfigModule>, ConfigModule>
