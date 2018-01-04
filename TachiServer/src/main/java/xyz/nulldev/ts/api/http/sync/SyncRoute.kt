@@ -27,7 +27,9 @@ class SyncRoute : TachiWebRoute() {
         try {
             var dId = INITAL_SNAPSHOT_NAME
 
-            return db.inTransaction {
+            var result: String? = null
+
+            db.inTransaction {
                 var takeSnapshots = false
 
                 //If has write=false or request is GET, then do not expect any sync input
@@ -61,10 +63,12 @@ class SyncRoute : TachiWebRoute() {
                 }
 
                 response.status(200)
-                SyncResponse().apply {
+                result = SyncResponse().apply {
                     this.serverChanges = report
                 }.toJson()
             }
+
+            return result ?: throw NullPointerException("Sync result is null!")
         } catch(t: Throwable) {
             logger.error("Could not perform sync!", t)
             response.status(500)
