@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.sync.protocol
 import android.content.Context
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.*
-import eu.kanade.tachiyomi.data.sync.protocol.models.*
+import eu.kanade.tachiyomi.data.sync.protocol.models.SyncReport
 import eu.kanade.tachiyomi.data.sync.protocol.models.common.ChangedField
 import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncRef
 import eu.kanade.tachiyomi.data.sync.protocol.models.entities.*
@@ -25,6 +25,7 @@ class ReportApplier(val context: Context) {
             applyChapters(report)
             applyHistory(report)
             applyCategories(report)
+            applyTracks(report)
         }
     }
 
@@ -139,10 +140,14 @@ class ReportApplier(val context: Context) {
             }
             
             //Add/delete manga categories
-            val addedMangaCategories = it.addedManga.toMangaCategories()
+            val addedMangaCategories = it.addedManga.toMangaCategories().filterNot {
+                //Ensure DB does not have manga category
+                db.hasMangaCategory(it.manga_id, it.category_id)
+            }
             val removedMangaCategories = it.deletedManga.toMangaCategories()
             
-            db.insertMangasCategories(addedMangaCategories).executeAsBlocking()
+            if(addedMangaCategories.isNotEmpty())
+                db.insertMangasCategories(addedMangaCategories).executeAsBlocking()
             removedMangaCategories.forEach {
                 db.deleteMangaCategory(it).executeAsBlocking()
             }
