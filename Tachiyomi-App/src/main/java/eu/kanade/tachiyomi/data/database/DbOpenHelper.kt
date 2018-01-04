@@ -62,6 +62,8 @@ class DbOpenHelper(context: Context)
         if (oldVersion < 5) {
             db.execSQL(ChapterTable.addScanlator)
         }
+        
+        //TODO Migrate old DBs for sync
     }
     
     override fun onConfigure(db: SQLiteDatabase) {
