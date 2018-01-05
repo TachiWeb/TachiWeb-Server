@@ -30,18 +30,16 @@ class SyncRoute : TachiWebRoute() {
             var result: String? = null
 
             db.inTransaction {
-                var takeSnapshots = false
+                var inReport: SyncReport? = null
 
                 //If has write=false or request is GET, then do not expect any sync input
                 if (request.queryParams("write")?.toLowerCase() != "false"
                         && request.requestMethod() == "POST") {
                     //Apply client report
                     val body = request.body()
-                    val report = SyncGsonProvider.gson.fromJson(body, SyncReport::class.java)
-                    ReportApplier(context).apply(report)
-                    dId = report.deviceId
-
-                    takeSnapshots = true
+                    inReport = SyncGsonProvider.gson.fromJson(body, SyncReport::class.java)
+                    ReportApplier(context).apply(inReport)
+                    dId = inReport.deviceId
                 }
 
                 val startTime = request.queryParams("from")?.toLongOrNull() ?: 0L
@@ -54,9 +52,12 @@ class SyncRoute : TachiWebRoute() {
                         dId,
                         startTime)
 
-                //Taking snapshots after the sync will cause incoming changes to be repeated
-                //back to the client (but there is no easy way around this)
-                if(takeSnapshots) {
+                if(inReport != null) {
+                    //Correct timestamps AFTER client report generated
+                    inReport.tmpApply.applyQueuedTimestamps(db)
+
+                    //Taking snapshots after the sync will cause incoming changes to be repeated
+                    //back to the client (but there is no easy way around this)
                     db.deleteMangaCategoriesSnapshot(dId).executeAsBlocking()
                     db.takeMangaCategoriesSnapshot(dId).executeAsBlocking()
                     snapshots.takeSnapshots(dId)
