@@ -110,7 +110,11 @@ object PreferenceKeys {
     const val syncId = "sync_id"
     
     const val lastSync = "last_sync"
-
+    
+    const val syncOnLaunch = "pref_sync_on_launch"
+    
+    const val syncInterval = "pref_sync_interval"
+    
     fun sourceUsername(sourceId: Long) = "pref_source_username_$sourceId"
 
     fun sourcePassword(sourceId: Long) = "pref_source_password_$sourceId"
