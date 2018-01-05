@@ -9,10 +9,15 @@ class LastSyncDb {
     private val dbFile = File(serverConfig.rootDir, "last_sync.db")
 
     val lastSyncs by lazy {
-        dbFile.readLines().associate {
-            Pair(it.substringAfter(':'),
-                    it.substringBefore(':').toLong())
-        }.toMutableMap()
+        if(dbFile.exists()) {
+            dbFile.readLines().associate {
+                Pair(it.substringAfter(':'),
+                        it.substringBefore(':').toLong())
+            }.toMutableMap()
+        } else {
+            //No existing DB, use empty map
+            mutableMapOf()
+        }
     }
 
     @Synchronized
