@@ -18,6 +18,7 @@ class SyncRoute : TachiWebRoute() {
     private val context: Context by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
     private val snapshots by lazy { SnapshotHelper(context) }
+    private val lastSyncs by lazy { LastSyncDb() }
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -42,7 +43,10 @@ class SyncRoute : TachiWebRoute() {
                     dId = inReport.deviceId
                 }
 
-                val startTime = request.queryParams("from")?.toLongOrNull() ?: 0L
+                //Use stored start time
+                val startTime = inReport?.deviceId?.let {
+                    lastSyncs.lastSyncs[it]
+                } ?: 0L
 
                 //Ensure initial snapshot is taken
                 db.takeEmptyMangaCategoriesSnapshot(dId).executeAsBlocking()
@@ -61,6 +65,15 @@ class SyncRoute : TachiWebRoute() {
                     db.deleteMangaCategoriesSnapshot(dId).executeAsBlocking()
                     db.takeMangaCategoriesSnapshot(dId).executeAsBlocking()
                     snapshots.takeSnapshots(dId)
+
+                    //Update sync times for other devices (clone original map)
+                    lastSyncs.lastSyncs.toMap().forEach { t, u ->
+                        if(t != inReport.deviceId && u > inReport.from)
+                            lastSyncs.lastSyncs[t] = inReport.from
+                    }
+                    //Save last sync time for this device
+                    lastSyncs.lastSyncs[dId] = report.to
+                    lastSyncs.save()
                 }
 
                 response.status(200)
