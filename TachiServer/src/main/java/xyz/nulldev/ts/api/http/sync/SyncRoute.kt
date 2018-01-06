@@ -30,6 +30,8 @@ class SyncRoute : TachiWebRoute() {
 
             var result: String? = null
 
+            val syncStartTime = System.currentTimeMillis()
+
             db.inTransaction {
                 var inReport: SyncReport? = null
 
@@ -54,7 +56,9 @@ class SyncRoute : TachiWebRoute() {
                 //Generate server report
                 val report = ReportGenerator(context).gen(LOCAL_DEVICE_NAME,
                         dId,
-                        startTime)
+                        startTime,
+                        syncStartTime) //Do not include changes made since the sync has started
+                                       //as those are the client's changes
 
                 if(inReport != null) {
                     //Correct timestamps AFTER client report generated
