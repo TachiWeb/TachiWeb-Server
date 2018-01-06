@@ -42,7 +42,7 @@ class LibrarySyncManager(private val context: Context) {
         get() = ContentResolver.getCurrentSyncs().any {
             it.authority == LibrarySyncManager.AUTHORITY
         }
-    
+
     /**
      * Sync snapshots
      */
