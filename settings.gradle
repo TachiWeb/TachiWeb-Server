@@ -19,6 +19,8 @@ include 'Tachiyomi-App'
 include 'TachiServer'
 // Config API
 include 'TachiServer/Config'
+// Desktop UI
+include 'TachiServer/DesktopUI'
 
 //JS
 // Web UI

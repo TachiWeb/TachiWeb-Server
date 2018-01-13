@@ -3,6 +3,7 @@ package xyz.nulldev.ts
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import eu.kanade.tachiyomi.App
+import javafx.application.Application
 import spark.Spark
 import xyz.nulldev.androidcompat.AndroidCompat
 import xyz.nulldev.androidcompat.AndroidCompatInitializer
@@ -11,6 +12,7 @@ import xyz.nulldev.ts.api.http.HttpModule
 import xyz.nulldev.ts.config.ConfigKodeinModule
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
+import xyz.nulldev.ts.dui.DUIApp
 import java.io.File
 import java.lang.management.ManagementFactory
 
@@ -64,6 +66,9 @@ class TachiServer {
 
         //Start HTTP API
         HttpAPI().start()
+
+        //Launch desktop app if required
+        Application.launch(DUIApp::class.java)
     }
 
     fun registerConfigModules() {

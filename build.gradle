@@ -27,6 +27,7 @@ ext.javaProjects = [
         project(":junrarandroid"),
         project(":TachiServer"),
         project(":TachiServer/Config"),
+        project(":TachiServer/DesktopUI"),
         project(":Tachiyomi-App")
 ]
 
@@ -52,7 +53,8 @@ configure(jsProjects) {
 configure([
         project(":AndroidCompat"),
         project(":TachiServer"),
-        project(":TachiServer/Config")
+        project(":TachiServer/Config"),
+        project(":TachiServer/DesktopUI")
 ]) {
     dependencies {
         // Dependency Injection
