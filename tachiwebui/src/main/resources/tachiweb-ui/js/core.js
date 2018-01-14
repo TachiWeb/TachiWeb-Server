@@ -108,6 +108,12 @@ window.onload = function () {
         setupMDC();
     }
 
+    //LigFill
+    if(LigFill) {
+        LigFill.addCodepoints("/bower_components/material-design-icons/iconfont/codepoints");
+        LigFill.bind(".material-icons");
+    }
+
     //Call other onload listeners
     if (valid(onLoad)) {
         onLoad();
