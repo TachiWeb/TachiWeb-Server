@@ -14,7 +14,9 @@ class DUIView : View() {
         webview {
             engine.load("http://${serverConfig.ip}:${serverConfig.port}")
 
-            WebConsoleListener.setDefaultListener { webView, message, lineNumber, sourceId -> println("Console: [$sourceId:$lineNumber] $message") }
+            WebConsoleListener.setDefaultListener { webView, message, lineNumber, sourceId ->
+                println("Console: [$sourceId:$lineNumber] $message")
+            }
         }
     }
 }
