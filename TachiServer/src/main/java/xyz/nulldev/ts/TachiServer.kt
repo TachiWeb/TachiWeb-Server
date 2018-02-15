@@ -9,7 +9,7 @@ import xyz.nulldev.androidcompat.AndroidCompatInitializer
 import xyz.nulldev.ts.api.http.HttpAPI
 import xyz.nulldev.ts.api.http.HttpModule
 import xyz.nulldev.ts.config.ConfigKodeinModule
-import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.GlobalConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import java.io.File
 import java.lang.management.ManagementFactory
@@ -28,7 +28,7 @@ class TachiServer {
     var configModulesRegistered = false
         private set
 
-    val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+    val serverConfig by lazy { GlobalConfigManager.module<ServerConfig>() }
 
     fun initInternals() {
         if(initialized) return
@@ -73,8 +73,8 @@ class TachiServer {
         if(configModulesRegistered) return
         configModulesRegistered = true
 
-        ConfigManager.registerModules(
-                ServerConfig(ConfigManager.config.getConfig("ts.server"))
+        GlobalConfigManager.registerModules(
+                ServerConfig(GlobalConfigManager.config.getConfig("ts.server"))
         )
     }
 
@@ -110,7 +110,7 @@ class TachiServer {
         }
 
         private val patchesDir
-                get() = ConfigManager.module<ServerConfig>().patchesDir
+                get() = GlobalConfigManager.module<ServerConfig>().patchesDir
 
         private fun extractPatch(file: String) {
             println("\t\tExtracting patch: $file")

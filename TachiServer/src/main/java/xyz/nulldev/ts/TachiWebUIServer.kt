@@ -22,13 +22,14 @@ import spark.Spark.redirect
 import spark.Spark.staticFiles
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
+import xyz.nulldev.ts.ext.kInstance
 import java.io.File
 
 /**
  * UI Server
  */
 class TachiWebUIServer {
-    val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+    val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
 
     fun start() {
         staticFiles.header("Access-Control-Allow-Origin", "*")

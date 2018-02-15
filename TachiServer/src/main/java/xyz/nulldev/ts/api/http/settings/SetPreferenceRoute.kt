@@ -27,6 +27,7 @@ import xyz.nulldev.ts.api.http.auth.PasswordHasher
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.authPassword
+import xyz.nulldev.ts.ext.kInstance
 import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
@@ -37,7 +38,7 @@ import xyz.nulldev.ts.ext.kInstanceLazy
 class SetPreferenceRoute : TachiWebRoute() {
     private val context: Context by kInstanceLazy()
 
-    private val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+    private val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
 
     override fun handleReq(request: Request, response: Response): Any {
         //Do not allow changing configuration in demo mode

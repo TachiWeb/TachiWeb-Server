@@ -39,6 +39,7 @@ import xyz.nulldev.ts.api.http.sync.SyncRoute
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
+import xyz.nulldev.ts.ext.kInstance
 
 /**
  * Project: TachiServer
@@ -46,7 +47,7 @@ import xyz.nulldev.ts.config.ServerConfig
  * Creation Date: 30/09/16
  */
 class HttpAPI {
-    private val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+    private val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
 
     fun start() {
         //Get an image from a chapter

@@ -16,7 +16,6 @@ import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.source.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
-import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.ext.kInstanceLazy
 import xyz.nulldev.ts.library.LibraryUpdater
 
@@ -48,5 +47,7 @@ class TachiyomiKodeinModule {
         bind<BackupManager>() with singleton { BackupManager(context) }
 
         bind<LibraryUpdater>() with singleton { LibraryUpdater() }
+
+        //Server dependencies
     }
 }

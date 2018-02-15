@@ -1,5 +1,7 @@
 package xyz.nulldev.ts.dui
 
+import com.github.salomonbrys.kodein.conf.KodeinGlobalAware
+import com.github.salomonbrys.kodein.instance
 import com.sun.javafx.webkit.WebConsoleListener
 import tornadofx.View
 import tornadofx.stackpane
@@ -7,8 +9,8 @@ import tornadofx.webview
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 
-class DUIView : View() {
-    val serverConfig by lazy { ConfigManager.module<ServerConfig>() }
+class DUIView : View(), KodeinGlobalAware {
+    val serverConfig by lazy { instance<ConfigManager>().module<ServerConfig>() }
 
     override val root = stackpane {
         webview {

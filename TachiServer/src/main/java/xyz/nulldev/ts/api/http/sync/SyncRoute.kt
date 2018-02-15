@@ -1,6 +1,11 @@
 package xyz.nulldev.ts.api.http.sync
 
 import android.content.Context
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinAware
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.sync.gson.SyncGsonProvider
 import eu.kanade.tachiyomi.data.sync.protocol.ReportApplier
@@ -12,11 +17,10 @@ import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.ext.kInstanceLazy
 
-class SyncRoute : TachiWebRoute() {
-    private val context: Context by kInstanceLazy()
-    private val db: DatabaseHelper by kInstanceLazy()
+class SyncRoute(override val kodein: Kodein = Kodein.global) : TachiWebRoute(), KodeinAware {
+    private val context: Context by lazy.instance()
+    private val db: DatabaseHelper by lazy.instance()
     private val snapshots by lazy { SnapshotHelper(context) }
     private val lastSyncs by lazy { LastSyncDb() }
 

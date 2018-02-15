@@ -39,6 +39,8 @@ class PreferencesHelper(val context: Context) {
 
     fun pageTransitions() = rxPrefs.getBoolean(Keys.enableTransitions, true)
 
+    fun doubleTapAnimSpeed() = rxPrefs.getInteger(Keys.doubleTapAnimationSpeed, 500)
+
     fun showPageNumber() = rxPrefs.getBoolean(Keys.showPageNumber, true)
 
     fun fullscreen() = rxPrefs.getBoolean(Keys.fullscreen, true)
@@ -160,9 +162,9 @@ class PreferencesHelper(val context: Context) {
     fun downloadNew() = rxPrefs.getBoolean(Keys.downloadNew, false)
 
     fun downloadNewCategories() = rxPrefs.getStringSet(Keys.downloadNewCategories, emptySet())
-    
+
     fun syncId() = rxPrefs.getString(Keys.syncId, null)
-    
+
     fun lastSync() = rxPrefs.getLong(Keys.lastSync, 0)
     
     fun syncOnLaunch() = rxPrefs.getBoolean(Keys.syncOnLaunch, true)
@@ -172,4 +174,8 @@ class PreferencesHelper(val context: Context) {
     fun lang() = prefs.getString(Keys.lang, "")
 
     fun defaultCategory() = prefs.getInt(Keys.defaultCategory, -1)
+
+    fun migrateFlags() = rxPrefs.getInteger("migrate_flags", Int.MAX_VALUE)
+
+    fun trustedSignatures() = rxPrefs.getStringSet("trusted_signatures", emptySet())
 }

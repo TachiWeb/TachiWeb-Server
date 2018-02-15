@@ -9,7 +9,7 @@ import java.io.File
 /**
  * Manages app config.
  */
-object ConfigManager {
+open class ConfigManager {
     private val generatedModules
             = mutableMapOf<Class<out ConfigModule>, ConfigModule>()
     var config: Config
@@ -18,7 +18,7 @@ object ConfigManager {
     val loadedModules: Map<Class<out ConfigModule>, ConfigModule>
         get() = generatedModules
 
-    val configFolder: String
+    open val configFolder: String
         get() = System.getProperty("compat-configdirs") ?: "config"
 
     val logger = KotlinLogging.logger {}
@@ -74,3 +74,5 @@ object ConfigManager {
         config = loadConfigs()
     }
 }
+
+object GlobalConfigManager : ConfigManager()

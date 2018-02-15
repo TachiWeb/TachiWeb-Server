@@ -11,6 +11,8 @@ object PreferenceKeys {
 
     const val enableTransitions = "pref_enable_transitions_key"
 
+    const val doubleTapAnimationSpeed = "pref_double_tap_anim_speed"
+
     const val showPageNumber = "pref_show_page_number_key"
 
     const val fullscreen = "fullscreen"
@@ -110,14 +112,18 @@ object PreferenceKeys {
     const val syncId = "sync_id"
     
     const val lastSync = "last_sync"
-    
+
     const val syncOnLaunch = "pref_sync_on_launch"
-    
+
     const val syncInterval = "pref_sync_interval"
-    
+
+    @Deprecated("Use the preferences of the source")
     fun sourceUsername(sourceId: Long) = "pref_source_username_$sourceId"
 
+    @Deprecated("Use the preferences of the source")
     fun sourcePassword(sourceId: Long) = "pref_source_password_$sourceId"
+
+    fun sourceSharedPref(sourceId: Long) = "source_$sourceId"
 
     fun trackUsername(syncId: Int) = "pref_mangasync_username_$syncId"
 

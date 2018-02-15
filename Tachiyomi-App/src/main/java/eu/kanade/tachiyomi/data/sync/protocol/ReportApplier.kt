@@ -10,12 +10,14 @@ import eu.kanade.tachiyomi.data.sync.protocol.models.common.ChangedField
 import eu.kanade.tachiyomi.data.sync.protocol.models.common.SyncRef
 import eu.kanade.tachiyomi.data.sync.protocol.models.entities.*
 import eu.kanade.tachiyomi.data.track.TrackManager
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
 
-class ReportApplier(val context: Context) {
-    private val db: DatabaseHelper by injectLazy()
+class ReportApplier(val context: Context,
+                    private val db: DatabaseHelper = Injekt.get()) {
     private val tracks: TrackManager by injectLazy()
-    
+
     /**
      * Apply a sync report
      *
@@ -179,18 +181,21 @@ class ReportApplier(val context: Context) {
                     dbCategory.id = it.toInt()
                 }
             }
-            
+
+            /**
+             * Bind a list of manga references to a category
+             */
             fun List<SyncRef<SyncManga>>.toMangaCategories()
                     = mapNotNull {
                 val manga = it.resolve(report)
                 val source = manga.source.resolve(report)
                 val dbManga = db.getManga(manga.url, source.id).executeAsBlocking()
-                
+
                 dbManga?.let {
                     MangaCategory.create(it, dbCategory)
                 }
             }
-            
+
             //Add/delete manga categories
             val addedMangaCategories = it.addedManga.toMangaCategories().filterNot {
                 //Ensure DB does not have manga category

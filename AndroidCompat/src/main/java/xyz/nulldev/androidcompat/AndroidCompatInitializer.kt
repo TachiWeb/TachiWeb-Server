@@ -6,7 +6,7 @@ import xyz.nulldev.androidcompat.bytecode.ModApplier
 import xyz.nulldev.androidcompat.config.ApplicationInfoConfigModule
 import xyz.nulldev.androidcompat.config.FilesConfigModule
 import xyz.nulldev.androidcompat.config.SystemConfigModule
-import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.GlobalConfigManager
 
 /**
  * Initializes the Android compatibility module
@@ -21,10 +21,10 @@ class AndroidCompatInitializer {
         Kodein.global.addImport(AndroidCompatModule().create())
 
         //Register config modules
-        ConfigManager.registerModules(
-            FilesConfigModule(ConfigManager.config.getConfig("android.files")),
-            ApplicationInfoConfigModule(ConfigManager.config.getConfig("android.app")),
-            SystemConfigModule(ConfigManager.config.getConfig("android.system"))
+        GlobalConfigManager.registerModules(
+            FilesConfigModule(GlobalConfigManager.config.getConfig("android.files")),
+            ApplicationInfoConfigModule(GlobalConfigManager.config.getConfig("android.app")),
+            SystemConfigModule(GlobalConfigManager.config.getConfig("android.system"))
         )
     }
 }

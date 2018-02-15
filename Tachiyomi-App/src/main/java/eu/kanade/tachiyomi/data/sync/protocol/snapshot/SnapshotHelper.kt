@@ -2,16 +2,17 @@ package eu.kanade.tachiyomi.data.sync.protocol.snapshot
 
 import android.content.Context
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
-import uy.kohesive.injekt.injectLazy
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 import java.io.File
 import java.io.FileNotFoundException
 
 /**
  * Helper class used to generate and manage snapshots
  */
-class SnapshotHelper(private val context: Context) {
-    val db: DatabaseHelper by injectLazy()
-    
+class SnapshotHelper(private val context: Context,
+                     private val db: DatabaseHelper = Injekt.get()) {
+
     /**
      * The file holding a snapshot for objects of [type] and for the
      * specified [id]
@@ -86,7 +87,7 @@ class SnapshotHelper(private val context: Context) {
     
     companion object {
         private val CHARSET = Charsets.UTF_8
-        private val CATEGORY_SNAPSHOTS = "categories"
-        private val TRACK_SNAPSHOTS = "tracks"
+        private const val CATEGORY_SNAPSHOTS = "categories"
+        private const val TRACK_SNAPSHOTS = "tracks"
     }
 }

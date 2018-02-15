@@ -16,9 +16,9 @@
 package android.os;
 
 import kotlin.NotImplementedError;
-import xyz.nulldev.ts.config.ConfigManager;
 import xyz.nulldev.androidcompat.config.SystemConfigModule;
-import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
+import xyz.nulldev.ts.config.ConfigManager;
+import xyz.nulldev.ts.config.GlobalConfigManager;
 
 /**
  * Gives access to the system properties store.  The system properties
@@ -27,7 +27,7 @@ import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
  * {@hide}
  */
 public class SystemProperties {
-    private static ConfigManager configManager = KodeinGlobalHelper.Companion.instance(ConfigManager.class);
+    private static ConfigManager configManager = GlobalConfigManager.INSTANCE;
     private static SystemConfigModule configModule = configManager.module(SystemConfigModule.class);
 
     public static final int PROP_VALUE_MAX = 91;

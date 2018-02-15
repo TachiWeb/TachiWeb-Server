@@ -58,6 +58,7 @@ keepFolder "data"
 keepFolder "util"
 keepFolder "source"
 keepFolder "network"
+keepFolder "extension"
 
 # Exclude
 excludeFolder "data.glide"

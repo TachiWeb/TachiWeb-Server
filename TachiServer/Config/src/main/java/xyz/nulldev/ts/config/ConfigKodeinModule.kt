@@ -7,6 +7,6 @@ import com.github.salomonbrys.kodein.singleton
 class ConfigKodeinModule {
     fun create() = Kodein.Module {
         //Config module
-        bind<ConfigManager>() with singleton { ConfigManager }
+        bind<ConfigManager>() with singleton { GlobalConfigManager }
     }
 }

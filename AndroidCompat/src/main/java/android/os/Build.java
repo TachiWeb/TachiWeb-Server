@@ -1,14 +1,14 @@
 package android.os;
 
-import xyz.nulldev.ts.config.ConfigManager;
 import xyz.nulldev.androidcompat.config.SystemConfigModule;
-import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
+import xyz.nulldev.ts.config.ConfigManager;
+import xyz.nulldev.ts.config.GlobalConfigManager;
 
 /**
  * Android compat class
  */
 public class Build {
-    private static ConfigManager configManager = KodeinGlobalHelper.Companion.instance(ConfigManager.class);
+    private static ConfigManager configManager = GlobalConfigManager.INSTANCE;
     private static SystemConfigModule configModule = configManager.module(SystemConfigModule.class);
 
     public static boolean IS_DEBUGGABLE = configModule.isDebuggable();

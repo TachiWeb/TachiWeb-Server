@@ -1,16 +1,15 @@
 package xyz.nulldev.androidcompat.io
 
-import com.github.salomonbrys.kodein.conf.KodeinGlobalAware
-import com.github.salomonbrys.kodein.instance
-import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.androidcompat.config.FilesConfigModule
+import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.config.GlobalConfigManager
 import java.io.File
 
 /**
  * Android file constants.
  */
-class AndroidFiles : KodeinGlobalAware {
-    val configManager: ConfigManager = kodein.instance()
+class AndroidFiles {
+    val configManager: ConfigManager = GlobalConfigManager
 
     val filesConfig: FilesConfigModule
         get() = configManager.module()
