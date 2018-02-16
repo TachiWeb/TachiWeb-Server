@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
+import eu.kanade.tachiyomi.data.sync.LibrarySyncManager
 import eu.kanade.tachiyomi.data.sync.gson.SyncGsonProvider
 import eu.kanade.tachiyomi.data.sync.protocol.ReportApplier
 import eu.kanade.tachiyomi.data.sync.protocol.ReportGenerator
@@ -18,11 +19,18 @@ import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
 
+/**
+ * Sync route, executes all sync operations
+ *
+ * CAVEAT: Ensure this route is able to be fully isolated from the rest of the server
+ *         This condition must be satisfied to ensure multiple users can sync to the same server
+ */
 class SyncRoute(override val kodein: Kodein = Kodein.global) : TachiWebRoute(), KodeinAware {
     private val context: Context by lazy.instance()
     private val db: DatabaseHelper by lazy.instance()
-    private val snapshots by lazy { SnapshotHelper(context) }
-    private val lastSyncs by lazy { LastSyncDb() }
+    private val syncManager: LibrarySyncManager by lazy.instance()
+    private val snapshots by lazy { SnapshotHelper(context, db) }
+    private val lastSyncs by lazy { LastSyncDb(kodein) }
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -58,7 +66,7 @@ class SyncRoute(override val kodein: Kodein = Kodein.global) : TachiWebRoute(), 
                 db.takeEmptyMangaCategoriesSnapshot(dId).executeAsBlocking()
 
                 //Generate server report
-                val report = ReportGenerator(context).gen(LOCAL_DEVICE_NAME,
+                val report = ReportGenerator(context, db, syncManager).gen(LOCAL_DEVICE_NAME,
                         dId,
                         startTime,
                         syncStartTime) //Do not include changes made since the sync has started

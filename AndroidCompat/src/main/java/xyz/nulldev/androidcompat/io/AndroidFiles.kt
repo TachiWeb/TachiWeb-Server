@@ -8,9 +8,7 @@ import java.io.File
 /**
  * Android file constants.
  */
-class AndroidFiles {
-    val configManager: ConfigManager = GlobalConfigManager
-
+class AndroidFiles(val configManager: ConfigManager = GlobalConfigManager) {
     val filesConfig: FilesConfigModule
         get() = configManager.module()
 

@@ -31,6 +31,9 @@ import android.net.Uri;
 import android.os.*;
 import android.view.Display;
 import android.view.DisplayAdjustments;
+import com.github.salomonbrys.kodein.Kodein;
+import com.github.salomonbrys.kodein.KodeinAware;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.nulldev.androidcompat.info.ApplicationInfoImpl;
@@ -49,14 +52,28 @@ import java.util.Map;
  *
  * TODO Deal with packagemanager for extension sources
  */
-public class CustomContext extends Context {
+public class CustomContext extends Context implements KodeinAware {
+    private Kodein kodein;
+    public CustomContext() {
+        this(KodeinGlobalHelper.Companion.kodein());
+    }
 
-    private AndroidFiles androidFiles = KodeinGlobalHelper.Companion.instance(AndroidFiles.class);
-    private ApplicationInfoImpl applicationInfo = KodeinGlobalHelper.Companion.instance(ApplicationInfoImpl.class);
+    public CustomContext(Kodein kodein) {
+        this.kodein = kodein;
+    }
 
-    private ServiceSupport serviceSupport = KodeinGlobalHelper.Companion.instance(ServiceSupport.class);
+    @NotNull
+    @Override
+    public Kodein getKodein() {
+        return kodein;
+    }
 
-    private FakePackageManager fakePackageManager = KodeinGlobalHelper.Companion.instance(FakePackageManager.class);
+    private AndroidFiles androidFiles = getKodein().getTyped().instance(AndroidFiles.class);
+    private ApplicationInfoImpl applicationInfo = getKodein().getTyped().instance(ApplicationInfoImpl.class);
+
+    private ServiceSupport serviceSupport = getKodein().getTyped().instance(ServiceSupport.class);
+
+    private FakePackageManager fakePackageManager = getKodein().getTyped().instance(FakePackageManager.class);
 
     private Logger logger = LoggerFactory.getLogger(CustomContext.class);
 
