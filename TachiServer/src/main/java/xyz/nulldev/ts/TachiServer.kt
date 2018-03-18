@@ -85,6 +85,12 @@ class TachiServer {
 
         //Start HTTP API
         HttpAPI().start()
+
+        //Wait for WebUI to initialize
+        if(serverConfig.httpInitializedPrintMessage.isNotBlank()) {
+            Spark.awaitInitialization()
+            println(serverConfig.httpInitializedPrintMessage)
+        }
     }
 
     fun registerConfigModules() {

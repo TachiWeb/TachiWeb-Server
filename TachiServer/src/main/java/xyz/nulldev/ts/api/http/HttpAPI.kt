@@ -139,12 +139,6 @@ class HttpAPI {
         val syncRoute = SyncRoute()
         getAPIRoute("/sync", syncRoute)
         postAPIRoute("/sync", syncRoute)
-
-        //Wait for WebUI to initialize
-        if(serverConfig.httpInitializedPrintMessage.isNotBlank()) {
-            Spark.awaitInitialization()
-            println(serverConfig.httpInitializedPrintMessage)
-        }
     }
 
     private fun buildAPIPath(path: String): String {
@@ -152,15 +146,15 @@ class HttpAPI {
     }
 
     private fun getAPIRoute(path: String, route: Route) {
-        val builtPath = buildAPIPath(path)
         if(!checkApi(path)) return
+        val builtPath = buildAPIPath(path)
         Spark.get(builtPath, route)
         Spark.get(builtPath + "/", route)
     }
 
     private fun postAPIRoute(path: String, route: Route) {
-        val builtPath = buildAPIPath(path)
         if(!checkApi(path)) return
+        val builtPath = buildAPIPath(path)
         Spark.post(builtPath, route)
         Spark.post(builtPath + "/", route)
     }
