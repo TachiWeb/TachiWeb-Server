@@ -20,7 +20,7 @@ class DbOpenHelper(context: Context)
         /**
          * Version of the database.
          */
-        const val DATABASE_VERSION = 6
+        const val DATABASE_VERSION = 7
     }
 
     override fun onCreate(db: SQLiteDatabase) = with(db) {
@@ -64,16 +64,19 @@ class DbOpenHelper(context: Context)
             db.execSQL(ChapterTable.addScanlator)
         }
         if (oldVersion < 6) {
+            db.execSQL(TrackTable.addTrackingUrl)
+        }
+        if (oldVersion < 7) {
             // Create sync updates table
             db.execSQL(SyncUpdatesTable.createTableQuery)
-            
+
             // Add missing entry updates
             UpdateTarget.registeredObjects.forEach {
                 getGenerateAllEntryUpdatesQueries(it).forEach {
                     db.execSQL(it)
                 }
             }
-            
+
             // Gen and apply triggers for sync
             UpdateTarget.registeredObjects.flatMap(Updatable::getTriggers).forEach {
                 db.execSQL(it)

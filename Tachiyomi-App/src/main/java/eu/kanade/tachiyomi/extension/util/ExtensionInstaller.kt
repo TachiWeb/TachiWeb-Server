@@ -6,12 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import com.jakewharton.rxrelay.PublishRelay
 import eu.kanade.tachiyomi.extension.model.Extension
 import eu.kanade.tachiyomi.extension.model.InstallStep
+import eu.kanade.tachiyomi.util.getUriCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -66,7 +69,7 @@ internal class ExtensionInstaller(private val context: Context) {
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
         val id = downloadManager.enqueue(request)
-        activeDownloads.put(pkgName, id)
+        activeDownloads[pkgName] = id
 
         downloadsRelay.filter { it.first == id }
                 .map { it.second }
@@ -118,9 +121,10 @@ internal class ExtensionInstaller(private val context: Context) {
      *
      * @param uri The uri of the extension to install.
      */
-    fun installApk(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW)
+    fun installApk(downloadId: Long, uri: Uri) {
+        val intent = Intent(context, ExtensionInstallActivity::class.java)
                 .setDataAndType(uri, APK_MIME)
+                .putExtra(EXTRA_DOWNLOAD_ID, downloadId)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         context.startActivity(intent)
@@ -133,18 +137,21 @@ internal class ExtensionInstaller(private val context: Context) {
      */
     fun uninstallApk(pkgName: String) {
         val packageUri = Uri.parse("package:$pkgName")
-        val uninstallIntent = Intent(Intent.ACTION_UNINSTALL_PACKAGE, packageUri)
-        context.startActivity(uninstallIntent)
+        val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE, packageUri)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        context.startActivity(intent)
     }
 
     /**
-     * Called when an extension is installed, allowing to update its installation step.
+     * Sets the result of the installation of an extension.
      *
-     * @param pkgName The package name of the installed application.
+     * @param downloadId The id of the download.
+     * @param result Whether the extension was installed or not.
      */
-    fun onApkInstalled(pkgName: String) {
-        val id = activeDownloads[pkgName] ?: return
-        downloadsRelay.call(id to InstallStep.Installed)
+    fun setInstallationResult(downloadId: Long, result: Boolean) {
+        val step = if (result) InstallStep.Installed else InstallStep.Error
+        downloadsRelay.call(downloadId to step)
     }
 
     /**
@@ -204,18 +211,37 @@ internal class ExtensionInstaller(private val context: Context) {
             if (id !in activeDownloads.values) return
 
             val uri = downloadManager.getUriForDownloadedFile(id)
+
+            // Set next installation step
             if (uri != null) {
                 downloadsRelay.call(id to InstallStep.Installing)
-                installApk(uri)
             } else {
                 Timber.e("Couldn't locate downloaded APK")
                 downloadsRelay.call(id to InstallStep.Error)
+                return
+            }
+
+            // Due to a bug in Android versions prior to N, the installer can't open files that do
+            // not contain the extension in the path, even if you specify the correct MIME.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                val query = DownloadManager.Query().setFilterById(id)
+                downloadManager.query(query).use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        @Suppress("DEPRECATION")
+                        val uriCompat = File(cursor.getString(cursor.getColumnIndex(
+                                DownloadManager.COLUMN_LOCAL_FILENAME))).getUriCompat(context)
+                        installApk(id, uriCompat)
+                    }
+                }
+            } else {
+                installApk(id, uri)
             }
         }
     }
 
-    private companion object {
+    companion object {
         const val APK_MIME = "application/vnd.android.package-archive"
+        const val EXTRA_DOWNLOAD_ID = "ExtensionInstaller.extra.DOWNLOAD_ID"
     }
 
 }

@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.support.multidex.MultiDex
-import eu.kanade.tachiyomi.util.LocaleHelper
 import timber.log.Timber
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.InjektScope
@@ -29,6 +28,5 @@ open class App : Application() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        LocaleHelper.updateConfiguration(this, newConfig, true)
     }
 }

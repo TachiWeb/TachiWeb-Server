@@ -39,6 +39,15 @@ class SyncRoute(override val kodein: Kodein = Kodein.global,
         fun SyncResponse.toJson() = SyncGsonProvider.gson.toJson(this)
 
         try {
+            // Validate protocol version
+            val protocol = request.queryParams("protocol")?.toIntOrNull()
+            if(protocol != null && protocol > LibrarySyncManager.PROTOCOL_VERSION) {
+                response.status(500)
+                return SyncResponse().apply {
+                    this.error = "Incompatible protocol version. This server is running protocol version: ${LibrarySyncManager.PROTOCOL_VERSION}!"
+                }.toJson()
+            }
+
             var dId = INITAL_SNAPSHOT_NAME
 
             var result: String? = null

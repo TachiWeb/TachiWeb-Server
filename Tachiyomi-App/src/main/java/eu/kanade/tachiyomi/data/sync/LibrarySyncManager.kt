@@ -51,37 +51,37 @@ class LibrarySyncManager(private val context: Context) {
     /**
      * Force a sync immediately
      */
-    /*fun forceSync() {
-        account?.let {
-            val settingsBundle = Bundle().apply {
-                putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
-                putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
-            }
-            ContentResolver.requestSync(it,
-                    AUTHORITY,
-                    settingsBundle)
-        }
-    }*/
+//    fun forceSync() {
+//        account?.let {
+//            val settingsBundle = Bundle().apply {
+//                putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
+//                putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
+//            }
+//            ContentResolver.requestSync(it,
+//                    AUTHORITY,
+//                    settingsBundle)
+//        }
+//    }
     
     /**
      * Update periodic sync with system
      *
      * @param frequency Frequency in hours
      */
-    /*fun updatePeriodicSync(frequency: Int = prefs.syncInterval().getOrDefault()) {
-        account?.let {
-            ContentResolver.setSyncAutomatically(it, AUTHORITY, true)
-            if(frequency == 0)
-                ContentResolver.removePeriodicSync(it,
-                        AUTHORITY,
-                        Bundle.EMPTY)
-            else
-                ContentResolver.addPeriodicSync(it,
-                        AUTHORITY,
-                        Bundle.EMPTY,
-                        TimeUnit.HOURS.toSeconds(frequency.toLong()))
-        }
-    }*/
+//    fun updatePeriodicSync(frequency: Int = prefs.syncInterval().getOrDefault()) {
+//        account?.let {
+//            ContentResolver.setSyncAutomatically(it, AUTHORITY, true)
+//            if(frequency == 0)
+//                ContentResolver.removePeriodicSync(it,
+//                        AUTHORITY,
+//                        Bundle.EMPTY)
+//            else
+//                ContentResolver.addPeriodicSync(it,
+//                        AUTHORITY,
+//                        Bundle.EMPTY,
+//                        TimeUnit.HOURS.toSeconds(frequency.toLong()))
+//        }
+//    }
     
     companion object {
         //Device ID, used to distinguish between devices when syncing with multiple servers
@@ -90,5 +90,7 @@ class LibrarySyncManager(private val context: Context) {
         
         val ACCOUNT_TYPE = "${BuildConfig.APPLICATION_ID}.sync-account"
         val AUTHORITY = "${BuildConfig.APPLICATION_ID}.sync-provider"
+
+        const val PROTOCOL_VERSION = 1
     }
 }

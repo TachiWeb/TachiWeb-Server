@@ -2,10 +2,8 @@ package eu.kanade.tachiyomi.util
 
 import android.app.ActivityManager
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.os.PowerManager
@@ -90,4 +88,13 @@ fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
     val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     return manager.getRunningServices(Integer.MAX_VALUE)
             .any { className == it.service.className }
+}
+
+/**
+ * Function used to send a local broadcast asynchronous
+ *
+ * @param intent intent that contains broadcast information
+ */
+fun Context.sendLocalBroadcast(intent: Intent) {
+    // Do nothing
 }

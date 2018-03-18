@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.data.download.model.DownloadQueue
  *
  * @param context context of application
  */
-class DownloadNotifier(private val context: Context) {
+internal class DownloadNotifier(private val context: Context) {
     /**
      * Status of download. Used for correct notification icon.
      */
@@ -19,18 +19,12 @@ class DownloadNotifier(private val context: Context) {
      * The size of queue on start download.
      */
     var initialQueueSize = 0
-        get() = field
         set(value) {
             if (value != 0){
                 isSingleChapter = (value == 1)
             }
             field = value
         }
-
-    /**
-     * Simultaneous download setting > 1.
-     */
-    var multipleDownloadThreads = false
 
     /**
      * Updated when error is thrown
@@ -47,7 +41,6 @@ class DownloadNotifier(private val context: Context) {
      */
     var paused = false
 
-
     /**
      * Dismiss the downloader's notification. Downloader error notifications use a different id, so
      * those can only be dismissed by the user.
@@ -57,52 +50,16 @@ class DownloadNotifier(private val context: Context) {
 
     /**
      * Called when download progress changes.
-     * Note: Only accepted when multi download active.
-     *
-     * @param queue the queue containing downloads.
-     */
-    fun onProgressChange(queue: DownloadQueue) {
-        if (multipleDownloadThreads) {
-            doOnProgressChange(null, queue)
-        }
-    }
-
-    /**
-     * Called when download progress changes.
-     * Note: Only accepted when single download active.
      *
      * @param download download object containing download information.
-     * @param queue the queue containing downloads.
      */
-    fun onProgressChange(download: Download, queue: DownloadQueue) {
-        if (!multipleDownloadThreads) {
-            doOnProgressChange(download, queue)
-        }
-    }
-
-    /**
-     * Show notification progress of chapter.
-     *
-     * @param download download object containing download information.
-     * @param queue the queue containing downloads.
-     */
-    private fun doOnProgressChange(download: Download?, queue: DownloadQueue) {
-        // Check if first call.
-        if (!isDownloading) {
-            isDownloading = true
-        }
-        if (multipleDownloadThreads) {
-            // Reset the queue size if the download progress is negative
-            if ((initialQueueSize - queue.size) < 0)
-                initialQueueSize = queue.size
-        }
+    fun onProgressChange(download: Download) {
     }
 
     /**
      * Show notification when download is paused.
      */
     fun onDownloadPaused() {
-
         // Reset initial values
         isDownloading = false
         initialQueueSize = 0

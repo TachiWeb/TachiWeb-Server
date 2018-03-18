@@ -12,7 +12,8 @@ import eu.kanade.tachiyomi.data.track.TrackManager
 import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.source.SourceManager
-import kotlinx.coroutines.experimental.async
+import rx.Observable
+import rx.schedulers.Schedulers
 import uy.kohesive.injekt.api.*
 
 class AppModule(val app: Application) : InjektModule {
@@ -45,16 +46,20 @@ class AppModule(val app: Application) : InjektModule {
 
         // Asynchronously init expensive components for a faster cold start
 
-        async { get<PreferencesHelper>() }
+        rxAsync { get<PreferencesHelper>() }
 
-        async { get<NetworkHelper>() }
+        rxAsync { get<NetworkHelper>() }
 
-        async { get<SourceManager>() }
+        rxAsync { get<SourceManager>() }
 
-        async { get<DatabaseHelper>() }
+        rxAsync { get<DatabaseHelper>() }
 
-        async { get<DownloadManager>() }
+        rxAsync { get<DownloadManager>() }
 
+    }
+
+    private fun rxAsync(block: () -> Unit) {
+        Observable.fromCallable { block() }.subscribeOn(Schedulers.computation()).subscribe()
     }
 
 }
