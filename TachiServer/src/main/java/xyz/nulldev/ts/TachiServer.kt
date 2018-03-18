@@ -76,15 +76,13 @@ class TachiServer {
                 TachiWebUIServer().start()
 
         //Bind sync routes
-        if(syncConfig.enable) {
+        if(syncConfig.enable)
             TSSyncDeploy().bindSyncRoutes()
 
-            if(syncConfig.syncOnlyMode)
-                return
+        if(!syncConfig.syncOnlyMode) {
+            //Start HTTP API
+            HttpAPI().start()
         }
-
-        //Start HTTP API
-        HttpAPI().start()
 
         //Wait for WebUI to initialize
         if(serverConfig.httpInitializedPrintMessage.isNotBlank()) {
@@ -135,7 +133,7 @@ class TachiServer {
         }
 
         private val patchesDir
-                get() = GlobalConfigManager.module<ServerConfig>().patchesDir
+            get() = GlobalConfigManager.module<ServerConfig>().patchesDir
 
         private fun extractPatch(file: String) {
             println("\t\tExtracting patch: $file")
@@ -171,14 +169,14 @@ class TachiServer {
 
             //Check if JVM booted in debug mode
             if(bean.inputArguments.any {
-                it.startsWith("-agentlib:", true)
-            }) throw IllegalStateException("JVM booted in debug mode!")
+                        it.startsWith("-agentlib:", true)
+                    }) throw IllegalStateException("JVM booted in debug mode!")
 
             var programArgs = System.getProperty("sun.java.command")
 
             //Check if started from JAR
             if(TachiServer::class.java.getResource("${TachiServer::class.simpleName}.class")
-                    .protocol == "jar") {
+                            .protocol == "jar") {
                 programArgs = "-jar $programArgs"
             }
 
