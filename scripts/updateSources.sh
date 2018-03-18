@@ -80,6 +80,7 @@ excludeFile "data.library" "LibraryUpdateService.kt"
 excludeFile "data.download" "DownloadNotifier.kt"
 excludeFile "data.sync" "LibrarySyncAdapter.kt"
 excludeFile "data.sync" "LibrarySyncService.kt"
+excludeFile "extension.util" "ExtensionInstallReceiver.kt"
 
 echo "Downloading JunRAR source code..."
 git clone "https://github.com/inorichi/junrar-android"

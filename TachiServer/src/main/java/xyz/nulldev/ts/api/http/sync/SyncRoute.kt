@@ -25,7 +25,8 @@ import xyz.nulldev.ts.api.http.TachiWebRoute
  * CAVEAT: Ensure this route is able to be fully isolated from the rest of the server
  *         This condition must be satisfied to ensure multiple users can sync to the same server
  */
-class SyncRoute(override val kodein: Kodein = Kodein.global) : TachiWebRoute(), KodeinAware {
+class SyncRoute(override val kodein: Kodein = Kodein.global,
+                requiresAuth: Boolean = true) : TachiWebRoute(requiresAuth), KodeinAware {
     private val context: Context by lazy.instance()
     private val db: DatabaseHelper by lazy.instance()
     private val syncManager: LibrarySyncManager by lazy.instance()
@@ -53,7 +54,7 @@ class SyncRoute(override val kodein: Kodein = Kodein.global) : TachiWebRoute(), 
                     //Apply client report
                     val body = request.body()
                     inReport = SyncGsonProvider.gson.fromJson(body, SyncReport::class.java)
-                    ReportApplier(context).apply(inReport)
+                    ReportApplier(context, db).apply(inReport)
                     dId = inReport.deviceId
                 }
 

@@ -11,6 +11,8 @@ import xyz.nulldev.ts.api.http.HttpModule
 import xyz.nulldev.ts.config.ConfigKodeinModule
 import xyz.nulldev.ts.config.GlobalConfigManager
 import xyz.nulldev.ts.config.ServerConfig
+import xyz.nulldev.ts.syncdeploy.SyncConfigModule
+import xyz.nulldev.ts.syncdeploy.TSSyncDeploy
 import java.io.File
 import java.lang.management.ManagementFactory
 
@@ -29,6 +31,7 @@ class TachiServer {
         private set
 
     val serverConfig by lazy { GlobalConfigManager.module<ServerConfig>() }
+    val syncConfig by lazy { GlobalConfigManager.module<SyncConfigModule>() }
 
     fun initInternals() {
         if(initialized) return
@@ -54,19 +57,34 @@ class TachiServer {
         //Initialize internals
         initInternals()
 
+        //Configure web related components
+        configureHttp()
+
+        //Launch desktop app if required
+//        Application.launch(DUIApp::class.java)
+    }
+
+    fun configureHttp() {
         //Setup HTTP server
         Spark.port(serverConfig.port)
         Spark.ipAddress(serverConfig.ip)
 
-        //Start UI server
+        //Start UI server (start before sync server as it needs to bind static dirs)
         if(serverConfig.enableWebUi)
-            TachiWebUIServer().start()
+            // Do not start UI server if sync only mode is on and sync enabled
+            if(!(syncConfig.enable && syncConfig.syncOnlyMode))
+                TachiWebUIServer().start()
+
+        //Bind sync routes
+        if(syncConfig.enable) {
+            TSSyncDeploy().bindSyncRoutes()
+
+            if(syncConfig.syncOnlyMode)
+                return
+        }
 
         //Start HTTP API
         HttpAPI().start()
-
-        //Launch desktop app if required
-//        Application.launch(DUIApp::class.java)
     }
 
     fun registerConfigModules() {
@@ -74,7 +92,8 @@ class TachiServer {
         configModulesRegistered = true
 
         GlobalConfigManager.registerModules(
-                ServerConfig(GlobalConfigManager.config.getConfig("ts.server"))
+                ServerConfig.register(GlobalConfigManager.config),
+                SyncConfigModule.register(GlobalConfigManager.config)
         )
     }
 

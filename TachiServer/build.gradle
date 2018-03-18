@@ -31,6 +31,9 @@ dependencies {
 
     // ICU Library (duplicated here from JVMPatch to fix resource bundle issues)
     compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
+
+    // Time extensions
+    compile 'com.github.kizitonwose.time:time:1.0.1'
 }
 
 def getGitHash = { ->

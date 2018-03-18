@@ -1,4 +1,4 @@
-package xyz.nulldev.androidcompat.sandbox
+package xyz.nulldev.ts.sandbox
 
 import xyz.nulldev.ts.config.ConfigManager
 

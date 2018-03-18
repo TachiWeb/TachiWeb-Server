@@ -1,5 +1,5 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.0" apply false
+    id "org.jetbrains.kotlin.jvm" version "1.2.30" apply false // Also in settings.gradle
     id "java"
 }
 
@@ -15,6 +15,7 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+        maven { url "https://jitpack.io" }
 
         maven {
             url new File(rootProject.rootDir, "local-repo").toURI().toURL().toExternalForm()
@@ -38,6 +39,15 @@ ext.jsProjects = [
 configure(javaProjects) {
     apply plugin: "java"
     apply plugin: "org.jetbrains.kotlin.jvm"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
 
     dependencies {
         // Kotlin

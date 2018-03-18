@@ -24,4 +24,9 @@ class ServerConfig(config: Config) : ConfigModule(config) {
             mkdirs()
         }
     }
+
+    companion object {
+        fun register(config: Config)
+                = ServerConfig(config.getConfig("ts.server"))
+    }
 }

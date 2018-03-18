@@ -13,4 +13,9 @@ class SystemConfigModule(val config: Config) : ConfigModule(config) {
     fun getLongProperty(property: String) = config.getLong("$propertyPrefix$property")
     fun getBooleanProperty(property: String) = config.getBoolean("$propertyPrefix$property")
     fun hasProperty(property: String) = config.hasPath("$propertyPrefix$property")
+
+    companion object {
+        fun register(config: Config)
+                = SystemConfigModule(config.getConfig("android.system"))
+    }
 }

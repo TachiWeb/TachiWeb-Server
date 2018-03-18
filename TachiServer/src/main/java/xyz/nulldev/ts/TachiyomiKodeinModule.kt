@@ -11,6 +11,7 @@ import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.data.sync.LibrarySyncManager
 import eu.kanade.tachiyomi.data.track.TrackManager
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.source.SourceManager
@@ -40,6 +41,8 @@ class TachiyomiKodeinModule {
         bind<DownloadManager>() with singleton { Injekt.get<DownloadManager>() }
 
         bind<TrackManager>() with singleton { Injekt.get<TrackManager>() }
+
+        bind<LibrarySyncManager>() with singleton { Injekt.get<LibrarySyncManager>() }
 
         bind<Gson>() with singleton { Injekt.get<Gson>() }
 

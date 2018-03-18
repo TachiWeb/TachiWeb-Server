@@ -12,14 +12,14 @@ import java.io.File
 open class ConfigManager {
     private val generatedModules
             = mutableMapOf<Class<out ConfigModule>, ConfigModule>()
-    var config: Config
+    val config by lazy { loadConfigs() }
 
     //Public read-only view of modules
     val loadedModules: Map<Class<out ConfigModule>, ConfigModule>
         get() = generatedModules
 
     open val configFolder: String
-        get() = System.getProperty("compat-configdirs") ?: "config"
+        get() = System.getProperty("compat-configdirs") ?: "tachiserver-data/config"
 
     val logger = KotlinLogging.logger {}
 
@@ -68,10 +68,6 @@ open class ConfigManager {
         modules.forEach {
             registerModule(it)
         }
-    }
-
-    init {
-        config = loadConfigs()
     }
 }
 

@@ -60,6 +60,12 @@ public class CustomContext extends Context implements KodeinAware {
 
     public CustomContext(Kodein kodein) {
         this.kodein = kodein;
+
+        //Init configs
+        androidFiles = getKodein().getTyped().instance(AndroidFiles.class);
+        applicationInfo = getKodein().getTyped().instance(ApplicationInfoImpl.class);
+        serviceSupport = getKodein().getTyped().instance(ServiceSupport.class);
+        fakePackageManager = getKodein().getTyped().instance(FakePackageManager.class);
     }
 
     @NotNull
@@ -68,12 +74,10 @@ public class CustomContext extends Context implements KodeinAware {
         return kodein;
     }
 
-    private AndroidFiles androidFiles = getKodein().getTyped().instance(AndroidFiles.class);
-    private ApplicationInfoImpl applicationInfo = getKodein().getTyped().instance(ApplicationInfoImpl.class);
-
-    private ServiceSupport serviceSupport = getKodein().getTyped().instance(ServiceSupport.class);
-
-    private FakePackageManager fakePackageManager = getKodein().getTyped().instance(FakePackageManager.class);
+    private AndroidFiles androidFiles;
+    private ApplicationInfoImpl applicationInfo;
+    private ServiceSupport serviceSupport;
+    private FakePackageManager fakePackageManager;
 
     private Logger logger = LoggerFactory.getLogger(CustomContext.class);
 
@@ -297,7 +301,7 @@ public class CustomContext extends Context implements KodeinAware {
 
     @Override
     public SQLiteDatabase openOrCreateDatabase(String s, int i, SQLiteDatabase.CursorFactory cursorFactory, DatabaseErrorHandler databaseErrorHandler) {
-        return SQLiteDatabase.openOrCreateDatabase(s, cursorFactory, databaseErrorHandler);
+        return SQLiteDatabase.openOrCreateDatabase(getDatabasePath(s).getAbsolutePath(), cursorFactory, databaseErrorHandler);
     }
 
     @Override
@@ -312,7 +316,7 @@ public class CustomContext extends Context implements KodeinAware {
 
     @Override
     public File getDatabasePath(String s) {
-        return null;
+        return new File(new File(androidFiles.getRootDir(), "databases"), s);
     }
 
     @Override

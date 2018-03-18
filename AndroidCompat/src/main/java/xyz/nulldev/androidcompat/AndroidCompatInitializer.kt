@@ -22,9 +22,9 @@ class AndroidCompatInitializer {
 
         //Register config modules
         GlobalConfigManager.registerModules(
-            FilesConfigModule(GlobalConfigManager.config.getConfig("android.files")),
-            ApplicationInfoConfigModule(GlobalConfigManager.config.getConfig("android.app")),
-            SystemConfigModule(GlobalConfigManager.config.getConfig("android.system"))
+            FilesConfigModule.register(GlobalConfigManager.config),
+            ApplicationInfoConfigModule.register(GlobalConfigManager.config),
+            SystemConfigModule.register(GlobalConfigManager.config)
         )
     }
 }

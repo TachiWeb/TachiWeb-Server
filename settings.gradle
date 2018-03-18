@@ -1,5 +1,5 @@
 // Constants
-gradle.ext.kotlinVersion = "1.2.0"
+gradle.ext.kotlinVersion = "1.2.30" // Also in settings.gradle
 
 // Subprojects
 
