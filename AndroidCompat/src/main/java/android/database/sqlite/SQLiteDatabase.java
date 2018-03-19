@@ -267,6 +267,12 @@ public final class SQLiteDatabase extends SQLiteClosable {
                 sActiveDatabases.remove(this);
             }
         }
+
+        //Actually close DB connection
+        try {
+            if(!connection.isClosed())
+                connection.close();
+        } catch (java.sql.SQLException ignored) {}
     }
 
     /**
