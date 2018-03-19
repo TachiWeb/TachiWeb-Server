@@ -20,7 +20,10 @@ import android.database.DatabaseUtils;
 import android.os.CancellationSignal;
 import xyz.nulldev.androidcompat.db.ScrollableResultSet;
 
-import java.sql.*;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 
 /**
@@ -187,6 +190,12 @@ public abstract class SQLiteProgram extends SQLiteClosable {
     @Override
     protected void onAllReferencesReleased() {
         clearBindings();
+
+        // Close prepared statement
+        try {
+            if (preparedStatement.isClosed())
+                preparedStatement.close();
+        } catch(SQLException ignored) {}
     }
 
     private void bind(int index, Object value) {
