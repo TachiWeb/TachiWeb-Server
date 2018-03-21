@@ -17,6 +17,10 @@ class SyncConfigModule(config: Config): ConfigModule(config) {
     val recaptchaSiteKey = config.getString("recaptcha.siteKey")
     val recaptchaSecret = config.getString("recaptcha.secret")
 
+    val name = config.getString("name")
+
+    val ipHeader = config.getString("ipHeader")
+
     companion object {
         fun register(config: Config)
             = SyncConfigModule(config.getConfig("ts.syncd"))

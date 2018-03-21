@@ -5,6 +5,10 @@ import com.github.salomonbrys.kodein.instance
 import spark.Route
 import spark.Spark
 import xyz.nulldev.ts.config.ConfigManager
+import xyz.nulldev.ts.syncdeploy.api.endpoints.AuthAPI
+import xyz.nulldev.ts.syncdeploy.api.endpoints.ChangePasswordAPI
+import xyz.nulldev.ts.syncdeploy.api.endpoints.ClearDataAPI
+import xyz.nulldev.ts.syncdeploy.api.endpoints.CloseAccountAPI
 
 class TSSyncDeploy: KodeinGlobalAware {
     private val config = instance<ConfigManager>().module<SyncConfigModule>()
@@ -14,13 +18,21 @@ class TSSyncDeploy: KodeinGlobalAware {
         val mainPagePath = if(config.syncOnlyMode)
             ""
         else "/acc-login"
-        getRoute(mainPagePath, MainPage())
-        postRoute("/account", AccountPage(accountManager))
+
+        val mainPageRelUrl = "/" + mainPagePath.removePrefix("/")
+
+        getRoute(mainPagePath, MainPage(accountManager, mainPageRelUrl))
+        getRoute("/account", AccountPage(accountManager, mainPageRelUrl))
+        getRoute("/account/data.zip", DownloadDataPage(accountManager))
+
+        postRoute("/sapi/auth", AuthAPI(accountManager))
+        getRoute("/sapi/clear-data", ClearDataAPI(accountManager))
+        getRoute("/sapi/close-account", CloseAccountAPI(accountManager))
+        postRoute("/sapi/change-password", ChangePasswordAPI(accountManager))
+
         getRoute("/s/:account/test_auth", TestAuthPage(accountManager))
         getRoute("/s/:account/auth", AuthPage(accountManager))
         postRoute("/s/:account/sync", SyncPage(accountManager))
-        postRoute("/account/clear-data", ResetSyncDataPage(accountManager))
-        postRoute("/account/change-password", ChangePasswordPage(accountManager))
     }
 
     private fun getRoute(path: String, route: Route) {

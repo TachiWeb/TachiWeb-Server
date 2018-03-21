@@ -34,6 +34,12 @@ dependencies {
 
     // Time extensions
     compile 'com.github.kizitonwose.time:time:1.0.1'
+
+    // HTML builder
+    compile "org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.9"
+
+    // Apache HTTP client
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
 }
 
 def getGitHash = { ->

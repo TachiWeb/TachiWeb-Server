@@ -10,6 +10,7 @@ class Account(val name: String) {
     val folder = File(ROOT, name)
     val configFolder = File(folder, "config")
     val pwFile = File(folder, "auth")
+    val syncDataFolder = File(folder, "tachiserver-data")
     val token = UUID.randomUUID()
     var lastUsedTime: Long = System.currentTimeMillis()
     val configured

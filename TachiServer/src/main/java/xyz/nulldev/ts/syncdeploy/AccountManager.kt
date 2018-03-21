@@ -6,6 +6,7 @@ import com.kizitonwose.time.hours
 import com.kizitonwose.time.milliseconds
 import com.kizitonwose.time.minutes
 import com.kizitonwose.time.schedule
+import mu.KotlinLogging
 import xyz.nulldev.ts.config.ConfigManager
 import java.io.File
 import java.util.*
@@ -15,6 +16,8 @@ import kotlin.concurrent.withLock
 class AccountManager: KodeinGlobalAware {
     private val accounts = ConcurrentHashMap<String, Account>()
     private val syncConfig = instance<ConfigManager>().module<SyncConfigModule>()
+
+    private val logger = KotlinLogging.logger {}
 
     val VALID_USERNAME_CHARS = "abcdefghijklmnopqrstuvwxyz".let {
         it + it.toUpperCase() + "_-@" + "0123456789"
@@ -28,7 +31,7 @@ class AccountManager: KodeinGlobalAware {
             it.configFolder.mkdirs()
             val configFile = File(it.configFolder, "server.config")
             configFile.writeText("""
-|ts.server.rootDir = ${it.folder.absolutePath}/tachiserver-data
+|ts.server.rootDir = ${it.syncDataFolder.absolutePath}
     """.trimMargin())
 
             //Copy sandbox template config
@@ -89,12 +92,21 @@ class AccountManager: KodeinGlobalAware {
         res
     }
 
+    fun forceUnloadAccount(account: String) {
+        lockAcc(account) {
+            synchronized(accounts) {
+                accounts.remove(account)
+            }
+        }
+    }
+
     private val ACCOUNT_REMOVAL_TIMEOUT = 1.hours
 
     init {
         val timer = Timer()
         timer.schedule(1.minutes, 1.minutes) {
-            println("Reaping accounts...")
+            logger.debug { "Reaping accounts..." }
+
             synchronized(accounts) {
                 val toRemove = mutableListOf<Account>()
                 accounts.forEach { _: String, u: Account ->
