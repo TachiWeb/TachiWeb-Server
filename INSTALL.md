@@ -19,6 +19,7 @@
 - java >= 8
 - grep
 - realpath
+- mvn (Maven)
 
 ### Building
 1. Download the source code:
