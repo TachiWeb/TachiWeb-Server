@@ -13,6 +13,7 @@ checkCommand zip
 checkCommand unzip
 checkCommand grep
 checkCommand realpath
+checkCommand mvn
 
 # Build UI components
 chmod +x scripts/buildWeb.sh
