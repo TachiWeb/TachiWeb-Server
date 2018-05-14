@@ -16,6 +16,7 @@
 
 package xyz.nulldev.ts.api.http
 
+import com.jayway.jsonpath.*
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import spark.Request
@@ -67,7 +68,50 @@ abstract class TachiWebRoute : Route {
                 //Not authenticated!
                 return error("Not authenticated!")
             } else {
-                return handleReq(request, response)
+                val res = handleReq(request, response)
+
+                // Filter response
+                val jsonWhitelist = (request.queryParamsValues("jw") ?: emptyArray()).map {
+                    it.trim()
+                }.filter { it.isNotBlank() }.map {
+                    JsonPath.compile(it)
+                }
+
+                val jsonBlacklist = (request.queryParamsValues("jb") ?: emptyArray()).map {
+                    it.trim()
+                }.filter { it.isNotBlank() }.map {
+                    JsonPath.compile(it)
+                }
+
+                return if(jsonWhitelist.isNotEmpty() || jsonBlacklist.isNotEmpty()) {
+                    val parsed = JsonPath.parse(res.toString())
+
+                    // Handle blacklist
+                    for(path in jsonBlacklist)
+                        try {
+                            parsed.delete(path)
+                        } catch(t: Throwable) {}
+
+                    // Handle whitelist
+                    if(jsonWhitelist.isNotEmpty()) {
+                        val pathObtainer = JsonPath.using(Configuration.builder()
+                                .options(Option.AS_PATH_LIST, Option.ALWAYS_RETURN_LIST)
+                                .build()).parse(parsed.jsonString())
+
+                        val valid = jsonWhitelist.flatMap {
+                            try {
+                                pathObtainer.read<List<String>>(it)
+                            } catch(t: Throwable) { null } ?: emptyList()
+                        }
+
+                        pathObtainer.read<List<String>>("$..*").forEach { path ->
+                            if(path !in valid && !valid.any { it.startsWith(path) })
+                                try {parsed.delete(path)} catch(t: Throwable) {}
+                        }
+                    }
+
+                    parsed.jsonString()
+                } else res
             }
         } catch (e: Exception) {
             logger.error("Exception handling route!", e)
@@ -79,7 +123,7 @@ abstract class TachiWebRoute : Route {
 
     companion object {
 
-        val SESSION_HEADER = "TW-Session"
+        const val SESSION_HEADER = "TW-Session"
 
         private val logger = LoggerFactory.getLogger(TachiWebRoute::class.java)
 
