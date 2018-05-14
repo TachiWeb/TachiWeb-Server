@@ -4,7 +4,7 @@ plugins {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "4.1"
+    gradleVersion = "4.7"
 }
 
 allprojects {
@@ -84,7 +84,7 @@ configure([
         compile "org.jsoup:jsoup:1.10.2"
 
         // Kotlin
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:${gradle.kotlinVersion}"
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${gradle.kotlinVersion}"
         compile "org.jetbrains.kotlin:kotlin-reflect:${gradle.kotlinVersion}"
     }
 }

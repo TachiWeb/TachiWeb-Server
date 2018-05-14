@@ -40,6 +40,9 @@ dependencies {
 
     // Apache HTTP client
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
+
+    // Json path
+    compile 'com.jayway.jsonpath:json-path:2.3.0'
 }
 
 def getGitHash = { ->
