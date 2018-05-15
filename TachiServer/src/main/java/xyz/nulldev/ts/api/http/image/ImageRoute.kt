@@ -32,6 +32,7 @@ import xyz.nulldev.androidcompat.util.java
 import xyz.nulldev.ts.api.http.TachiWebRoute
 import xyz.nulldev.ts.api.java.util.isDownloaded
 import xyz.nulldev.ts.api.java.util.pageList
+import xyz.nulldev.ts.ext.enableCache
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.io.FileInputStream
 import java.nio.file.Files
@@ -64,10 +65,8 @@ class ImageRoute : TachiWebRoute() {
                 ?: return error("The specified manga does not exist!")
         val source: CatalogueSource?
         try {
-            val tmpSrc = sourceManager.get(manga.source) ?: throw IllegalArgumentException()
-            if(tmpSrc !is CatalogueSource) {
-                throw IllegalArgumentException("Source is not a catalogue source!")
-            }
+            val tmpSrc = sourceManager.get(manga.source) as? CatalogueSource
+                    ?: throw IllegalArgumentException("Source is not a catalogue source!")
             source = tmpSrc
         } catch (e: Exception) {
             logger.warn("Error loading source: ${manga.source}!", e)
@@ -84,9 +83,7 @@ class ImageRoute : TachiWebRoute() {
         if (chapter.isDownloaded) {
             pageObj = downloadManager.buildPageList(source, manga, chapter)
                     .toBlocking()
-                    .first()
-                    .filter { it.index == page }
-                    .first()
+                    .first().first { it.index == page }
         }
         //TODO Accept offline sources
         if(source !is HttpSource) {
@@ -98,11 +95,12 @@ class ImageRoute : TachiWebRoute() {
         }
         try {
             response.raw().outputStream.use { outputStream ->
-                if (pageObj!!.status == Page.READY && pageObj!!.uri != null) {
+                if (pageObj!!.status == Page.READY && pageObj.uri != null) {
                     response.status(200)
-                    response.type(Files.probeContentType(Paths.get(pageObj!!.uri!!.java())))
+                    response.enableCache()
+                    response.type(Files.probeContentType(Paths.get(pageObj.uri!!.java())))
                     IOUtils.copy(
-                            FileInputStream(pageObj!!.uri!!.file()),
+                            FileInputStream(pageObj.uri!!.file()),
                             outputStream)
                 } else {
                     throw IllegalStateException()

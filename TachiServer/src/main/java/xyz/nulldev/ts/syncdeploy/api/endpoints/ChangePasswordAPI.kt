@@ -7,7 +7,7 @@ import spark.Route
 import xyz.nulldev.ts.syncdeploy.AccountManager
 import xyz.nulldev.ts.syncdeploy.api.JsonError
 import xyz.nulldev.ts.syncdeploy.api.JsonSuccess
-import xyz.nulldev.ts.syncdeploy.disableCache
+import xyz.nulldev.ts.ext.disableCache
 import java.nio.charset.Charset
 
 class ChangePasswordAPI(private val am: AccountManager) : Route {

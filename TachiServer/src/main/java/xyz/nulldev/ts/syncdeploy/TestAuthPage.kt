@@ -3,6 +3,7 @@ package xyz.nulldev.ts.syncdeploy
 import spark.Request
 import spark.Response
 import spark.Route
+import xyz.nulldev.ts.ext.disableCache
 
 class TestAuthPage(private val am: AccountManager) : Route {
     override fun handle(request: Request, response: Response): Any {

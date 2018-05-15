@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
 import xyz.nulldev.ts.api.http.TachiWebRoute
+import xyz.nulldev.ts.ext.enableCache
 import xyz.nulldev.ts.ext.kInstanceLazy
 import xyz.nulldev.ts.library.LibraryUpdater
 import java.io.FileInputStream
@@ -85,7 +86,7 @@ class CoverRoute : TachiWebRoute() {
             try {
                 FileOutputStream(cacheFile).use { outputStream ->
                     val httpResponse = source.client.newCall(
-                            okhttp3.Request.Builder().headers(source.headers).url(url!!).build()).execute()
+                            okhttp3.Request.Builder().headers(source.headers).url(url).build()).execute()
                     httpResponse.use {
                         val stream = httpResponse!!.body().byteStream()
                         stream.use {
@@ -106,6 +107,7 @@ class CoverRoute : TachiWebRoute() {
             }
         }
         //Send cached image
+        response.enableCache()
         response.type(Files.probeContentType(cacheFile.toPath()))
         try {
             FileInputStream(cacheFile).use { stream ->
@@ -129,6 +131,6 @@ class CoverRoute : TachiWebRoute() {
     }
 
     companion object {
-        private val DEFAULT_BUFFER_SIZE = 1024 * 4
+        private const val DEFAULT_BUFFER_SIZE = 1024 * 4
     }
 }

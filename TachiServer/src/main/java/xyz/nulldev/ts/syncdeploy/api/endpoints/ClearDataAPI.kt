@@ -6,7 +6,7 @@ import spark.Route
 import xyz.nulldev.ts.syncdeploy.AccountManager
 import xyz.nulldev.ts.syncdeploy.api.JsonError
 import xyz.nulldev.ts.syncdeploy.api.JsonSuccess
-import xyz.nulldev.ts.syncdeploy.disableCache
+import xyz.nulldev.ts.ext.disableCache
 
 class ClearDataAPI(private val am: AccountManager) : Route {
     override fun handle(request: Request, response: Response): Any {

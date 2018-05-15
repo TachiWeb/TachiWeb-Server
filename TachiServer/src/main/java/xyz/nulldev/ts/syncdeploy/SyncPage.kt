@@ -4,6 +4,7 @@ import spark.Request
 import spark.Response
 import spark.Route
 import xyz.nulldev.ts.api.http.sync.SyncRoute
+import xyz.nulldev.ts.ext.disableCache
 import xyz.nulldev.ts.sandbox.Sandbox
 
 class SyncPage(val am: AccountManager): Route {
