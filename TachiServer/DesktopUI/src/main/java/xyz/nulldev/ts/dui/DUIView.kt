@@ -2,7 +2,6 @@ package xyz.nulldev.ts.dui
 
 import com.github.salomonbrys.kodein.conf.KodeinGlobalAware
 import com.github.salomonbrys.kodein.instance
-import com.sun.javafx.webkit.WebConsoleListener
 import tornadofx.View
 import tornadofx.stackpane
 import tornadofx.webview
@@ -16,9 +15,9 @@ class DUIView : View(), KodeinGlobalAware {
         webview {
             engine.load("http://${serverConfig.ip}:${serverConfig.port}")
 
-            WebConsoleListener.setDefaultListener { webView, message, lineNumber, sourceId ->
-                println("Console: [$sourceId:$lineNumber] $message")
-            }
+//            WebConsoleListener.setDefaultListener { webView, message, lineNumber, sourceId ->
+//                println("Console: [$sourceId:$lineNumber] $message")
+//            }
         }
     }
 }
