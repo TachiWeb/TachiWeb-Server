@@ -18,12 +18,14 @@ interface BackupController {
 
     /**
      * Restore a backup from a JSON string
+     * @throws Exception If restore operation failed
      * @param backup The JSON string
      */
     fun restore(backup: String)
 
     /**
      * Restore a backup from a JSON stream
+     * @throws Exception If restore operation failed
      * @param backup The JSON stream
      */
     fun restore(backup: InputStream)

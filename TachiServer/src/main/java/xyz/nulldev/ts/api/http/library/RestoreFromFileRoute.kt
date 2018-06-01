@@ -35,7 +35,8 @@ class RestoreFromFileRoute : TachiWebRoute() {
         request.attribute("org.eclipse.jetty.multipartConfig", MultipartConfigElement("/tmp"))
         try {
             request.raw().getPart("uploaded_file").inputStream.use {
-                return api.backup.restore(it)
+                api.backup.restore(it)
+                return true
             }
         } catch (e: Exception) {
             logger.error("Restore failed!", e)
