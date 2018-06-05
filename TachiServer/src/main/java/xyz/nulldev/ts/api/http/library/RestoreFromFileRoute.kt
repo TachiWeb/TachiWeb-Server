@@ -36,7 +36,7 @@ class RestoreFromFileRoute : TachiWebRoute() {
         try {
             request.raw().getPart("uploaded_file").inputStream.use {
                 api.backup.restore(it)
-                return true
+                return success()
             }
         } catch (e: Exception) {
             logger.error("Restore failed!", e)

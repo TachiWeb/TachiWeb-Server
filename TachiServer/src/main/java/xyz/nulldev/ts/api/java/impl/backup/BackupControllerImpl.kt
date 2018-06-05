@@ -7,9 +7,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import eu.kanade.tachiyomi.data.backup.BackupManagerInternalForwarder
 import eu.kanade.tachiyomi.data.backup.BackupCreateService
 import eu.kanade.tachiyomi.data.backup.BackupManager
+import eu.kanade.tachiyomi.data.backup.BackupManagerInternalForwarder
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.backup.models.DHistory
 import eu.kanade.tachiyomi.data.database.models.*
@@ -208,7 +208,7 @@ class BackupControllerImpl : BackupController {
             }
         }
 
-        Observable.from(mangasJson)
+        val restored = Observable.from(mangasJson)
                 .concatMap {
                     val obj = it.asJsonObject
                     val manga = backupManager.parser.fromJson<MangaImpl>(obj.get(Backup.MANGA))
@@ -219,6 +219,6 @@ class BackupControllerImpl : BackupController {
 
                     val observable = getMangaRestoreObservable(manga, chapters, categories, history, tracks)
                     observable ?: Observable.just(manga)
-                }.toBlocking().first()
+                }.toBlocking().iterator.forEach {} // Go through all restores
     }
 }
