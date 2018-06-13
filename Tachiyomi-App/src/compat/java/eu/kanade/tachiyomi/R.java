@@ -29,6 +29,7 @@ public class R extends RCompat {
         public static int dropped = sres("Dropped");
         public static int on_hold = sres("On hold");
         public static int plan_to_read = sres("Plan to read");
+        public static int repeating = sres("Re-reading");
 
         public static int download_queue_error = sres("An error occurred while downloading chapters. You can try again in the downloads section");
         public static int download_notifier_text_only_wifi = sres("No wifi connection available");

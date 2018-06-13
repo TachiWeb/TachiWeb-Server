@@ -41,7 +41,8 @@ class DownloadService : Service() {
          * @param context the application context.
          */
         fun start(context: Context) {
-            context.startService(Intent(context, DownloadService::class.java))
+            val intent = Intent(context, DownloadService::class.java)
+            context.startService(intent)
         }
 
         /**
@@ -175,5 +176,4 @@ class DownloadService : Service() {
     fun PowerManager.WakeLock.acquireIfNeeded() {
         if (!isHeld) acquire()
     }
-
 }

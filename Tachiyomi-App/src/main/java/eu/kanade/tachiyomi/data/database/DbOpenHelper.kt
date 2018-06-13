@@ -20,7 +20,7 @@ class DbOpenHelper(context: Context)
         /**
          * Version of the database.
          */
-        const val DATABASE_VERSION = 7
+        const val DATABASE_VERSION = 8
     }
 
     override fun onCreate(db: SQLiteDatabase) = with(db) {
@@ -67,6 +67,9 @@ class DbOpenHelper(context: Context)
             db.execSQL(TrackTable.addTrackingUrl)
         }
         if (oldVersion < 7) {
+            db.execSQL(TrackTable.addLibraryId)
+        }
+        if (oldVersion < 8) {
             // Create sync updates table
             db.execSQL(SyncUpdatesTable.createTableQuery)
 
