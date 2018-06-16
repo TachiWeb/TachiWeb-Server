@@ -1,5 +1,5 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.41" apply false // Also in settings.gradle
+    id "org.jetbrains.kotlin.jvm" version "1.2.50" apply false // Also in settings.gradle
     id "java"
 }
 
