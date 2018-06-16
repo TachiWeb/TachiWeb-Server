@@ -26,7 +26,7 @@ import xyz.nulldev.ts.api.http.TachiWebRoute
  *         This condition must be satisfied to ensure multiple users can sync to the same server
  */
 class SyncRoute(override val kodein: Kodein = Kodein.global,
-                requiresAuth: Boolean = true) : TachiWebRoute(requiresAuth), KodeinAware {
+                requiresAuth: Boolean = true) : TachiWebRoute(requiresAuth = requiresAuth), KodeinAware {
     private val context: Context by lazy.instance()
     private val db: DatabaseHelper by lazy.instance()
     private val syncManager: LibrarySyncManager by lazy.instance()

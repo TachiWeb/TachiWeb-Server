@@ -76,7 +76,7 @@ class UpdateRoute : TachiWebRoute() {
             try {
                 val results = libraryUpdater.updateChapters(manga, source)
                 //Return the results in JSON
-                val toReturn = TachiWebRoute.success()
+                val toReturn = success()
                 toReturn.put(KEY_ADDED, results.first)
                 toReturn.put(KEY_REMOVED, results.second)
                 return toReturn.toString()

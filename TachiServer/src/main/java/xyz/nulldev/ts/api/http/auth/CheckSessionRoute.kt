@@ -25,7 +25,7 @@ import xyz.nulldev.ts.api.http.TachiWebRoute
  *
  * If the auth password is correct, the user is authenticated.
  */
-class CheckSessionRoute: TachiWebRoute(false /* No auth */) {
+class CheckSessionRoute: TachiWebRoute(requiresAuth = false) {
     override fun handleReq(request: Request, response: Response): Any {
         val session: String = request.attribute("session")
         val password = request.queryParams("password")

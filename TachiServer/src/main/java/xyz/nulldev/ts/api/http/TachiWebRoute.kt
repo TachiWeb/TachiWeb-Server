@@ -16,7 +16,9 @@
 
 package xyz.nulldev.ts.api.http
 
-import com.jayway.jsonpath.*
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.Option
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import spark.Request
@@ -31,18 +33,11 @@ import xyz.nulldev.ts.api.java.model.ServerAPIInterface
  * Author: nulldev
  * Creation Date: 30/09/16
  */
-abstract class TachiWebRoute : Route {
+abstract class TachiWebRoute(
+        val requiresAuth: Boolean = true
+) : Route {
 
-    private val requiresAuth: Boolean
     protected val api: ServerAPIInterface = TachiyomiAPI
-
-    constructor() {
-        requiresAuth = true
-    }
-
-    constructor(requiresAuth: Boolean) {
-        this.requiresAuth = requiresAuth
-    }
 
     @Throws(Exception::class)
     override fun handle(request: Request, response: Response): Any? {
