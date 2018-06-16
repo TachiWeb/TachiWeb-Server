@@ -27,6 +27,7 @@ import spark.Route
 import xyz.nulldev.ts.api.http.auth.SessionManager
 import xyz.nulldev.ts.api.java.TachiyomiAPI
 import xyz.nulldev.ts.api.java.model.ServerAPIInterface
+import java.util.*
 
 /**
  * Project: TachiServer
@@ -63,7 +64,13 @@ abstract class TachiWebRoute(
                 //Not authenticated!
                 return error("Not authenticated!")
             } else {
-                val res = handleReq(request, response)
+                val res = try {
+                    handleReq(request, response)
+                } catch(t: Throwable) {
+                    val uuid = UUID.randomUUID()
+                    logger.error("Route handler failure (error ID: $uuid)!", t)
+                    return error("Unknown API handler error!", uuid)
+                }
 
                 // Filter response
                 val jsonWhitelist = (request.queryParamsValues("jw") ?: emptyArray()).map {
@@ -79,7 +86,12 @@ abstract class TachiWebRoute(
                 }
 
                 return if(jsonWhitelist.isNotEmpty() || jsonBlacklist.isNotEmpty()) {
-                    val parsed = JsonPath.parse(res.toString())
+                    val parsed = try {
+                        JsonPath.parse(res.toString())
+                    } catch(e: Exception) {
+                        logger.warn("Json path filtering failed on route: ${this::class.qualifiedName}", e)
+                        return res
+                    }
 
                     // Handle blacklist
                     for(path in jsonBlacklist)
@@ -109,8 +121,9 @@ abstract class TachiWebRoute(
                 } else res
             }
         } catch (e: Exception) {
-            logger.error("Exception handling route!", e)
-            throw e
+            val uuid = UUID.randomUUID()
+            logger.error("Exception handling route (error ID: $uuid)!", e)
+            return error("Unknown internal server error!", uuid)
         }
     }
 
@@ -124,8 +137,11 @@ abstract class TachiWebRoute(
 
         val sessionManager = SessionManager()
 
-        fun error(message: String): JSONObject
-                = success(false).put("error", message)
+        fun error(message: String, uuid: UUID? = null): JSONObject
+                = success(false).put("error", message).apply {
+            if(uuid != null)
+                put("uuid", uuid.toString())
+        }
 
         @JvmOverloads fun success(success: Boolean = true): JSONObject
                 = JSONObject().put("success", success)
