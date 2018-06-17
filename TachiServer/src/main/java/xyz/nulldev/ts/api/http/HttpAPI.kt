@@ -41,6 +41,7 @@ import xyz.nulldev.ts.api.v2.http.HttpApplication
 import xyz.nulldev.ts.api.v2.http.chapters.ChaptersController
 import xyz.nulldev.ts.api.v2.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.v2.http.library.LibraryController
+import xyz.nulldev.ts.api.v2.http.mangas.MangasController
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
@@ -146,6 +147,9 @@ class HttpAPI {
 
         getAPIRoute("/v2/chapters/:chapters/reading-status", JavalinShim(ChaptersController::getReadingStatus))
         postAPIRoute("/v2/chapters/:chapters/reading-status", JavalinShim(ChaptersController::setReadingStatus))
+
+        getAPIRoute("/v2/mangas/:mangas/viewer", JavalinShim(MangasController::getViewer))
+        postAPIRoute("/v2/mangas/:mangas/viewer", JavalinShim(MangasController::setViewer))
 
         //Sync route
         val syncRoute = SyncRoute()

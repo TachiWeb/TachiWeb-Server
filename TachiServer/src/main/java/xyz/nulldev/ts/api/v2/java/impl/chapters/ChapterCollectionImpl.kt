@@ -31,8 +31,6 @@ class ChapterCollectionImpl(override val id: List<Long>): ChapterCollection,
                 chapter.read = it
             }
         }
-
-    override val size = id.size
 }
 
 class ChapterCollectionProxy(override val id: Long) : ChapterModel {

@@ -23,13 +23,13 @@ object ChaptersController : BaseController() {
     fun getReadingStatus(ctx: Context) {
         prepareChapterAttributes(ctx)
 
-        ctx.json(ctx.attribute<ChapterCollection>(CHAPTERS_ATTR).readingStatus)
+        ctx.json(Response.Success(ctx.attribute<ChapterCollection>(CHAPTERS_ATTR).readingStatus))
     }
 
     fun setReadingStatus(ctx: Context) {
         prepareChapterAttributes(ctx)
 
-        val status = ctx.bodyAsClass<Array<ReadingStatus>>().toList()
+        val status = ctx.bodyAsClass<Array<ReadingStatus?>>().toList()
         ctx.attribute<ChapterCollection>(CHAPTERS_ATTR).readingStatus = status
         ctx.json(Response.Success())
     }
