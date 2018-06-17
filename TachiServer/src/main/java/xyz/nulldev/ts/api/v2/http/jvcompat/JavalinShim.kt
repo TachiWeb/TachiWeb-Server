@@ -1,4 +1,4 @@
-package xyz.nulldev.ts.api.http.jvcompat
+package xyz.nulldev.ts.api.v2.http.jvcompat
 
 import spark.Request
 import spark.Response

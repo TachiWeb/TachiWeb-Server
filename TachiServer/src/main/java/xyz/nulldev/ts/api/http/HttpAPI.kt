@@ -29,7 +29,6 @@ import xyz.nulldev.ts.api.http.download.DownloadsOperationRoute
 import xyz.nulldev.ts.api.http.download.GetDownloadStatusRoute
 import xyz.nulldev.ts.api.http.image.CoverRoute
 import xyz.nulldev.ts.api.http.image.ImageRoute
-import xyz.nulldev.ts.api.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.http.library.*
 import xyz.nulldev.ts.api.http.manga.*
 import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute
@@ -38,6 +37,10 @@ import xyz.nulldev.ts.api.http.settings.SetPreferenceRoute
 import xyz.nulldev.ts.api.http.settings.SourceLoginRoute
 import xyz.nulldev.ts.api.http.sync.SyncRoute
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute
+import xyz.nulldev.ts.api.v2.http.HttpApplication
+import xyz.nulldev.ts.api.v2.http.chapters.ChaptersController
+import xyz.nulldev.ts.api.v2.http.jvcompat.JavalinShim
+import xyz.nulldev.ts.api.v2.http.library.LibraryController
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
@@ -136,9 +139,13 @@ class HttpAPI {
         val getFiltersRoute = GetFiltersRoute()
         getAPIRoute("/get_filters/:sourceId", getFiltersRoute)
 
-        // Javalin compatible routes
-        getAPIRoute("/library/flags", JavalinShim(LibraryController::getLibraryFlags))
-        postAPIRoute("/library/flags", JavalinShim(LibraryController::setLibraryFlags))
+        // V2 APIs (TODO Move to Javalin once all routes are rewritten)
+        HttpApplication() // Initialize Javalin API for now but do not start it
+        getAPIRoute("/v2/library/flags", JavalinShim(LibraryController::getLibraryFlags))
+        postAPIRoute("/v2/library/flags", JavalinShim(LibraryController::setLibraryFlags))
+
+        getAPIRoute("/v2/chapters/:chapters/reading-status", JavalinShim(ChaptersController::getReadingStatus))
+        postAPIRoute("/v2/chapters/:chapters/reading-status", JavalinShim(ChaptersController::setReadingStatus))
 
         //Sync route
         val syncRoute = SyncRoute()

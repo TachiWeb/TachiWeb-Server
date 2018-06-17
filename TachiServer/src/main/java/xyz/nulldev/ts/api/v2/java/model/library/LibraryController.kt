@@ -1,4 +1,4 @@
-package xyz.nulldev.ts.api.java.model.library
+package xyz.nulldev.ts.api.v2.java.model.library
 
 interface LibraryController {
     /**

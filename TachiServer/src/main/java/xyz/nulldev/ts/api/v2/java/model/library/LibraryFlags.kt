@@ -1,7 +1,7 @@
-package xyz.nulldev.ts.api.java.model.library
+package xyz.nulldev.ts.api.v2.java.model.library
 
-import xyz.nulldev.ts.api.java.model.FilterStatus
-import xyz.nulldev.ts.api.java.model.SortDirection
+import xyz.nulldev.ts.api.v2.java.model.FilterStatus
+import xyz.nulldev.ts.api.v2.java.model.SortDirection
 
 data class LibraryFlags(
         val filters: List<LibraryFilter>,

@@ -1,4 +1,4 @@
-package xyz.nulldev.ts.api.http.jvcompat
+package xyz.nulldev.ts.api.v2.http.jvcompat
 
 import io.javalin.translator.json.JavalinJsonPlugin
 import spark.Request
@@ -39,3 +39,9 @@ fun <T> Context.bodyAsClass(clazz: Class<T>): T {
 fun Context.body(): String = bodyAsBytes().toString(Charset.forName(first.raw().characterEncoding ?: "UTF-8"))
 
 fun Context.bodyAsBytes() = first.raw().inputStream.readBytes()
+
+fun Context.param(param: String): String? = first.params(param)
+
+fun Context.attribute(attribute: String, value: Any?) = first.attribute(attribute, value)
+
+fun <T> Context.attribute(attribute: String): T = first.attribute(attribute)

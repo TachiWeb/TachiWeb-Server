@@ -1,12 +1,12 @@
-package xyz.nulldev.ts.api.java.impl.library
+package xyz.nulldev.ts.api.v2.java.impl.library
 
 import com.f2prateek.rx.preferences.Preference
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.preference.getOrDefault
 import uy.kohesive.injekt.injectLazy
-import xyz.nulldev.ts.api.java.model.FilterStatus
-import xyz.nulldev.ts.api.java.model.SortDirection
-import xyz.nulldev.ts.api.java.model.library.*
+import xyz.nulldev.ts.api.v2.java.model.FilterStatus
+import xyz.nulldev.ts.api.v2.java.model.SortDirection
+import xyz.nulldev.ts.api.v2.java.model.library.*
 import eu.kanade.tachiyomi.ui.library.LibrarySort as LibrarySortConsts
 
 class LibraryControllerImpl : LibraryController {
