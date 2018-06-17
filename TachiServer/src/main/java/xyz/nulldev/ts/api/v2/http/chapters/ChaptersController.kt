@@ -4,17 +4,19 @@ import xyz.nulldev.ts.api.v2.http.BaseController
 import xyz.nulldev.ts.api.v2.http.Response
 import xyz.nulldev.ts.api.v2.http.jvcompat.*
 import xyz.nulldev.ts.api.v2.java.model.chapters.ChapterCollection
-import xyz.nulldev.ts.api.v2.java.model.chapters.ReadingStatus
 
 object ChaptersController : BaseController() {
     //TODO Swap to Javalin attribute passing
     fun prepareChapterAttributes(ctx: Context) {
-        val chaptersParam = ctx.param(CHAPTERS_PARAM)!!
+        val chaptersParam = ctx.param(CHAPTERS_PARAM)
 
-        ctx.attribute(CHAPTERS_ATTR,
-                api.chapters.getChapters(*chaptersParam.split(",").map {
-                    it.trim().toLong()
-                }.toLongArray()))
+        ctx.attribute(CHAPTERS_ATTR, if(chaptersParam != null)
+            api.chapters.get(*chaptersParam.split(",").map {
+                it.trim().toLong()
+            }.toLongArray())
+        else
+            api.chapters.getAll()
+        )
     }
 
     private val CHAPTERS_PARAM = ":chapters"
@@ -23,14 +25,22 @@ object ChaptersController : BaseController() {
     fun getReadingStatus(ctx: Context) {
         prepareChapterAttributes(ctx)
 
-        ctx.json(Response.Success(ctx.attribute<ChapterCollection>(CHAPTERS_ATTR).readingStatus))
+        val chapters = ctx.attribute<ChapterCollection>(CHAPTERS_ATTR)
+
+        ctx.json(Response.Success(chapters.readingStatus.mapIndexed { index, readingStatus ->
+            ChapterReadingStatus(chapters.id[index], readingStatus)
+        }))
     }
 
     fun setReadingStatus(ctx: Context) {
         prepareChapterAttributes(ctx)
 
-        val status = ctx.bodyAsClass<Array<ReadingStatus?>>().toList()
-        ctx.attribute<ChapterCollection>(CHAPTERS_ATTR).readingStatus = status
+        val chapters = ctx.attribute<ChapterCollection>(CHAPTERS_ATTR)
+
+        val status = ctx.bodyAsClass<Array<ChapterReadingStatus>>().toList()
+        chapters.readingStatus = chapters.id.map { chapter ->
+            status.find { it.id == chapter }?.readingStatus
+        }
         ctx.json(Response.Success())
     }
 }

@@ -147,9 +147,13 @@ class HttpAPI {
 
         getAPIRoute("/v2/chapters/:chapters/reading-status", JavalinShim(ChaptersController::getReadingStatus))
         postAPIRoute("/v2/chapters/:chapters/reading-status", JavalinShim(ChaptersController::setReadingStatus))
+        getAPIRoute("/v2/chapters/reading-status", JavalinShim(ChaptersController::getReadingStatus))
+        postAPIRoute("/v2/chapters/reading-status", JavalinShim(ChaptersController::setReadingStatus))
 
         getAPIRoute("/v2/mangas/:mangas/viewer", JavalinShim(MangasController::getViewer))
         postAPIRoute("/v2/mangas/:mangas/viewer", JavalinShim(MangasController::setViewer))
+        getAPIRoute("/v2/mangas/viewer", JavalinShim(MangasController::getViewer))
+        postAPIRoute("/v2/mangas/viewer", JavalinShim(MangasController::setViewer))
 
         //Sync route
         val syncRoute = SyncRoute()
