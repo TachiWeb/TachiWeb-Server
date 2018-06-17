@@ -29,6 +29,7 @@ import xyz.nulldev.ts.api.http.download.DownloadsOperationRoute
 import xyz.nulldev.ts.api.http.download.GetDownloadStatusRoute
 import xyz.nulldev.ts.api.http.image.CoverRoute
 import xyz.nulldev.ts.api.http.image.ImageRoute
+import xyz.nulldev.ts.api.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.http.library.*
 import xyz.nulldev.ts.api.http.manga.*
 import xyz.nulldev.ts.api.http.settings.ListLoginSourceRoute
@@ -134,6 +135,10 @@ class HttpAPI {
         //Get filters
         val getFiltersRoute = GetFiltersRoute()
         getAPIRoute("/get_filters/:sourceId", getFiltersRoute)
+
+        // Javalin compatible routes
+        getAPIRoute("/library/flags", JavalinShim(LibraryController::getLibraryFlags))
+        postAPIRoute("/library/flags", JavalinShim(LibraryController::setLibraryFlags))
 
         //Sync route
         val syncRoute = SyncRoute()

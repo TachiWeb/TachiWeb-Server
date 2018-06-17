@@ -24,6 +24,13 @@ dependencies {
 
     // Spark Web Framework
     compile "com.sparkjava:spark-core:2.5.5"
+
+    // Javalin (new web framework)
+    compile 'io.javalin:javalin:1.7.0'
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.+"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
+
+    // Tests
     compile "junit:junit:4.12"
 
     // Database

@@ -25,6 +25,7 @@ import spark.Request
 import spark.Response
 import spark.Route
 import xyz.nulldev.ts.api.http.auth.SessionManager
+import xyz.nulldev.ts.api.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.java.TachiyomiAPI
 import xyz.nulldev.ts.api.java.model.ServerAPIInterface
 import java.util.*
@@ -37,6 +38,12 @@ import java.util.*
 abstract class TachiWebRoute(
         val requiresAuth: Boolean = true
 ) : Route {
+
+    // Warn if route does not use Javalin yet
+    init {
+        if(this !is JavalinShim)
+            logger.warn("${this::class.simpleName} does not use the Javalin framework!")
+    }
 
     protected val api: ServerAPIInterface = TachiyomiAPI
 
