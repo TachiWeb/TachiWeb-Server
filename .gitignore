@@ -5,6 +5,6 @@ build
 *.iml
 *.jar
 /test
-/.gradle/buildOutputCleanup
 /libs
 out
+.gradle
