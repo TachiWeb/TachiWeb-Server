@@ -1,0 +1,31 @@
+[ignore]
+
+[include]
+./src
+
+[libs]
+
+[lints]
+
+[options]
+module.system.node.resolve_dirname=node_modules
+module.system.node.resolve_dirname=./src
+
+esproposal.decorators=ignore
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+
+# Not sure if I need these right now
+# suppress_type=$FlowIssue
+# suppress_type=$FlowFixMe
+
+[strict]
+
+
+# Set up based on this article
+# https://stephenmann.io/react-flow-vscode-tutorial
+# Currently using flow in vscode. Running 'flow' via command line isn't exactly
+# set up to work. It throws errors from files in node_modules
+
+# https://github.com/facebook/flow/issues/5180#issuecomment-341888566
+# ^ explaination for 'resolve_dirname=./src'

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 echo "Building web components..."
+# Old web components
 pushd tachiwebui/src/main/resources/tachiweb-ui
 bower install
 npm install
@@ -12,4 +13,9 @@ rm -rf action alert av communication content device editor file hardware image m
 popd
 popd
 
+popd
+
+pushd tachiwebui/src/main/resources/tachiweb-react
+npm install
+npm run build
 popd

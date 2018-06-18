@@ -29,7 +29,7 @@ import java.io.File
  * UI Server
  */
 class TachiWebUIServer {
-    val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
+    private val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
 
     fun start() {
         staticFiles.header("Access-Control-Allow-Origin", "*")
@@ -42,9 +42,18 @@ class TachiWebUIServer {
 
             staticFiles.externalLocation(externalLoc.absolutePath)
         } else {
-            staticFiles.location("/tachiweb-ui")
+            staticFiles.location(if(serverConfig.useOldWebUi)
+                "/tachiweb-ui"
+            else
+                "/tachiweb-react/build")
         }
-        redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
-        redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
+
+        if(serverConfig.useOldWebUi) {
+            redirect.any("/", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
+            redirect.any("", "/library.html", Redirect.Status.TEMPORARY_REDIRECT)
+        } else {
+            redirect.any("/", "/index.html", Redirect.Status.TEMPORARY_REDIRECT)
+            redirect.any("", "/index.html", Redirect.Status.TEMPORARY_REDIRECT)
+        }
     }
 }

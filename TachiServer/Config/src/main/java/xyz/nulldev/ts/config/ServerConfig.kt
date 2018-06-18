@@ -9,6 +9,7 @@ class ServerConfig(config: Config) : ConfigModule(config) {
 
     val allowConfigChanges = config.getBoolean("allowConfigChanges")
     val enableWebUi = config.getBoolean("enableWebUi")
+    val useOldWebUi = config.getBoolean("useOldWebUi")
     val disabledApiEndpoints = config.getStringList("disabledApiEndpoints").map(String::toLowerCase)
     val enabledApiEndpoints = config.getStringList("enabledApiEndpoints").map(String::toLowerCase)
     val httpInitializedPrintMessage = config.getString("httpInitializedPrintMessage")
