@@ -28,4 +28,14 @@ class DbMapper<IdType, T : Any>(val ids: List<IdType>,
             }.forEach { if(it != null) dbSetter(it) }
         }
     }
+
+    fun mapDelete(mapper: (T) -> Unit) {
+        db.inTransaction {
+            ids.forEach {
+                dbGetter(it)?.let {
+                    mapper(it)
+                }
+            }
+        }
+    }
 }

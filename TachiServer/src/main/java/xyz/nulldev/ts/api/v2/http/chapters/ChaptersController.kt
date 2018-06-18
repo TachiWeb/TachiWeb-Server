@@ -1,8 +1,9 @@
 package xyz.nulldev.ts.api.v2.http.chapters
 
 import xyz.nulldev.ts.api.v2.http.BaseController
-import xyz.nulldev.ts.api.v2.http.Response
-import xyz.nulldev.ts.api.v2.http.jvcompat.*
+import xyz.nulldev.ts.api.v2.http.jvcompat.Context
+import xyz.nulldev.ts.api.v2.http.jvcompat.attribute
+import xyz.nulldev.ts.api.v2.http.jvcompat.param
 import xyz.nulldev.ts.api.v2.java.model.chapters.ChapterCollection
 
 object ChaptersController : BaseController() {
@@ -25,22 +26,21 @@ object ChaptersController : BaseController() {
     fun getReadingStatus(ctx: Context) {
         prepareChapterAttributes(ctx)
 
-        val chapters = ctx.attribute<ChapterCollection>(CHAPTERS_ATTR)
-
-        ctx.json(Response.Success(chapters.readingStatus.mapIndexed { index, readingStatus ->
-            ChapterReadingStatus(chapters.id[index], readingStatus)
-        }))
+        getApiField(ctx,
+                CHAPTERS_ATTR,
+                ChapterCollection::id,
+                ChapterCollection::readingStatus,
+                ChapterReadingStatus::class)
     }
 
     fun setReadingStatus(ctx: Context) {
         prepareChapterAttributes(ctx)
 
-        val chapters = ctx.attribute<ChapterCollection>(CHAPTERS_ATTR)
-
-        val status = ctx.bodyAsClass<Array<ChapterReadingStatus>>().toList()
-        chapters.readingStatus = chapters.id.map { chapter ->
-            status.find { it.id == chapter }?.readingStatus
-        }
-        ctx.json(Response.Success())
+        setApiField(ctx,
+                CHAPTERS_ATTR,
+                ChapterCollection::id,
+                ChapterCollection::readingStatus,
+                ChapterReadingStatus::id,
+                ChapterReadingStatus::readingStatus)
     }
 }

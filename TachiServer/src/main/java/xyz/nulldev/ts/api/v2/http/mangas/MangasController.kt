@@ -1,8 +1,9 @@
 package xyz.nulldev.ts.api.v2.http.mangas
 
 import xyz.nulldev.ts.api.v2.http.BaseController
-import xyz.nulldev.ts.api.v2.http.Response
-import xyz.nulldev.ts.api.v2.http.jvcompat.*
+import xyz.nulldev.ts.api.v2.http.jvcompat.Context
+import xyz.nulldev.ts.api.v2.http.jvcompat.attribute
+import xyz.nulldev.ts.api.v2.http.jvcompat.param
 import xyz.nulldev.ts.api.v2.java.model.mangas.MangaCollection
 
 object MangasController : BaseController() {
@@ -25,22 +26,21 @@ object MangasController : BaseController() {
     fun getViewer(ctx: Context) {
         prepareMangaAttributes(ctx)
 
-        val mangas = ctx.attribute<MangaCollection>(MANGAS_ATTR)
-
-        ctx.json(Response.Success(mangas.viewer.mapIndexed { index, viewer ->
-            MangaViewer(mangas.id[index], viewer)
-        }))
+        getApiField(ctx,
+                MANGAS_ATTR,
+                MangaCollection::id,
+                MangaCollection::viewer,
+                MangaViewer::class)
     }
 
     fun setViewer(ctx: Context) {
         prepareMangaAttributes(ctx)
 
-        val mangas = ctx.attribute<MangaCollection>(MANGAS_ATTR)
-
-        val viewer = ctx.bodyAsClass<Array<MangaViewer>>().toList()
-        mangas.viewer = mangas.id.map { manga ->
-            viewer.find { it.id == manga }?.viewer
-        }
-        ctx.json(Response.Success())
+        setApiField(ctx,
+                MANGAS_ATTR,
+                MangaCollection::id,
+                MangaCollection::viewer,
+                MangaViewer::id,
+                MangaViewer::viewer)
     }
 }

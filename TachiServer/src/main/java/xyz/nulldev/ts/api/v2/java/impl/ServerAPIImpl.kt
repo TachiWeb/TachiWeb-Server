@@ -2,6 +2,7 @@ package xyz.nulldev.ts.api.v2.java.impl
 
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.inTransactionReturn
+import xyz.nulldev.ts.api.v2.java.impl.categories.CategoriesControllerImpl
 import xyz.nulldev.ts.api.v2.java.impl.chapters.ChaptersControllerImpl
 import xyz.nulldev.ts.api.v2.java.impl.library.LibraryControllerImpl
 import xyz.nulldev.ts.api.v2.java.impl.mangas.MangasControllerImpl
@@ -14,6 +15,7 @@ class ServerAPIImpl : ServerAPI {
     override val library = LibraryControllerImpl()
     override val chapters = ChaptersControllerImpl()
     override val mangas = MangasControllerImpl()
+    override val categories = CategoriesControllerImpl()
 
     fun <T> transaction(block: () -> T) {
         db.db.inTransactionReturn(block)

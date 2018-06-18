@@ -38,10 +38,13 @@ import xyz.nulldev.ts.api.http.settings.SourceLoginRoute
 import xyz.nulldev.ts.api.http.sync.SyncRoute
 import xyz.nulldev.ts.api.http.task.TaskStatusRoute
 import xyz.nulldev.ts.api.v2.http.HttpApplication
+import xyz.nulldev.ts.api.v2.http.categories.CategoriesController
 import xyz.nulldev.ts.api.v2.http.chapters.ChaptersController
 import xyz.nulldev.ts.api.v2.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.v2.http.library.LibraryController
 import xyz.nulldev.ts.api.v2.http.mangas.MangasController
+import xyz.nulldev.ts.api.v2.http.mangas.MangasController.getViewer
+import xyz.nulldev.ts.api.v2.http.mangas.MangasController.setViewer
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
@@ -141,6 +144,7 @@ class HttpAPI {
         getAPIRoute("/get_filters/:sourceId", getFiltersRoute)
 
         // V2 APIs (TODO Move to Javalin once all routes are rewritten)
+        //TODO Change path params to use constants
         HttpApplication() // Initialize Javalin API for now but do not start it
         getAPIRoute("/v2/library/flags", JavalinShim(LibraryController::getLibraryFlags))
         postAPIRoute("/v2/library/flags", JavalinShim(LibraryController::setLibraryFlags))
@@ -154,6 +158,28 @@ class HttpAPI {
         postAPIRoute("/v2/mangas/:mangas/viewer", JavalinShim(MangasController::setViewer))
         getAPIRoute("/v2/mangas/viewer", JavalinShim(MangasController::getViewer))
         postAPIRoute("/v2/mangas/viewer", JavalinShim(MangasController::setViewer))
+
+        getAPIRoute("/v2/categories/:categories", JavalinShim(CategoriesController::getCategory))
+        getAPIRoute("/v2/categories", JavalinShim(CategoriesController::getCategory))
+        postAPIRoute("/v2/categories", JavalinShim(CategoriesController::addCategory))
+        deleteAPIRoute("/v2/categories/:categories", JavalinShim(CategoriesController::deleteCategory))
+        deleteAPIRoute("/v2/categories", JavalinShim(CategoriesController::deleteCategory))
+        getAPIRoute("/v2/categories/:categories/name", JavalinShim(CategoriesController::getName))
+        postAPIRoute("/v2/categories/:categories/name", JavalinShim(CategoriesController::setName))
+        getAPIRoute("/v2/categories/name", JavalinShim(CategoriesController::getName))
+        postAPIRoute("/v2/categories/name", JavalinShim(CategoriesController::setName))
+        getAPIRoute("/v2/categories/:categories/order", JavalinShim(CategoriesController::getOrder))
+        postAPIRoute("/v2/categories/:categories/order", JavalinShim(CategoriesController::setOrder))
+        getAPIRoute("/v2/categories/order", JavalinShim(CategoriesController::getOrder))
+        postAPIRoute("/v2/categories/order", JavalinShim(CategoriesController::setOrder))
+        getAPIRoute("/v2/categories/:categories/flags", JavalinShim(CategoriesController::getFlags))
+        postAPIRoute("/v2/categories/:categories/flags", JavalinShim(CategoriesController::setFlags))
+        getAPIRoute("/v2/categories/flags", JavalinShim(CategoriesController::getFlags))
+        postAPIRoute("/v2/categories/flags", JavalinShim(CategoriesController::setFlags))
+        getAPIRoute("/v2/categories/:categories/manga", JavalinShim(CategoriesController::getManga))
+        postAPIRoute("/v2/categories/:categories/manga", JavalinShim(CategoriesController::setManga))
+        getAPIRoute("/v2/categories/manga", JavalinShim(CategoriesController::getManga))
+        postAPIRoute("/v2/categories/manga", JavalinShim(CategoriesController::setManga))
 
         //Sync route
         val syncRoute = SyncRoute()
@@ -177,6 +203,13 @@ class HttpAPI {
         val builtPath = buildAPIPath(path)
         Spark.post(builtPath, route)
         Spark.post(builtPath + "/", route)
+    }
+
+    private fun deleteAPIRoute(path: String, route: Route) {
+        if(!checkApi(path)) return
+        val builtPath = buildAPIPath(path)
+        Spark.delete(builtPath, route)
+        Spark.delete(builtPath + "/", route)
     }
 
     fun checkApi(path: String): Boolean {
