@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "Building web components..."
-# Old web components
+# Old UI (TODO Remove from build)
 pushd tachiwebui/src/main/resources/tachiweb-ui
 bower install
 npm install
@@ -15,6 +15,7 @@ popd
 
 popd
 
+# New UI
 pushd tachiwebui/src/main/resources/tachiweb-react
 npm install
 npm run build
