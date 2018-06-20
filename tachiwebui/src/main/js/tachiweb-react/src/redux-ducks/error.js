@@ -31,15 +31,15 @@ export const allErrorsSelector = (state: State): string => {
   return allErrors[0] || '';
 };
 
-// NOTE: not sure if I actually need to use this, so commenting it out for now
-//
-// export const createErrorMessageSelector = actions => (state) => {
-//   // returns the first error messages for actions
-//   // * We assume when any request fails on a page that
-//   //   requires multiple API calls, we shows the first error
+// 'actions' should be an array of strings. Strings should be action prefixes.
+// e.g. ['GET_TODOS'] corresponds to GET_TODOS_REQUEST, _SUCCESS, _FAILURE
+export const createErrorMessageSelector = (actions: Array<string>) => (state: Object): string => {
+  // returns the first error message for actions
+  // * We assume when any request fails on a page that
+  //   requires multiple API calls, we shows the first error
 
-//   const allErrors = actions.map(action => state.error[action]);
-//   const errors = compact(allErrors);
+  const allErrors = actions.map(action => state.error[action]);
+  const errors = compact(allErrors);
 
-//   return errors[0] || '';
-// };
+  return errors[0] || '';
+};

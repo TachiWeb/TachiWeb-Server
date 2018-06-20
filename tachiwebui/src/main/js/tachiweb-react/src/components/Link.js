@@ -16,7 +16,7 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 
 type Props = {
   to: ?string,
-}; // all props will be passed to the <Link> or <a>
+}; // all props will be passed to the <Link> or <button>
 
 const Link = (props: Props) => {
   const Component = props.to ? ReactRouterLink : 'button';

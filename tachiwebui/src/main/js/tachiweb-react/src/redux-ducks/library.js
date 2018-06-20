@@ -176,7 +176,7 @@ export function fetchUnread({ ignoreCache = false }: Options = {}) {
   };
 }
 
-export function uploadRestoreData(file: File) {
+export function uploadRestoreFile(file: File) {
   return (dispatch: Function) => {
     dispatch({ type: UPLOAD_RESTORE_REQUEST });
 

@@ -69,11 +69,15 @@ class TachiServer {
         Spark.port(serverConfig.port)
         Spark.ipAddress(serverConfig.ip)
 
+        var ui: TachiWebUIServer? = null
+
         //Start UI server (start before sync server as it needs to bind static dirs)
-        if(serverConfig.enableWebUi)
+        if(serverConfig.enableWebUi) {
             // Do not start UI server if sync only mode is on and sync enabled
-            if(!(syncConfig.enable && syncConfig.syncOnlyMode))
-                TachiWebUIServer().start()
+            if (!(syncConfig.enable && syncConfig.syncOnlyMode)) {
+                ui = TachiWebUIServer().apply { start() }
+            }
+        }
 
         //Bind sync routes
         if(syncConfig.enable)
@@ -82,6 +86,9 @@ class TachiServer {
         if(!syncConfig.syncOnlyMode) {
             //Start HTTP API
             HttpAPI().start()
+
+            // Postconfigure UI if started
+            ui?.postConfigure()
         }
 
         //Wait for WebUI to initialize

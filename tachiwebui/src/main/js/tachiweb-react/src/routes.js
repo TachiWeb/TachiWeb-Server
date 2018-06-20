@@ -6,7 +6,7 @@ import MangaInfoContainer from 'containers/MangaInfoContainer';
 import ReaderContainer from 'containers/ReaderContainer';
 import CatalogueContainer from 'containers/CatalogueContainer';
 import ErrorNotificationsContainer from 'containers/ErrorNotificationsContainer';
-import BackupRestoreContainer from 'containers/BackupRestoreContainer';
+import BackupRestore from 'pages/BackupRestore';
 
 // NOTE: All url params are strings. You have to parse them if you want a different type.
 
@@ -19,7 +19,7 @@ const Router = () => (
       <Switch>
         <Route exact path="/" component={LibraryContainer} />
         <Route path="/library" component={LibraryContainer} />
-        <Route path="/backup_restore" component={BackupRestoreContainer} />
+        <Route path="/backup_restore" component={BackupRestore} />
 
         <Route
           path="/catalogue/:mangaId/:chapterId/:page"

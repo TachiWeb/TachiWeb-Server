@@ -17,15 +17,12 @@ const UPDATE_CURRENT_FILTERS = 'filters/UPDATE_CURRENT_FILTERS';
 // ================================================================================
 // Reducers
 // ================================================================================
-// NOTE: filters should just store the initial filters received by the server
-//       Any edited filters should just be held in local state
 type State = {
   +initialFilters: $ReadOnlyArray<FilterAnyType>,
   +lastUsedFilters: $ReadOnlyArray<FilterAnyType>, // use this for the actual search fetches
 
   // having this in the redux store is going to create a ton of actions being logged
-  // consider keeping this in local state, meaning temp changes would be wiped out every time
-  // you navigated away from the page (but lastUsedFilters will replace it when you come back)
+  // the benefit is that any un-searched changes will remain when you leave and return to catalogue
   +currentFilters: $ReadOnlyArray<FilterAnyType>, // stores changes that haven't been submitted yet
 };
 const initialState: State = {

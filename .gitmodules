@@ -1,0 +1,3 @@
+[submodule "tachiwebui/src/main/js/tachiweb-react"]
+	path = tachiwebui/src/main/js/tachiweb-react
+	url = https://github.com/Ligerx/TachiWeb-React

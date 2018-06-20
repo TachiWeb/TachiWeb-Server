@@ -18,8 +18,7 @@
 package xyz.nulldev.ts
 
 import spark.Redirect
-import spark.Spark.redirect
-import spark.Spark.staticFiles
+import spark.Spark.*
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
@@ -30,6 +29,15 @@ import java.io.File
  */
 class TachiWebUIServer {
     private val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
+
+    private val NEW_UI_FOLDER = "/tachiweb-react/build"
+    private val NEW_UI_INDEX = "$NEW_UI_FOLDER/index.html"
+
+    private val newUiIndexText by lazy {
+        this::class.java.getResourceAsStream(NEW_UI_INDEX).bufferedReader().use {
+            it.readText()
+        }
+    }
 
     fun start() {
         staticFiles.header("Access-Control-Allow-Origin", "*")
@@ -45,7 +53,7 @@ class TachiWebUIServer {
             staticFiles.location(if(serverConfig.useOldWebUi)
                 "/tachiweb-ui"
             else
-                "/tachiweb-react/build")
+                NEW_UI_FOLDER)
         }
 
         if(serverConfig.useOldWebUi) {
@@ -54,6 +62,13 @@ class TachiWebUIServer {
         } else {
             redirect.any("/", "/index.html", Redirect.Status.TEMPORARY_REDIRECT)
             redirect.any("", "/index.html", Redirect.Status.TEMPORARY_REDIRECT)
+        }
+    }
+
+    fun postConfigure() {
+        if(!serverConfig.useOldWebUi) {
+            // Route all unhandled requests to React
+            get("/*") { _, _ -> newUiIndexText }
         }
     }
 }

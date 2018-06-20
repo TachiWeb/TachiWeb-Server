@@ -7,9 +7,10 @@ import CardContent from '@material-ui/core/CardContent';
 import Dropzone from 'react-dropzone';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import RestoreDialog from 'components/backup-restore/RestoreDialog';
+import type { RestoreCardContainerProps } from 'containers/RestoreCardContainer';
 
-// TODO: different UI states after submitting an uploaded file.
-//       Restoring doesn't work right now so I don't have any real state changes to work with.
+// TODO: clear all files from state when user successfully restores library
 
 // TODO: use custom styling for dropzone
 //       I'm currently using the default styles included with dropzone (which I copied over).
@@ -54,14 +55,12 @@ const styles = {
   },
 };
 
-type Props = {
-  classes: Object, // injected styles
-  onClickRestore: Function,
-};
+type Props = RestoreCardContainerProps & { classes: Object };
 
 type State = {
   acceptedFiles: Array<File>,
   rejectedFiles: Array<File>,
+  dialogueOpen: boolean,
 };
 
 class RestoreCard extends Component<Props, State> {
@@ -69,6 +68,8 @@ class RestoreCard extends Component<Props, State> {
     // Only accept 1 file, but dropzone gives us an array regardless
     acceptedFiles: [],
     rejectedFiles: [],
+
+    dialogueOpen: false,
   };
 
   handleDrop = (acceptedFiles: Array<File>, rejectedFiles: Array<File>) => {
@@ -88,53 +89,68 @@ class RestoreCard extends Component<Props, State> {
     return 'Drag and Drop or Click Here to upload your backup file';
   };
 
-  handleClick = () => {
-    const { onClickRestore } = this.props;
+  handleUpload = () => {
+    const { uploadRestoreFile } = this.props;
     const { acceptedFiles } = this.state;
 
     // Checking that files exist just in case (even though button should be disabled)
     if (acceptedFiles.length) {
-      onClickRestore(acceptedFiles[0]);
+      uploadRestoreFile(acceptedFiles[0]);
+      this.setState({ dialogueOpen: true }); // open loading dialog
     }
   };
 
-  render() {
-    const { classes } = this.props;
-    const { acceptedFiles, rejectedFiles } = this.state;
+  handleCloseDialog = () => {
+    this.setState({ dialogueOpen: false });
+  };
 
-    const buttonDisabled = acceptedFiles.length !== 1 || rejectedFiles.length;
+  render() {
+    const { classes, restoreIsLoading, restoreFailed } = this.props;
+    const { acceptedFiles, rejectedFiles, dialogueOpen } = this.state;
+
+    const buttonDisabled: boolean = acceptedFiles.length !== 1 || rejectedFiles.length > 0;
 
     return (
-      <Card>
-        <CardContent>
-          <Typography gutterBottom variant="headline">
-            Restore Your Library
-          </Typography>
+      <React.Fragment>
+        <Card>
+          <CardContent>
+            <Typography gutterBottom variant="headline">
+              Restore Your Library
+            </Typography>
 
-          <Dropzone
-            className={classes.dropzoneDefault}
-            activeClassName={classes.dropzoneActive}
-            acceptClassName={classes.dropzoneAccept}
-            rejectClassName={classes.dropzoneRejected}
-            onDrop={this.handleDrop}
-            multiple={false}
-            accept="application/json,.json"
-          >
-            {this.dropzoneContent}
-          </Dropzone>
+            <Dropzone
+              className={classes.dropzoneDefault}
+              activeClassName={classes.dropzoneActive}
+              acceptClassName={classes.dropzoneAccept}
+              rejectClassName={classes.dropzoneRejected}
+              onDrop={this.handleDrop}
+              multiple={false}
+              accept="application/json,.json"
+            >
+              {this.dropzoneContent}
+            </Dropzone>
 
-          <Button
-            className={classes.button}
-            variant="raised"
-            color="primary"
-            disabled={buttonDisabled}
-            onClick={this.handleClick}
-          >
-            <Icon className={classes.icon}>cloud_upload</Icon>
-            Restore
-          </Button>
-        </CardContent>
-      </Card>
+            <Button
+              className={classes.button}
+              variant="raised"
+              color="primary"
+              disabled={buttonDisabled}
+              onClick={this.handleUpload}
+            >
+              <Icon className={classes.icon}>cloud_upload</Icon>
+              Restore
+            </Button>
+          </CardContent>
+        </Card>
+
+        <RestoreDialog
+          open={dialogueOpen}
+          onClose={this.handleCloseDialog}
+          isLoading={restoreIsLoading}
+          failed={restoreFailed}
+          tryAgain={this.handleUpload}
+        />
+      </React.Fragment>
     );
   }
 }

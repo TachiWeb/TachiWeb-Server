@@ -1,0 +1,29 @@
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
+def reactDir = new File("${project.projectDir}/src/main/js/tachiweb-react")
+def outDir = new File("${project.projectDir}/src/main/resources/tachiweb-react/build")
+
+node {
+    workDir = new File("${project.buildDir}/node")
+    nodeModulesDir = reactDir
+    npmWorkDir = reactDir
+    yarnWorkDir = reactDir
+
+    download = false
+}
+
+task deleteOldWebUi(type: Delete) {
+    delete outDir
+    followSymlinks = false
+}
+
+task copyWebUi(type: Copy) {
+    from new File(reactDir, "build")
+    into outDir
+}
+
+copyWebUi.dependsOn(npm_run_build)
+copyWebUi.dependsOn(deleteOldWebUi)
+npm_run_build.dependsOn(npm_install)

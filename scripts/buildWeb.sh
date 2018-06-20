@@ -14,9 +14,3 @@ popd
 popd
 
 popd
-
-# New UI
-pushd tachiwebui/src/main/resources/tachiweb-react
-npm install
-npm run build
-popd
