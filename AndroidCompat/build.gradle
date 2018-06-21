@@ -19,6 +19,9 @@ dependencies {
 
     // Config API
     compile project(":TachiServer/Config")
+
+    // dex2jar
+    compile "dex2jar:dex-translator"
 }
 
 def fatJarTask = tasks.getByPath(':AndroidCompat/JVMPatch:fatJar')
@@ -29,6 +32,7 @@ task copyJVMPatches(type: Copy) {
     into 'src/main/resources/patches'
 }
 
+compileJava.dependsOn gradle.includedBuild('dex2jar').task(':dex-translator:assemble')
 compileJava.dependsOn copyJVMPatches
 copyJVMPatches.dependsOn fatJarTask
 

@@ -1,3 +1,6 @@
 [submodule "tachiwebui/src/main/js/tachiweb-react"]
 	path = tachiwebui/src/main/js/tachiweb-react
 	url = https://github.com/Ligerx/TachiWeb-React
+[submodule "dex2jar"]
+	path = dex2jar
+	url = git@github.com:pxb1988/dex2jar.git

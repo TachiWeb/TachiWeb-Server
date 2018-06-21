@@ -4,7 +4,7 @@ plugins {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "4.7"
+    gradleVersion = "4.8.1"
 }
 
 allprojects {
@@ -25,6 +25,7 @@ allprojects {
 
 ext.javaProjects = [
         project(":AndroidCompat"),
+        project(":AndroidCompat/JVMPatch"),
         project(":junrarandroid"),
         project(":TachiServer"),
         project(":TachiServer/Config"),

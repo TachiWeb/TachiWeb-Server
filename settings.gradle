@@ -1,6 +1,13 @@
 // Constants
 gradle.ext.kotlinVersion = "1.2.50" // Also in build.gradle
 
+// Composite builds
+includeBuild('dex2jar') {
+    dependencySubstitution {
+        substitute module('dex2jar:dex-translator') with project(':dex-translator')
+    }
+}
+
 // Subprojects
 
 // JVM

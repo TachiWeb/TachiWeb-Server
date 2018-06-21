@@ -14,4 +14,12 @@ task fatJar(type: Jar) {
     with jar
 }
 
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+            '--patch-module', "java.base=" + files(sourceSets.main.java.srcDirs).asPath,
+        ]
+    }
+}
+
 assemble.dependsOn fatJar
