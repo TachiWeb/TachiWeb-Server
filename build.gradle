@@ -25,7 +25,6 @@ allprojects {
 
 ext.javaProjects = [
         project(":AndroidCompat"),
-        project(":AndroidCompat/JVMPatch"),
         project(":junrarandroid"),
         project(":TachiServer"),
         project(":TachiServer/Config"),
