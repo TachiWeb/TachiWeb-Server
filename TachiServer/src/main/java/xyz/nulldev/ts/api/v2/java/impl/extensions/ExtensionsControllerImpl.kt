@@ -27,7 +27,7 @@ class ExtensionsControllerImpl : ExtensionsController {
 
     override fun reloadAvailable() {
         manager.findAvailableExtensions()
-        manager.getAvailableExtensionsObservable().take(2).toBlocking().forEach {}
+        manager.getAvailableExtensionsObservable().take(2).toBlocking().subscribe()
     }
 
     override fun reloadLocal() {
@@ -52,6 +52,11 @@ class ExtensionsControllerImpl : ExtensionsController {
             }
 
             return localExtensions
+        }
+
+        init {
+            // Forcibly fill this initially to allow the reloadAvailable endpoint to function
+            manager.findAvailableExtensions()
         }
     }
 }

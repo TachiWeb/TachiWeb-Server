@@ -9,9 +9,11 @@ import eu.kanade.tachiyomi.extension.model.Extension
 import eu.kanade.tachiyomi.source.Source
 import xyz.nulldev.androidcompat.pm.PackageController
 import xyz.nulldev.ts.api.v2.java.impl.util.ProxyList
+import xyz.nulldev.ts.api.v2.java.model.PreparedInputStream
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionCollection
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionModel
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionStatus
+import java.net.URL
 
 class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionCollection,
         List<ExtensionModel> by ProxyList(pkgName, { ExtensionCollectionProxy(it) }) {
@@ -48,6 +50,23 @@ class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionColl
 
     override val hasUpdate: List<Boolean?>
         get() = mapPkgNames { (it as? Extension.Installed)?.hasUpdate }
+
+    override val icon: List<PreparedInputStream?>
+        get() = mapPkgNames {
+            when(it) {
+                is Extension.Available -> PreparedInputStream.from {
+                    URL(it.iconUrl).openStream()
+                }
+                is Extension.Installed,
+                is Extension.Untrusted -> controller.findPackage(it.pkgName)?.icon?.let {
+                    if(!it.exists()) return@let null
+
+                    PreparedInputStream.from {
+                        it.inputStream()
+                    }
+                }
+            }
+        }
 
     override fun delete() {
         pkgName.forEach {
@@ -103,6 +122,9 @@ class ExtensionCollectionProxy(override val pkgName: String): ExtensionModel {
 
     override val hasUpdate: Boolean?
         get() = collection.hasUpdate[0]
+
+    override val icon: PreparedInputStream?
+        get() = collection.icon[0]
 
     override fun delete() = collection.delete()
 

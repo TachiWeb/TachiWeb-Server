@@ -20,6 +20,8 @@ interface ExtensionLikeModel {
 
     val hasUpdate: Any?
 
+    val icon: Any?
+
     fun delete()
 
     fun install()

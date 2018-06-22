@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty1
 abstract class BaseController {
     protected val api: ServerAPI = Tachiyomi
 
-    fun <C, T, I : Number, H : Any> getApiField(ctx: Context,
+    fun <C, T, I, H : Any> getApiField(ctx: Context,
                                                 attribute: String,
                                                 collectionIdField: KProperty1<C, List<I>>,
                                                 collectionField: KProperty1<C, List<T>>,
@@ -25,7 +25,7 @@ abstract class BaseController {
         }))
     }
 
-    inline fun <C, T, I : Number, reified H : Any> setApiField(ctx: Context,
+    inline fun <C, T, I, reified H : Any> setApiField(ctx: Context,
                                                 attribute: String,
                                                 collectionIdField: KProperty1<C, List<I>>,
                                                 collectionField: KMutableProperty1<C, List<T?>>,

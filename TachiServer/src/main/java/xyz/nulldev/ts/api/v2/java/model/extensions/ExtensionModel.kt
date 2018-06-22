@@ -1,6 +1,7 @@
 package xyz.nulldev.ts.api.v2.java.model.extensions
 
 import eu.kanade.tachiyomi.source.Source
+import xyz.nulldev.ts.api.v2.java.model.PreparedInputStream
 
 interface ExtensionModel : ExtensionLikeModel {
     override val name: String
@@ -21,4 +22,6 @@ interface ExtensionModel : ExtensionLikeModel {
     override val sources: List<Source>?
 
     override val hasUpdate: Boolean?
+
+    override val icon: PreparedInputStream?
 }
