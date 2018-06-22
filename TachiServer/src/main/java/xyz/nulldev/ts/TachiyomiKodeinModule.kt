@@ -13,6 +13,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.sync.LibrarySyncManager
 import eu.kanade.tachiyomi.data.track.TrackManager
+import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.source.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -37,6 +38,8 @@ class TachiyomiKodeinModule {
         bind<NetworkHelper>() with singleton { Injekt.get<NetworkHelper>() }
 
         bind<SourceManager>() with singleton { Injekt.get<SourceManager>() }
+
+        bind<ExtensionManager>() with singleton { Injekt.get<ExtensionManager>() }
 
         bind<DownloadManager>() with singleton { Injekt.get<DownloadManager>() }
 

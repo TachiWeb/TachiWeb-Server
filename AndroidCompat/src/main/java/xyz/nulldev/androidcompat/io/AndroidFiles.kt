@@ -28,6 +28,8 @@ class AndroidFiles(val configManager: ConfigManager = GlobalConfigManager) {
 
     val prefsDir: File get() = registerFile(filesConfig.prefsDir)
 
+    val packagesDir: File get() = registerFile(filesConfig.packageDir)
+
     fun registerFile(file: String): File {
         return File(file).apply {
             mkdirs()

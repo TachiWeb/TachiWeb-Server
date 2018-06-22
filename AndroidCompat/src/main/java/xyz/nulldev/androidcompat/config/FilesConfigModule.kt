@@ -24,6 +24,8 @@ class FilesConfigModule(config: Config) : ConfigModule(config) {
 
     val prefsDir = config.getString("prefsDir")!!
 
+    val packageDir = config.getString("packageDir")!!
+
     companion object {
         fun register(config: Config)
                 = FilesConfigModule(config.getConfig("android.files"))

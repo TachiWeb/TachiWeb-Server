@@ -22,6 +22,12 @@ dependencies {
 
     // dex2jar
     compile "dex2jar:dex-translator"
+
+    // APK parser
+    compile 'net.dongliu:apk-parser:2.6.1'
+
+    // APK sig verifier
+    compile 'com.android.tools.build:apksig:2.3.0'
 }
 
 def fatJarTask = tasks.getByPath(':AndroidCompat/JVMPatch:fatJar')

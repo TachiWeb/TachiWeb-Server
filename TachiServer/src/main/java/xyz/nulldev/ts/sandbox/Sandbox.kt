@@ -14,6 +14,7 @@ import xyz.nulldev.androidcompat.config.FilesConfigModule
 import xyz.nulldev.androidcompat.config.SystemConfigModule
 import xyz.nulldev.androidcompat.info.ApplicationInfoImpl
 import xyz.nulldev.androidcompat.io.AndroidFiles
+import xyz.nulldev.androidcompat.pm.PackageController
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import java.io.Closeable
@@ -46,6 +47,8 @@ class Sandbox(configFolder: File) : Closeable {
             bind<ApplicationInfoImpl>(overrides = true) with singleton { ApplicationInfoImpl(this) }
 
             bind<FakePackageManager>(overrides = true) with singleton { FakePackageManager() }
+
+            bind<PackageController>(overrides = true) with singleton { PackageController() }
 
             bind<CustomContext>(overrides = true) with singleton { CustomContext(this) }
             bind<Context>(overrides = true) with singleton { instance<CustomContext>() }
