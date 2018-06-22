@@ -15,7 +15,6 @@
  */
 package dalvik.system;
 
-import jdk.internal.reflect.CallerSensitive;
 import org.jetbrains.annotations.Nullable;
 import xyz.nulldev.androidcompat.pm.PackageController;
 import xyz.nulldev.androidcompat.util.KodeinGlobalHelper;
@@ -96,7 +95,6 @@ public class BaseDexClassLoader extends ClassLoader {
         return realClassloader.getResources(name);
     }
 
-    @CallerSensitive
     public static boolean registerAsParallelCapable() {
         return ClassLoader.registerAsParallelCapable();
     }
@@ -113,7 +111,6 @@ public class BaseDexClassLoader extends ClassLoader {
         return ClassLoader.getSystemResourceAsStream(name);
     }
 
-    @CallerSensitive
     public static ClassLoader getSystemClassLoader() {
         return ClassLoader.getSystemClassLoader();
     }
@@ -137,6 +134,8 @@ public class BaseDexClassLoader extends ClassLoader {
     public void clearAssertionStatus() {
         realClassloader.clearAssertionStatus();
     }
+
+
 
     @Override
     public String toString() {

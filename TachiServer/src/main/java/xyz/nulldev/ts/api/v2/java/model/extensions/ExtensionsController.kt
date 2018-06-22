@@ -11,5 +11,7 @@ interface ExtensionsController {
 
     fun reloadAvailable()
 
+    fun reloadLocal()
+
     fun installExternal(apk: File)
 }

@@ -8,10 +8,12 @@ import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.extension.model.Extension
 import xyz.nulldev.androidcompat.pm.PackageController
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionsController
+import xyz.nulldev.ts.ext.kInstance
+import xyz.nulldev.ts.ext.kInstanceLazy
 import java.io.File
 
 class ExtensionsControllerImpl : ExtensionsController {
-    private val controller by Kodein.global.lazy.instance<PackageController>()
+    private val controller by kInstanceLazy<PackageController>()
 
     override fun get(vararg packageNames: String)
             = ExtensionCollectionImpl(packageNames.toList()) // TODO Check these extensions exist
@@ -28,8 +30,13 @@ class ExtensionsControllerImpl : ExtensionsController {
         manager.getAvailableExtensionsObservable().take(2).toBlocking().forEach {}
     }
 
+    override fun reloadLocal() {
+        manager.init(kInstance())
+    }
+
     override fun installExternal(apk: File) {
         controller.installPackage(apk, true)
+        reloadLocal()
     }
 
     companion object {

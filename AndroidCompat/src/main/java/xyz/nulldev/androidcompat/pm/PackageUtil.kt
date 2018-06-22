@@ -6,7 +6,7 @@ import android.content.pm.PackageInfo
 import net.dongliu.apk.parser.bean.ApkMeta
 import java.io.File
 
-fun ApkMeta.toPackageInfo(root: File): PackageInfo {
+fun ApkMeta.toPackageInfo(root: File, apk: File): PackageInfo {
     return PackageInfo().also {
         it.packageName = packageName
         it.versionCode = versionCode.toInt()
@@ -21,7 +21,7 @@ fun ApkMeta.toPackageInfo(root: File): PackageInfo {
         it.applicationInfo = ApplicationInfo().apply {
             packageName = it.packageName
             nonLocalizedLabel = label
-            sourceDir = root.absolutePath
+            sourceDir = apk.absolutePath
         }
     }
 }

@@ -129,7 +129,7 @@ public class CustomContext extends Context implements KodeinAware {
 
     @Override
     public ClassLoader getClassLoader() {
-        return null;
+        return this.getClass().getClassLoader();
     }
 
     @Override

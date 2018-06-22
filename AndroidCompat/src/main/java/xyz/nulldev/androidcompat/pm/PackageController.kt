@@ -10,6 +10,15 @@ import java.io.File
 
 class PackageController {
     private val androidFiles by Kodein.global.lazy.instance<AndroidFiles>()
+    private val uninstallListeners = mutableListOf<(String) -> Unit>()
+
+    fun registerUninstallListener(listener: (String) -> Unit) {
+        uninstallListeners.add(listener)
+    }
+
+    fun unregisterUninstallListener(listener: (String) -> Unit) {
+        uninstallListeners.remove(listener)
+    }
 
     private fun findRoot(apk: File): File {
         val pn = ApkParsers.getMetaInfo(apk).packageName
@@ -20,16 +29,16 @@ class PackageController {
     fun installPackage(apk: File, allowReinstall: Boolean) {
         val root = findRoot(apk)
 
-        try {
-            if (root.exists()) {
-                if (allowReinstall) {
-                    throw IllegalStateException("Package already installed!")
-                } else {
-                    // TODO Compare past and new signature
-                    root.deleteRecursively()
-                }
+        if (root.exists()) {
+            if (!allowReinstall) {
+                throw IllegalStateException("Package already installed!")
+            } else {
+                // TODO Compare past and new signature
+                root.deleteRecursively()
             }
+        }
 
+        try {
             root.mkdirs()
 
             val installed = InstalledPackage(root)
@@ -40,8 +49,9 @@ class PackageController {
             if (!installed.jar.exists()) {
                 throw IllegalStateException("Failed to translate APK dex!")
             }
-        } finally {
+        } catch(t: Throwable) {
             root.deleteRecursively()
+            throw t
         }
     }
 
@@ -54,7 +64,13 @@ class PackageController {
     }
 
     fun deletePackage(pack: InstalledPackage) {
+        if(!pack.root.exists()) error("Package was never installed!")
+
+        val packageName = pack.info.packageName
         pack.root.deleteRecursively()
+        uninstallListeners.forEach {
+            it(packageName)
+        }
     }
 
     fun findPackage(packageName: String): InstalledPackage? {

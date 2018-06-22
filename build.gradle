@@ -50,6 +50,12 @@ configure(javaProjects) {
         }
     }
 
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
     dependencies {
         // Kotlin
         compile "org.jetbrains.kotlin:kotlin-stdlib:${gradle.kotlinVersion}"

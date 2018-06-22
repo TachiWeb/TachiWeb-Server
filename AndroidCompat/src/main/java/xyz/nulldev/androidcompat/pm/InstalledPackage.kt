@@ -22,7 +22,7 @@ data class InstalledPackage(val root: File) {
     val icon = File(root, "icon.png")
 
     val info: PackageInfo
-        get() = ApkParsers.getMetaInfo(apk).toPackageInfo(root).also {
+        get() = ApkParsers.getMetaInfo(apk).toPackageInfo(root, apk).also {
             val parsed = ApkFile(apk)
             val dbFactory = DocumentBuilderFactory.newInstance()
             val dBuilder = dbFactory.newDocumentBuilder()
@@ -45,9 +45,9 @@ data class InstalledPackage(val root: File) {
                 }
             }
 
-            (parsed.apkSingers.flatMap { it.certificateMetas }
-            + parsed.apkV2Singers.flatMap { it.certificateMetas })
-                    .map { Signature(it.data) }
+            it.signatures = (parsed.apkSingers.flatMap { it.certificateMetas }
+                    + parsed.apkV2Singers.flatMap { it.certificateMetas })
+                    .map { Signature(it.data) }.toTypedArray()
         }
 
     fun verify(): Boolean {
@@ -62,10 +62,11 @@ data class InstalledPackage(val root: File) {
         try {
             val icons = ApkFile(apk).allIcons
 
-            val iconMeta = icons.find { it.isFile } ?: return
-            val read = iconMeta.data.inputStream().use {
-                ImageIO.read(it)
-            }
+            val read = icons.filter { it.isFile }.map {
+                it.data.inputStream().use {
+                    ImageIO.read(it)
+                }
+            }.sortedByDescending { it.width * it.height }.firstOrNull() ?: return
 
             ImageIO.write(read, "png", icon)
         } catch(e: Exception) {
