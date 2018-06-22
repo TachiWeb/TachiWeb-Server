@@ -148,6 +148,8 @@ object ExtensionsController : BaseController() {
         val attr = ctx.attribute<ExtensionCollection>(EXTENSIONS_ATTR)
 
         attr.install()
+        api.extensions.reloadLocal()
+        api.extensions.reloadAvailable()
 
         ctx.json(Response.Success(attr.map { SerializableExtensionModel(it) }))
     }
@@ -195,8 +197,11 @@ object ExtensionsController : BaseController() {
 
             api.extensions.installExternal(tmp)
             api.extensions.reloadLocal()
+            api.extensions.reloadAvailable()
         } finally {
             tmp.delete()
         }
+
+        ctx.json(Response.Success())
     }
 }
