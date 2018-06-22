@@ -48,7 +48,7 @@ class ListSourcesRoute : TachiWebRoute() {
         val contentArray = JSONArray()
         for (source in sources) {
             val sourceObj = JSONObject()
-            sourceObj.put(KEY_ID, source.id)
+            sourceObj.put(KEY_ID, source.id.toString())
             sourceObj.put(KEY_NAME, source.name)
             val langObj = JSONObject()
             langObj.put(KEY_LANG_NAME, source.lang)
