@@ -64,4 +64,9 @@ class PackageController {
         else
             null
     }
+
+    fun findJarFromApk(apkFile: File): File? {
+        val pkgName = ApkParsers.getMetaInfo(apkFile).packageName
+        return findPackage(pkgName)?.jar
+    }
 }

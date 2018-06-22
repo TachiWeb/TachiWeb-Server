@@ -6,9 +6,12 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.extension.model.Extension
+import xyz.nulldev.androidcompat.pm.PackageController
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionsController
+import java.io.File
 
 class ExtensionsControllerImpl : ExtensionsController {
+    private val controller by Kodein.global.lazy.instance<PackageController>()
 
     override fun get(vararg packageNames: String)
             = ExtensionCollectionImpl(packageNames.toList()) // TODO Check these extensions exist
@@ -23,6 +26,10 @@ class ExtensionsControllerImpl : ExtensionsController {
     override fun reloadAvailable() {
         manager.findAvailableExtensions()
         manager.getAvailableExtensionsObservable().take(2).toBlocking().forEach {}
+    }
+
+    override fun installExternal(apk: File) {
+        controller.installPackage(apk, true)
     }
 
     companion object {
