@@ -105,6 +105,8 @@ object ExtensionsController : BaseController() {
     }
 
     fun getIcon(ctx: Context) {
+        prepareExtensionsAttributes(ctx)
+
         val attr = ctx.attribute<ExtensionCollection>(EXTENSIONS_ATTR)
 
         if(attr.size > 1) {
@@ -117,7 +119,9 @@ object ExtensionsController : BaseController() {
             if(icon == null) {
                 ctx.json(Response.Error("This extension has no icon!"))
             } else {
-                icon.open().use {
+                ctx.contentType(icon.first)
+
+                icon.second.open().use {
                     ctx.result(it)
                 }
             }

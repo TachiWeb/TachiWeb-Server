@@ -14,6 +14,8 @@ import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionCollection
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionModel
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionStatus
 import java.net.URL
+import java.net.URLConnection
+import java.nio.file.Files
 
 class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionCollection,
         List<ExtensionModel> by ProxyList(pkgName, { ExtensionCollectionProxy(it) }) {
@@ -51,17 +53,18 @@ class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionColl
     override val hasUpdate: List<Boolean?>
         get() = mapPkgNames { (it as? Extension.Installed)?.hasUpdate }
 
-    override val icon: List<PreparedInputStream?>
+    override val icon: List<Pair<String, PreparedInputStream>?>
         get() = mapPkgNames {
             when(it) {
-                is Extension.Available -> PreparedInputStream.from {
-                    URL(it.iconUrl).openStream()
-                }
+                is Extension.Available -> URLConnection.guessContentTypeFromName(it.iconUrl) to
+                        PreparedInputStream.from {
+                            URL(it.iconUrl).openStream()
+                        }
                 is Extension.Installed,
                 is Extension.Untrusted -> controller.findPackage(it.pkgName)?.icon?.let {
                     if(!it.exists()) return@let null
 
-                    PreparedInputStream.from {
+                    Files.probeContentType(it.toPath()) to PreparedInputStream.from {
                         it.inputStream()
                     }
                 }
@@ -126,7 +129,7 @@ class ExtensionCollectionProxy(override val pkgName: String): ExtensionModel {
     override val hasUpdate: Boolean?
         get() = collection.hasUpdate[0]
 
-    override val icon: PreparedInputStream?
+    override val icon: Pair<String, PreparedInputStream>?
         get() = collection.icon[0]
 
     override fun delete() = collection.delete()

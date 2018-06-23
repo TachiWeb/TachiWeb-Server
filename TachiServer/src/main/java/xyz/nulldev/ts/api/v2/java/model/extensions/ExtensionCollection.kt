@@ -23,5 +23,5 @@ interface ExtensionCollection : ExtensionLikeModel, List<ExtensionModel> {
 
     override val hasUpdate: List<Boolean?>
 
-    override val icon: List<PreparedInputStream?>
+    override val icon: List<Pair<String, PreparedInputStream>?>
 }
