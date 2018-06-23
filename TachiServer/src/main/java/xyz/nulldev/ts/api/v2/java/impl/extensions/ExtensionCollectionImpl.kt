@@ -79,10 +79,13 @@ class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionColl
 
     override fun install() {
         mapPkgNames {
-            if(it !is Extension.Available)
+            if(it is Extension.Available) {
+                manager.installExtension(it)
+            } else if(it is Extension.Installed && it.hasUpdate) {
+                manager.updateExtension(it)
+            } else {
                 error("Extension ${it.pkgName} is not an installable extension!")
-
-            manager.installExtension(it).toBlocking().subscribe()
+            }.toBlocking().subscribe()
         }
     }
 
