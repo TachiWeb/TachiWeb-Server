@@ -1,5 +1,0 @@
-dependencies {
-    compile project(":TachiServer/Config")
-
-    compile group: 'no.tornado', name: 'tornadofx', version: '1.7.14'
-}

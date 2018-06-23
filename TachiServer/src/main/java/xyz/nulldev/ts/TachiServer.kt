@@ -59,9 +59,6 @@ class TachiServer {
 
         //Configure web related components
         configureHttp()
-
-        //Launch desktop app if required
-//        Application.launch(DUIApp::class.java)
     }
 
     fun configureHttp() {

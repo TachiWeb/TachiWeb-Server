@@ -19,9 +19,6 @@ dependencies {
     // Config API
     compile project(":TachiServer/Config")
 
-    // Desktop UI
-    compile project(":TachiServer/DesktopUI")
-
     // Spark Web Framework
     compile "com.sparkjava:spark-core:2.5.5"
 
