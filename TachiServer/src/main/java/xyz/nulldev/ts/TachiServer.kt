@@ -15,6 +15,7 @@ import xyz.nulldev.ts.syncdeploy.SyncConfigModule
 import xyz.nulldev.ts.syncdeploy.TSSyncDeploy
 import java.io.File
 import java.lang.management.ManagementFactory
+import kotlin.concurrent.thread
 
 /**
  * Server bootstrap class
@@ -202,7 +203,11 @@ class TachiServer {
                 = ProcessBuilder()
                 .command(args)
                 .inheritIO()
-                .start()
+                .start().apply {
+                    Runtime.getRuntime().addShutdownHook(thread(start = false) {
+                        destroy()
+                    })
+                }
                 .waitFor()
     }
 }
