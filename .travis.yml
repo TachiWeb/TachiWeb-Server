@@ -12,7 +12,7 @@ matrix:
         apt:
           update: true
       before_deploy:
-        - sudo apt-get install rsync sshpass
+        - sudo apt-get install rsync
       deploy:
         provider: script
         script: bash scripts/travisDeploy.sh
