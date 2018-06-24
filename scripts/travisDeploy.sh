@@ -3,8 +3,6 @@
 # Mac OS curl hack
 export PATH=/usr/local/bin:$PATH
 
-pushd "$TRAVIS_BUILD_DIR"
-
 curl --ftp-create-dirs \
     -T "$(ls TachiServer/build/libs | grep TachiServer-all)" \
     "sftp://${SFTP_USER}:${SFTP_PASSWORD}@${SFTP_HOST}${SFTP_DIR}/${TRAVIS_REPO_SLUG}/${TRAVIS_BUILD_NUMBER}_${TRAVIS_COMMIT}/server.jar"
@@ -16,5 +14,3 @@ ls bootui/tachiweb-bootstrap/dist -1 | grep -i tachiweb* | while read x; do
         -T "$BIN_PATH" \
         "sftp://${SFTP_USER}:${SFTP_PASSWORD}@${SFTP_HOST}${SFTP_DIR}/${TRAVIS_REPO_SLUG}/${TRAVIS_BUILD_NUMBER}_${TRAVIS_COMMIT}/natives/$x"
 done
-
-popd
