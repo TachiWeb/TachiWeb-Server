@@ -7,4 +7,4 @@ before_script:
   - sudo apt-get update
   - sudo apt-get install realpath
   - sudo apt-get install openjdk-8-jdk
-script: scripts/build.sh
+script: bash -c "CI=false scripts/build.sh"
