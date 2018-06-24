@@ -26,6 +26,7 @@ matrix:
         - brew update
         - brew outdated coreutils || brew upgrade coreutils
         - brew outdated maven || brew upgrade maven
+        - brew install yarn --without-node
       script: bash -c "CI=false scripts/build.sh"
       deploy:
         provider: script
