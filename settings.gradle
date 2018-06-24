@@ -30,3 +30,5 @@ include 'TachiServer/Config'
 //JS
 // Web UI
 include 'tachiwebui'
+// Electron bootstrap wrapper
+include 'bootui'

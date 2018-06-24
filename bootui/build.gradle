@@ -1,0 +1,27 @@
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
+def bootuiDir = new File("${project.projectDir}/tachiweb-bootstrap")
+
+node {
+    workDir = new File("${project.buildDir}/node")
+    nodeModulesDir = bootuiDir
+    npmWorkDir = bootuiDir
+    yarnWorkDir = bootuiDir
+
+    download = false
+}
+
+def tsProject = project(":TachiServer")
+
+task copyServerBinary(type: Copy) {
+    def fileName = tsProject.name + '-all-' + tsProject.version + '.jar'
+    from new File(new File(tsProject.buildDir, 'libs'), fileName)
+    into new File(bootuiDir, "static")
+    rename(fileName, 'tachiserver.jar')
+}
+
+copyServerBinary.dependsOn ":TachiServer:fatJar"
+yarn_dist.dependsOn(copyServerBinary)
+yarn_dist.dependsOn(yarn_install)
