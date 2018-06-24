@@ -8,6 +8,7 @@ function checkCommand() {
 checkCommand bower
 checkCommand java
 checkCommand npm
+checkCommand yarn
 checkCommand curl
 checkCommand zip
 checkCommand unzip
@@ -32,8 +33,15 @@ chmod +x scripts/getAndroidLib.sh
 # Remove old build
 rm -rf target
 # Build and package server into JAR
-./gradlew clean assemble fatJar
+./gradlew clean assemble :TachiServer:fatJar
 
 # Output build info
-echo -e "\n\n-------------> Build complete! <-------------"
+echo -e "\n\n-------------> Java Build complete! <-------------"
 echo "Output file: $(realpath "TachiServer/build/libs/$(ls TachiServer/build/libs | grep TachiServer-all)")"
+echo "Continuing to build native binaries..."
+
+# Package native
+./gradlew :bootui:yarn_dist
+echo -e "\n\n-------------> Native Build complete! <-------------"
+echo "Output files:"
+ls bootui/tachiweb-bootstrap/dist -1 | grep tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done

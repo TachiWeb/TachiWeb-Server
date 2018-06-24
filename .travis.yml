@@ -1,0 +1,11 @@
+sudo: required
+language: node_js
+node_js:
+  - "iojs"
+  - "9"
+dist: trusty
+before_script:
+  - sudo apt-get update
+  - sudo apt-get install openjdk-8-jdk
+  - sudo npm install -g bower
+script: scripts/build.sh
