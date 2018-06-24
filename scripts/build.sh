@@ -56,4 +56,4 @@ else
 fi
 echo -e "\n\n-------------> Native Build complete! <-------------"
 echo "Output files:"
-ls -1 bootui/tachiweb-bootstrap/dist | grep tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
+ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done

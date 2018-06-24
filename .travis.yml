@@ -14,6 +14,7 @@ matrix:
       before_deploy:
         - sudo apt-get install rsync
       deploy:
+        skip_cleanup: true
         provider: script
         script: bash scripts/travisDeploy.sh
         on:
@@ -30,6 +31,7 @@ matrix:
         - brew install yarn --without-node
       script: bash -c "CI=false scripts/build.sh"
       deploy:
+        skip_cleanup: true
         provider: script
         script: bash scripts/travisDeploy.sh
         on:

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-pushd "$TRAVIS_BUILD_DIR"
-
 mkdir -p ~/.ssh
 echo "$SFTP_KEY" | base64 --decode > ~/.ssh/id_rsa
 
@@ -9,7 +7,7 @@ BASE_DIR="${SFTP_DIR}/${TRAVIS_REPO_SLUG}/${TRAVIS_BUILD_NUMBER}_${TRAVIS_COMMIT
 NATIVES_DIR="$BASE_DIR/natives"
 BASE_LOC="${SFTP_USER}@${SFTP_HOST}"
 
-ssh BASE_LOC "mkdir -p '$NATIVES_DIR'"
+ssh "$BASE_LOC" "mkdir -p '$NATIVES_DIR'"
 
 mv "$(ls TachiServer/build/libs | grep TachiServer-all)" /tmp/server.jar
 
@@ -20,5 +18,3 @@ ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb* | while read x; do
 
     rsync -v -e ssh "$BIN_PATH" "$BASE_LOC$NATIVES_DIR"
 done
-
-popd
