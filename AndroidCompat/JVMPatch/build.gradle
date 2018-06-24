@@ -14,14 +14,6 @@ task fatJar(type: Jar) {
     with jar
 }
 
-compileJava {
-    doFirst {
-        options.compilerArgs = [
-            '--patch-module', "java.base=" + files(sourceSets.main.java.srcDirs).asPath,
-        ]
-    }
-}
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
