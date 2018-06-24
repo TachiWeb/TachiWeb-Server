@@ -7,11 +7,12 @@ matrix:
       dist: trusty
       before_install:
         - sudo apt-get install -y realpath openjdk-8-jdk wine mono-complete gcc-multilib g++-multilib
-        - bash scripts/travisConfCurl.sh
       script: bash -c "CI=false scripts/build.sh"
       addons:
         apt:
           update: true
+      before_deploy:
+        - sudo apt-get install rsync sshpass
       deploy:
         provider: script
         script: bash scripts/travisDeploy.sh
@@ -27,7 +28,6 @@ matrix:
         - brew outdated coreutils || brew upgrade coreutils
         - brew outdated maven || brew upgrade maven
         - brew install yarn --without-node
-        - brew install curl
       script: bash -c "CI=false scripts/build.sh"
       deploy:
         provider: script

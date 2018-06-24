@@ -41,7 +41,7 @@ chmod +x scripts/getAndroidLib.sh
 # Remove old build
 rm -rf target
 # Build and package server into JAR
-./gradlew clean assemble :TachiServer:fatJar
+./gradlew clean assemble :TachiServer:fatJar || { echo 'Java build failed!' ; exit 1; }
 
 # Output build info
 echo -e "\n\n-------------> Java Build complete! <-------------"
@@ -50,10 +50,10 @@ echo "Continuing to build native binaries..."
 
 # Package native
 if [[ ${LINUX_WINDOWS} == "true" ]]; then
-    ./gradlew :bootui:yarn_distLinuxWindows
+    ./gradlew :bootui:yarn_distLinuxWindows || { echo 'Native Linux/Windows build failed!' ; exit 1; }
 else
-    ./gradlew :bootui:yarn_dist
+    ./gradlew :bootui:yarn_dist || { echo 'Native build failed!' ; exit 1; }
 fi
 echo -e "\n\n-------------> Native Build complete! <-------------"
 echo "Output files:"
-ls bootui/tachiweb-bootstrap/dist -1 | grep tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
+ls -1 bootui/tachiweb-bootstrap/dist | grep tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done

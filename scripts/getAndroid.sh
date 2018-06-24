@@ -14,13 +14,7 @@ rm -rf "tmp"
 mkdir -p "tmp"
 pushd "tmp"
 
-ANDROID_URL="https://android.googlesource.com/platform/prebuilts/sdk/+/3b8a524d25fa6c3d795afb1eece3f24870c60988/27/public/android.jar?format=TEXT"
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    curl "$ANDROID_URL" | base64 -D > android.jar
-else
-    curl "$ANDROID_URL" | base64 -d > android.jar
-fi
+curl "https://android.googlesource.com/platform/prebuilts/sdk/+/3b8a524d25fa6c3d795afb1eece3f24870c60988/27/public/android.jar?format=TEXT" | base64 --decode > android.jar
 
 # We need to remove any stub classes that we might use
 echo "Patching JAR..."
@@ -62,7 +56,7 @@ zip --delete android.jar android/text/Html.class
 ABS_JAR="$(realpath android.jar)"
 function dedup() {
     pushd "$1"
-    CLASSES="$(find * - type f)"
+    CLASSES="$(find * -type f)"
     echo "$CLASSES" | while read class
     do
         NAME="${class%.*}"
