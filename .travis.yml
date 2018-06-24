@@ -6,8 +6,8 @@ matrix:
         - "9"
       dist: trusty
       before_install:
-        - sudo apt-get install -y realpath
-        - sudo apt-get install -y openjdk-8-jdk
+        - sudo apt-get install -y realpath openjdk-8-jdk wine mono-complete gcc-multilib g++-multilib
+        - bash scripts/travisConfCurl.sh
       script: bash -c "CI=false scripts/build.sh"
       addons:
         apt:
@@ -24,8 +24,8 @@ matrix:
         - "9"
       before_install:
         - brew update
-        - brew install coreutils
-        - brew install maven
+        - brew outdated coreutils || brew upgrade coreutils
+        - brew outdated maven || brew upgrade maven
       script: bash -c "CI=false scripts/build.sh"
       deploy:
         provider: script

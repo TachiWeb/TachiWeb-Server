@@ -25,3 +25,5 @@ task copyServerBinary(type: Copy) {
 copyServerBinary.dependsOn ":TachiServer:fatJar"
 yarn_dist.dependsOn(copyServerBinary)
 yarn_dist.dependsOn(yarn_install)
+yarn_distLinuxWindows.dependsOn(copyServerBinary)
+yarn_distLinuxWindows.dependsOn(yarn_install)

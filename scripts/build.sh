@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+LINUX_WINDOWS="false"
+for i in "$@" ; do
+    if [[ ${i} == "--windows" ]] ; then
+        LINUX_WINDOWS="true"
+        break
+    fi
+done
+
 # Check commands
 function checkCommand() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 is required but it's not installed. Aborting!"; exit 1; }
@@ -41,7 +49,11 @@ echo "Output file: $(realpath "TachiServer/build/libs/$(ls TachiServer/build/lib
 echo "Continuing to build native binaries..."
 
 # Package native
-./gradlew :bootui:yarn_dist
+if [[ ${LINUX_WINDOWS} == "true" ]]; then
+    ./gradlew :bootui:yarn_distLinuxWindows
+else
+    ./gradlew :bootui:yarn_dist
+fi
 echo -e "\n\n-------------> Native Build complete! <-------------"
 echo "Output files:"
 ls bootui/tachiweb-bootstrap/dist -1 | grep tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
