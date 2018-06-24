@@ -123,8 +123,8 @@ class TachiServer {
                     println("\tExtracting patches...")
                     extractPatch(JVM_PATCH)
                     println("\tAssembling command line...")
-                    val jvmArgs = assembleBootCommand()
-                    println("\t\tCommand line: ${jvmArgs.joinToString(separator = " ")}")
+                    val jvmArgs = assembleBootCommand(args)
+                    println("\t\tCommand line: ${jvmArgs.map { "'$it'" }.joinToString(separator = " ")}")
                     val exitCode = bootNewJvm(jvmArgs)
                     println("\tJVM finished with exit code $exitCode")
                     return
@@ -152,7 +152,7 @@ class TachiServer {
             }
         }
 
-        private fun assembleBootCommand(): List<String> {
+        private fun assembleBootCommand(originalArgs: Array<String>): List<String> {
             val bean = ManagementFactory.getRuntimeMXBean()
             val jvmArgs = bean.inputArguments.toMutableList()
 
@@ -177,13 +177,22 @@ class TachiServer {
                         it.startsWith("-agentlib:", true)
                     }) throw IllegalStateException("JVM booted in debug mode!")
 
-            var programArgs = System.getProperty("sun.java.command")
+            var programArgs = bean.inputArguments
 
-            //Check if started from JAR
-            if(TachiServer::class.java.getResource("${TachiServer::class.simpleName}.class")
+            // Check if started from JAR
+            programArgs = if(TachiServer::class.java
+                            .getResource("${TachiServer::class.simpleName}.class")
                             .protocol == "jar") {
-                programArgs = "-jar $programArgs"
-            }
+                val jarLoc = File(TachiServer::class.java
+                        .protectionDomain
+                        .codeSource
+                        .location
+                        .toURI()).absolutePath
+
+                listOf("-jar", jarLoc)
+            } else {
+                listOf(TachiServer::class.java.name)
+            } + programArgs
 
             //Find Java binary
             val javaBinFolder = File(File(System.getProperty("java.home")), "bin")
@@ -196,7 +205,7 @@ class TachiServer {
                 else -> throw RuntimeException("Cannot find JVM binary!")
             })
 
-            return jvmArgs + "-D$BOOTSTRAP_STATUS_PROPERTY=true" + programArgs.split(" ")
+            return jvmArgs + "-D$BOOTSTRAP_STATUS_PROPERTY=true" + programArgs + originalArgs
         }
 
         private fun bootNewJvm(args: List<String>)
