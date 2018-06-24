@@ -10,7 +10,6 @@
 **OS -** TachiWeb currently only compiles properly on Linux.
 
 **Tools -** The following programs must be installed (and meet version requirements) to build this project:
-- bower >= 1.8.0
 - npm >= 3.0.0
 - curl
 - zip

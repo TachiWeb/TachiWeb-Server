@@ -1,10 +1,24 @@
-sudo: required
-language: node_js
-node_js:
-  - "9"
-dist: trusty
-before_script:
-  - sudo apt-get update
-  - sudo apt-get install realpath
-  - sudo apt-get install openjdk-8-jdk
-script: bash -c "CI=false scripts/build.sh"
+matrix:
+  include:
+    - sudo: required
+      language: node_js
+      node_js:
+        - "9"
+      dist: trusty
+      before_install:
+        - sudo apt-get install -y realpath
+        - sudo apt-get install -y openjdk-8-jdk
+      script: bash -c "CI=false scripts/build.sh"
+      addons:
+        apt:
+          update: true
+    - os: osx
+      osx_image: xcode9.4
+      language: node_js
+      node_js:
+        - "9"
+      before_install:
+        - brew update
+        - brew install realpath
+        - brew install maven
+      script: bash -c "CI=false scripts/build.sh"
