@@ -7,7 +7,7 @@ BASE_DIR="${SFTP_DIR}/${TRAVIS_REPO_SLUG}/${TRAVIS_BUILD_NUMBER}_${TRAVIS_COMMIT
 NATIVES_DIR="$BASE_DIR/natives"
 BASE_LOC="${SFTP_USER}@${SFTP_HOST}"
 
-ssh "$BASE_LOC" "mkdir -p '$NATIVES_DIR'"
+ssh -o "StrictHostKeyChecking no" "$BASE_LOC" "mkdir -p '$NATIVES_DIR'"
 
 mv "$(ls TachiServer/build/libs | grep TachiServer-all)" /tmp/server.jar
 
