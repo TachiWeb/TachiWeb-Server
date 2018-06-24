@@ -5,7 +5,7 @@ function checkCommand() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 is required but it's not installed. Aborting!"; exit 1; }
 }
 
-checkCommand bower
+#checkCommand bower
 checkCommand java
 checkCommand npm
 checkCommand yarn
@@ -17,8 +17,8 @@ checkCommand realpath
 checkCommand mvn
 
 # Build UI components
-chmod +x scripts/buildWeb.sh
-scripts/buildWeb.sh
+#chmod +x scripts/buildWeb.sh
+#scripts/buildWeb.sh
 # Init local repo
 rm -rf "local-repo"
 mkdir -p "local-repo"
