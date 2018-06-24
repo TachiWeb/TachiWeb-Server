@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Mac OS curl hack
-export PATH=/usr/local/bin:$PATH
+export PATH="/usr/local/opt/curl/bin:$PATH"
 
 curl --ftp-create-dirs \
     -T "$(ls TachiServer/build/libs | grep TachiServer-all)" \

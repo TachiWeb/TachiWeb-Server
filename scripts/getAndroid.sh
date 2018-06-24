@@ -13,7 +13,14 @@ echo "Getting required Android.jar..."
 rm -rf "tmp"
 mkdir -p "tmp"
 pushd "tmp"
-curl "https://android.googlesource.com/platform/prebuilts/sdk/+/3b8a524d25fa6c3d795afb1eece3f24870c60988/27/public/android.jar?format=TEXT" | base64 -d > android.jar
+
+ANDROID_URL="https://android.googlesource.com/platform/prebuilts/sdk/+/3b8a524d25fa6c3d795afb1eece3f24870c60988/27/public/android.jar?format=TEXT"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    curl "$ANDROID_URL" | base64 -D > android.jar
+else
+    curl "$ANDROID_URL" | base64 -d > android.jar
+fi
 
 # We need to remove any stub classes that we might use
 echo "Patching JAR..."
