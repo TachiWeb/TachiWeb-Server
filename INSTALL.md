@@ -24,7 +24,7 @@
 ### Building
 1. Download the source code:
 ```
-git clone https://github.com/null-dev/TW-Compat
+git clone https://github.com/TachiWeb/TachiWeb-Server
 ```
 2. Build the project (will take a long time):
 ```
