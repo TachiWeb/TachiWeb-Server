@@ -1,7 +1,6 @@
 sudo: required
 language: node_js
 node_js:
-  - "iojs"
   - "9"
 dist: trusty
 before_script:
