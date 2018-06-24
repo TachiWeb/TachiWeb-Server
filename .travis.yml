@@ -12,6 +12,11 @@ matrix:
       addons:
         apt:
           update: true
+      deploy:
+        provider: script
+        script: bash scripts/travisDeploy.sh
+        on:
+          all_branches: true
     - os: osx
       osx_image: xcode9.4
       language: node_js
@@ -19,6 +24,11 @@ matrix:
         - "9"
       before_install:
         - brew update
-        - brew install realpath
+        - brew install coreutils
         - brew install maven
       script: bash -c "CI=false scripts/build.sh"
+      deploy:
+        provider: script
+        script: bash scripts/travisDeploy.sh
+        on:
+          all_branches: true
