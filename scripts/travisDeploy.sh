@@ -2,6 +2,7 @@
 
 mkdir -p ~/.ssh
 echo "$SFTP_KEY" | base64 --decode > ~/.ssh/id_rsa
+chmod 400 ~/.ssh/id_rsa
 
 BASE_DIR="${SFTP_DIR}/${TRAVIS_REPO_SLUG}/${TRAVIS_BUILD_NUMBER}_${TRAVIS_COMMIT}"
 NATIVES_DIR="$BASE_DIR/natives"

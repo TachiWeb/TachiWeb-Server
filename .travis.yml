@@ -7,7 +7,7 @@ matrix:
       dist: trusty
       before_install:
         - sudo apt-get install -y realpath openjdk-8-jdk wine mono-complete gcc-multilib g++-multilib
-      script: bash -c "CI=false scripts/build.sh"
+      script: bash -c "CI=false scripts/build.sh --windows"
       addons:
         apt:
           update: true

@@ -13,6 +13,14 @@ function checkCommand() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 is required but it's not installed. Aborting!"; exit 1; }
 }
 
+function printJavaBinaries() {
+    echo "$(realpath "TachiServer/build/libs/$(ls TachiServer/build/libs | grep TachiServer-all)")"
+}
+
+function printNativeBinaries() {
+    ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
+}
+
 #checkCommand bower
 checkCommand java
 checkCommand npm
@@ -40,20 +48,33 @@ chmod +x scripts/getAndroidLib.sh
 ./scripts/getAndroidLib.sh
 # Remove old build
 rm -rf target
-# Build and package server into JAR
-./gradlew clean assemble :TachiServer:fatJar || { echo 'Java build failed!' ; exit 1; }
 
-# Output build info
-echo -e "\n\n-------------> Java Build complete! <-------------"
-echo "Output file: $(realpath "TachiServer/build/libs/$(ls TachiServer/build/libs | grep TachiServer-all)")"
-echo "Continuing to build native binaries..."
-
-# Package native
+YARN_COMMAND=""
 if [[ ${LINUX_WINDOWS} == "true" ]]; then
-    ./gradlew :bootui:yarn_distLinuxWindows || { echo 'Native Linux/Windows build failed!' ; exit 1; }
+    YARN_COMMAND=":bootui:yarn_distLinuxWindows"
 else
-    ./gradlew :bootui:yarn_dist || { echo 'Native build failed!' ; exit 1; }
+    YARN_COMMAND=":bootui:yarn_dist"
 fi
-echo -e "\n\n-------------> Native Build complete! <-------------"
-echo "Output files:"
-ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
+
+if [[ ${TRAVIS}  == "true" ]]; then
+    ./gradlew "$YARN_COMMAND" :TachiServer:fatJar || { echo 'Travis build failed!' ; exit 1; }
+    echo -e "\n\n-------------> Travis build complete! <-------------"
+    echo "Output files:"
+    printJavaBinaries
+    printNativeBinaries
+else
+    # Build and package server into JAR
+    ./gradlew clean assemble :TachiServer:fatJar || { echo 'Java build failed!' ; exit 1; }
+
+    # Output build info
+    echo -e "\n\n-------------> Java build complete! <-------------"
+    echo "Output file:"
+    printJavaBinaries
+    echo "Continuing to build native binaries..."
+
+    # Package native
+    ./gradlew "$YARN_COMMAND" || { echo 'Native build failed!' ; exit 1; }
+    echo -e "\n\n-------------> Native build complete! <-------------"
+    echo "Output files:"
+    printNativeBinaries
+fi
