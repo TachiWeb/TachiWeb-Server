@@ -4,3 +4,6 @@
 [submodule "tachiwebui/src/main/js/tachiweb-react"]
 	path = tachiwebui/src/main/js/tachiweb-react
 	url = https://github.com/Ligerx/TachiWeb-React
+[submodule "bootui/tachiweb-bootstrap"]
+	path = bootui/tachiweb-bootstrap
+	url = git@github.com:TachiWeb/TachiWeb-Bootstrap.git
