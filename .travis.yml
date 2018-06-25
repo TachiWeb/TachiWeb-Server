@@ -6,11 +6,18 @@ matrix:
         - "9"
       dist: trusty
       before_install:
+        # Wine
         - wget -nc https://dl.winehq.org/wine-builds/Release.key
         - sudo apt-key add Release.key
         - sudo apt-add-repository -y https://dl.winehq.org/wine-builds/ubuntu/
+        # Mono
+        - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+        - sudo apt-get install apt-transport-https
+        - echo "deb https://download.mono-project.com/repo/ubuntu stable-trusty main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+        # Actually install packages
         - sudo apt-get update
         - sudo apt-get install -y --install-recommends realpath openjdk-8-jdk winehq-stable mono-complete gcc-multilib g++-multilib
+        # Mono again
         - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
         - wine msiexec /i /tmp/mono.msi
       script: bash -c "CI=false scripts/build.sh --windows"
