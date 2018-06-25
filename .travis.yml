@@ -16,13 +16,15 @@ matrix:
         - echo "deb https://download.mono-project.com/repo/ubuntu stable-trusty main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         # Actually install packages
         - sudo apt-get update
-        - sudo apt-get install -y --install-recommends realpath openjdk-8-jdk winehq-stable mono-complete gcc-multilib g++-multilib
+        - sudo apt-get install -y --install-recommends realpath openjdk-8-jdk winehq-stable mono-complete gcc-multilib g++-multilib rpm bsdtar
         # Mono again
         - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
         - wine msiexec /i /tmp/mono.msi
       script: bash -c "CI=false scripts/build.sh --windows"
       before_deploy:
         - sudo apt-get install rsync
+        - zip -r bootui/tachiweb-bootstrap/dist/tachiweb-win32.zip bootui/tachiweb-bootstrap/dist/win-ia32-unpacked
+        - zip -r bootui/tachiweb-bootstrap/dist/tachiweb-win64.zip bootui/tachiweb-bootstrap/dist/win-unpacked
       deploy:
         skip_cleanup: true
         provider: script
