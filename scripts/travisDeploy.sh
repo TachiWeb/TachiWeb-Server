@@ -15,7 +15,21 @@ mv "TachiServer/build/libs/$(ls TachiServer/build/libs | grep TachiServer-all)" 
 rsync -v -e ssh /tmp/server.jar "$BASE_LOC:$BASE_DIR"
 
 ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb | while read x; do
+    if [[ ${x} == *.blockmap ]]; then
+        continue
+    fi
+
     BIN_PATH="$(realpath "bootui/tachiweb-bootstrap/dist/$x")"
+
+    rsync -v -e ssh "$BIN_PATH" "$BASE_LOC:$NATIVES_DIR"
+done
+
+ls -1 bootui/tachiweb-bootstrap/dist/squirrel-windows | grep -i tachiweb | while read x; do
+    if [[ ${x} == *.blockmap ]]; then
+        continue
+    fi
+
+    BIN_PATH="$(realpath "bootui/tachiweb-bootstrap/dist/squirrel-windows/$x")"
 
     rsync -v -e ssh "$BIN_PATH" "$BASE_LOC:$NATIVES_DIR"
 done
