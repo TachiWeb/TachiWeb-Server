@@ -18,7 +18,7 @@ function printJavaBinaries() {
 }
 
 function printNativeBinaries() {
-    ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb- | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
+    ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb | while read x; do echo "$(realpath "bootui/tachiweb-bootstrap/dist/$x")"; done
 }
 
 #checkCommand bower

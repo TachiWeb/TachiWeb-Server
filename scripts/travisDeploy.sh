@@ -14,7 +14,7 @@ mv "TachiServer/build/libs/$(ls TachiServer/build/libs | grep TachiServer-all)" 
 
 rsync -v -e ssh /tmp/server.jar "$BASE_LOC:$BASE_DIR"
 
-ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb* | while read x; do
+ls -1 bootui/tachiweb-bootstrap/dist | grep -i tachiweb | while read x; do
     BIN_PATH="$(realpath "bootui/tachiweb-bootstrap/dist/$x")"
 
     rsync -v -e ssh "$BIN_PATH" "$BASE_LOC:$NATIVES_DIR"
