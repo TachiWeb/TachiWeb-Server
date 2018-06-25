@@ -20,7 +20,7 @@ matrix:
         # Mono again
         - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
         - wine msiexec /i /tmp/mono.msi
-      script: travis_wait 40 bash -c "CI=false scripts/build.sh --windows"
+      script: bash -c "CI=false scripts/build.sh --windows"
       before_deploy:
         - sudo apt-get install rsync
       deploy:
