@@ -103,4 +103,3 @@ task fatJar(type: Jar) {
 }
 
 assemble.dependsOn fatJar
-processResources.dependsOn ":tachiwebui:copyWebUi"

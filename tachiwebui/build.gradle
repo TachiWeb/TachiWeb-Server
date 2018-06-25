@@ -24,6 +24,7 @@ task copyWebUi(type: Copy) {
     into outDir
 }
 
+processResources.dependsOn(copyWebUi)
 copyWebUi.dependsOn(npm_run_build)
 copyWebUi.dependsOn(deleteOldWebUi)
 npm_run_build.dependsOn(npm_install)
