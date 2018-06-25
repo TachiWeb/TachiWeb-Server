@@ -56,7 +56,7 @@ else
     YARN_COMMAND=":bootui:yarn_dist"
 fi
 
-if [[ ${TRAVIS}  == "true" ]]; then
+if [[ ${TRAVIS} == "true" ]]; then
     ./gradlew "$YARN_COMMAND" :TachiServer:fatJar || { echo 'Travis build failed!' ; exit 1; }
     echo -e "\n\n-------------> Travis build complete! <-------------"
     echo "Output files:"

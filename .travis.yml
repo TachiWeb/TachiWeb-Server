@@ -6,11 +6,12 @@ matrix:
         - "9"
       dist: trusty
       before_install:
-        - sudo apt-get install -y realpath openjdk-8-jdk wine mono-complete gcc-multilib g++-multilib
+        - wget -nc https://dl.winehq.org/wine-builds/Release.key
+        - sudo apt-key add Release.key
+        - sudo apt-add-repository -y https://dl.winehq.org/wine-builds/ubuntu/
+        - sudo apt-get update
+        - sudo apt-get install -y --install-recommends realpath openjdk-8-jdk winehq-stable mono-complete gcc-multilib g++-multilib
       script: bash -c "CI=false scripts/build.sh --windows"
-      addons:
-        apt:
-          update: true
       before_deploy:
         - sudo apt-get install rsync
       deploy:
