@@ -23,8 +23,8 @@ matrix:
       script: bash -c "CI=false scripts/build.sh --windows"
       before_deploy:
         - sudo apt-get install rsync
-        - zip -r bootui/tachiweb-bootstrap/dist/tachiweb-win32.zip bootui/tachiweb-bootstrap/dist/win-ia32-unpacked
-        - zip -r bootui/tachiweb-bootstrap/dist/tachiweb-win64.zip bootui/tachiweb-bootstrap/dist/win-unpacked
+        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r tachiweb-win32.zip win-ia32-unpacked"
+        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r tachiweb-win64.zip win-unpacked"
       deploy:
         skip_cleanup: true
         provider: script
