@@ -44,11 +44,10 @@ import xyz.nulldev.ts.api.v2.http.extensions.ExtensionsController
 import xyz.nulldev.ts.api.v2.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.v2.http.library.LibraryController
 import xyz.nulldev.ts.api.v2.http.mangas.MangasController
-import xyz.nulldev.ts.api.v2.http.mangas.MangasController.getViewer
-import xyz.nulldev.ts.api.v2.http.mangas.MangasController.setViewer
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
+import kotlin.system.exitProcess
 
 /**
  * Project: TachiServer
@@ -210,6 +209,14 @@ class HttpAPI {
         getAPIRoute("/v2/extensions/:extensions/has_update", JavalinShim(ExtensionsController::getHasUpdate))
         getAPIRoute("/v2/extensions/:extensions/icon", JavalinShim(ExtensionsController::getIcon))
         postAPIRoute("/v2/extensions/:extensions/install", JavalinShim(ExtensionsController::install))
+
+        // Fake v3 APIs
+        postAPIRoute("/v3/server/stop", Route { request, response ->
+            response.status(200)
+            response.raw().outputStream.close()
+
+            exitProcess(0)
+        })
 
         //Sync route
         val syncRoute = SyncRoute()

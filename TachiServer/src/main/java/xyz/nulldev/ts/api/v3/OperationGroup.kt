@@ -26,19 +26,25 @@ internal val apiSerializer = ObjectMapper().registerKotlinModule()
 internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.op(
         operationId: String,
         noinline function: suspend (Input) -> Output
-) = op(operationId) { input: Input, _ ->
-    val test = OperationGroup::register
+) = opWithContext(operationId) { input: Input, _ ->
     function(input)
 }
 
 internal inline fun <reified Output> OpenAPI3RouterFactory.op(
         operationId: String,
         noinline function: suspend () -> Output
-) = op(operationId) { _: Unit, _ ->
+) = opWithContext(operationId) { _: Unit, _ ->
     function()
 }
 
-internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.op(
+internal inline fun <reified Output> OpenAPI3RouterFactory.opWithContext(
+        operationId: String,
+        noinline function: suspend (RoutingContext) -> Output
+) = opWithContext(operationId) { _: Unit, rc ->
+    function(rc)
+}
+
+internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.opWithContext(
         operationId: String,
         noinline function: suspend (Input, RoutingContext) -> Output
 ) {
@@ -76,7 +82,7 @@ internal inline fun <reified PathParam1, reified Input, reified Output> OpenAPI3
         operationId: String,
         pathParam1Name: String,
         noinline function: suspend (PathParam1, Input) -> Output
-) = op(operationId) { input: Input, rc ->
+) = opWithContext(operationId) { input: Input, rc ->
     function(rc.pathParamObj(pathParam1Name), input)
 }
 
@@ -85,7 +91,7 @@ internal inline fun <reified PathParam1, reified PathParam2, reified Input, reif
         pathParam1Name: String,
         pathParam2Name: String,
         noinline function: suspend (PathParam1, PathParam2, Input) -> Output
-) = op(operationId) { input: Input, rc ->
+) = opWithContext(operationId) { input: Input, rc ->
     function(rc.pathParamObj(pathParam1Name), rc.pathParamObj(pathParam2Name), input)
 }
 
@@ -93,7 +99,7 @@ internal inline fun <reified PathParam1, reified Output> OpenAPI3RouterFactory.o
         operationId: String,
         pathParam1Name: String,
         noinline function: suspend (PathParam1) -> Output
-) = op(operationId) { _: Unit, rc ->
+) = opWithContext(operationId) { _: Unit, rc ->
     function(rc.pathParamObj(pathParam1Name))
 }
 
@@ -102,8 +108,42 @@ internal inline fun <reified PathParam1, reified PathParam2, reified Output> Ope
         pathParam1Name: String,
         pathParam2Name: String,
         noinline function: suspend (PathParam1, PathParam2) -> Output
-) = op(operationId) { _: Unit, rc ->
+) = opWithContext(operationId) { _: Unit, rc ->
     function(rc.pathParamObj(pathParam1Name), rc.pathParamObj(pathParam2Name))
+}
+
+internal inline fun <reified PathParam1, reified Input, reified Output> OpenAPI3RouterFactory.opWithParamsAndContext(
+        operationId: String,
+        pathParam1Name: String,
+        noinline function: suspend (PathParam1, Input, RoutingContext) -> Output
+) = opWithContext(operationId) { input: Input, rc ->
+    function(rc.pathParamObj(pathParam1Name), input, rc)
+}
+
+internal inline fun <reified PathParam1, reified PathParam2, reified Input, reified Output> OpenAPI3RouterFactory.opWithParamsAndContext(
+        operationId: String,
+        pathParam1Name: String,
+        pathParam2Name: String,
+        noinline function: suspend (PathParam1, PathParam2, Input, RoutingContext) -> Output
+) = opWithContext(operationId) { input: Input, rc ->
+    function(rc.pathParamObj(pathParam1Name), rc.pathParamObj(pathParam2Name), input, rc)
+}
+
+internal inline fun <reified PathParam1, reified Output> OpenAPI3RouterFactory.opWithParamsAndContext(
+        operationId: String,
+        pathParam1Name: String,
+        noinline function: suspend (PathParam1, RoutingContext) -> Output
+) = opWithContext(operationId) { _: Unit, rc ->
+    function(rc.pathParamObj(pathParam1Name), rc)
+}
+
+internal inline fun <reified PathParam1, reified PathParam2, reified Output> OpenAPI3RouterFactory.opWithParamsAndContext(
+        operationId: String,
+        pathParam1Name: String,
+        pathParam2Name: String,
+        noinline function: suspend (PathParam1, PathParam2, RoutingContext) -> Output
+) = opWithContext(operationId) { _: Unit, rc ->
+    function(rc.pathParamObj(pathParam1Name), rc.pathParamObj(pathParam2Name), rc)
 }
 
 internal inline fun <reified T> RoutingContext.pathParamObj(name: String): T {
