@@ -10,7 +10,7 @@ TachiWeb-Server is a port of [Tachiyomi](https://github.com/inorichi/tachiyomi) 
   <summary>Show all downloads</summary>
   <p>
   
-  | Windows | Linux <br><small><small>(more distros soon!)</small></small> | macOS | Server-only<br><small><small>(For the pros)</small></small> |
+  | Windows | Linux | macOS | Server-only |
   | --- | --- | --- | --- |
   | [64-bit/32-bit installation file](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-win-Setup.exe) | [32-bit AppImage](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-i386.AppImage) | [DMG image](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-mac.dmg) | [Executable JAR](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/server.jar) |
   | [32-bit portable zip archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-win32-portable.zip) | [64-bit AppImage](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-x86_64.AppImage) | [zip archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-mac.zip) |
