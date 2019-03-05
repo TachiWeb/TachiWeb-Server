@@ -5,7 +5,7 @@ matrix:
       services:
         - docker
       node_js:
-        - "9"
+        - "10"
       dist: trusty
       before_install:
         - sudo apt-get install --allow-unauthenticated -y apt-transport-https
@@ -38,7 +38,7 @@ matrix:
       osx_image: xcode9.4
       language: node_js
       node_js:
-        - "9"
+        - "10"
       before_install:
         - brew update
         - brew outdated coreutils || brew upgrade coreutils
