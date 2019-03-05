@@ -23,8 +23,7 @@ matrix:
         # - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
         # - wine msiexec /i /tmp/mono.msi
         # Docker
-        - bash -c "cd bootui/tachiweb-bootstrap && bash ../../scripts/startDocker.sh"
-      script: bash -c "CI=false scripts/build.sh --windows"
+      script: bash -c "CI=false scripts/build.sh --linux" && bash -c "cd bootui/tachiweb-bootstrap && bash ../../scripts/buildWindowsInDocker.sh"
       before_deploy:
         - sudo apt-get install rsync
         - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r tachiweb-win32.zip win-ia32-unpacked"

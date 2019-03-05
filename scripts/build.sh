@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-LINUX_WINDOWS="false"
+LINUX="false"
 for i in "$@" ; do
-    if [[ ${i} == "--windows" ]] ; then
-        LINUX_WINDOWS="true"
+    if [[ ${i} == "--linux" ]] ; then
+        LINUX="true"
         break
     fi
 done
@@ -50,8 +50,8 @@ chmod +x scripts/getAndroidLib.sh
 rm -rf target
 
 YARN_COMMAND=""
-if [[ ${LINUX_WINDOWS} == "true" ]]; then
-    YARN_COMMAND=":bootui:yarn_distLinuxWindows"
+if [[ ${LINUX} == "true" ]]; then
+    YARN_COMMAND=":bootui:yarn_distLinux"
 else
     YARN_COMMAND=":bootui:yarn_dist"
 fi
