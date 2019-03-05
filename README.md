@@ -1,28 +1,45 @@
-# TachiWeb-Server
-TachiWeb-Server is an attempt to port [Tachiyomi](https://github.com/inorichi/tachiyomi) to the desktop and server platforms.
+# TachiWeb-Server ![Travis status](https://api.travis-ci.org/TachiWeb/TachiWeb-Server.svg?branch=develop)
+TachiWeb-Server is a port of [Tachiyomi](https://github.com/inorichi/tachiyomi) to the desktop and server platforms.
 
-# About
+## Downloads
+[![Windows installer download](.github/Windows.png)](https://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-win-Setup.exe)&nbsp;&nbsp;
+[![Linux 64-bit AppImage download](.github/Linux.png)](https://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-x86_64.AppImage)&nbsp;&nbsp;
+[![Mac DMG download](.github/macOS.png)](https://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-mac.dmg)
+
+<details>
+  <summary>Show all downloads</summary>
+  <p>
+  
+  | Windows | Linux <br><small><small>(more distros soon!)</small></small> | macOS | Server-only<br><small><small>(For the pros)</small></small> |
+  | --- | --- | --- | --- |
+  | [64-bit/32-bit installation file](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-win-Setup.exe) | [32-bit AppImage](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-i386.AppImage) | [DMG image](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-mac.dmg) | [Executable JAR](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/server.jar) |
+  | [32-bit portable zip archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-win32-portable.zip) | [64-bit AppImage](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-x86_64.AppImage) | [zip archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-mac.zip) |
+  | [64-bit portable zip archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-win64-portable.zip) | [64-bit .pacman package](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-x64.pacman) | |
+  |  | [32-bit .tar.gz archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-ia32.tar.gz) | |
+  |  | [64-bit .tar.gz archive](http://travis.nd.ax/TachiWeb/TachiWeb-Server/latest/natives/TachiWeb-linux-x64.tar.gz) | |
+  
+  [Older builds](https://travis.nd.ax/TachiWeb/TachiWeb-Server/)
+  
+  </p>
+</details>
+
+**Java 8 or newer is required to run the application.**
+
+## About
 TachiWeb-Server provides a consistent and flexible API for programs using the Tachiyomi backend.
 TachiWeb-Server allows multiple programs to use the same Tachiyomi library at the same time and provides a foundation for alternative frontends to build on.
 
-Currently, this project comes bundled with a built in HTML/CSS/JS frontend that is enabled by default.
+Currently, this project comes bundled with a React frontend that is enabled by default and a bootstrapper to integrate the application with your desktop.
 
 TachiWeb is not officially supported by Tachiyomi or it's contributors.
 
-# Live demo
-~A live demo is available here: [http://d3.nulldev.xyz:4567/](http://d3.nulldev.xyz:4567/)~ Currently not working. Will be fixed soon!
-**NOTE**: Batoto normally requires log in but in the demo, I will use my own credentials.
-Please don't destroy the live demo.
-
-# Motivation
+## Motivation
 There is currently no Manga reader that can be easily synced between the desktop and mobile.
 TachiWeb-Server is fully compatible with Tachiyomi's data structures and backups, allowing easy migration between the two.
 **Seamless sync between the two programs is a goal and planned feature.**
 
-# Installation
-
-## Local installation
-Refer to [INSTALL.md](https://github.com/TachiWeb/TachiWeb-Server/blob/master/INSTALL.md).
+## Server setup
+TachiWeb can also be installed on servers. Refer to [INSTALL.md](https://github.com/TachiWeb/TachiWeb-Server/blob/master/INSTALL.md) for the server installation procedure.
 
 # State
 TachiWeb-Server usable, but still **alpha** software.
