@@ -2,6 +2,8 @@ matrix:
   include:
     - sudo: required
       language: node_js
+      services:
+        - docker
       node_js:
         - "9"
       dist: trusty
@@ -20,6 +22,8 @@ matrix:
         # Mono again
         - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
         - wine msiexec /i /tmp/mono.msi
+        # Docker
+        - bash -c "cd bootui/tachiweb-bootstrap && ../../scripts/startDocker.sh"
       script: bash -c "CI=false scripts/build.sh --windows"
       before_deploy:
         - sudo apt-get install rsync
