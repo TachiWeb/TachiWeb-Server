@@ -23,6 +23,8 @@ TachiWeb-Server is a port of [Tachiyomi](https://github.com/inorichi/tachiyomi) 
   </p>
 </details>
 
+<br>
+
 **Java 8 or newer is required to run the application.**
 
 ## About
