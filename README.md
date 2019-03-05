@@ -31,7 +31,7 @@ Details on the state of the project can be found here: [https://github.com/Tachi
 
 # License
 ```
-Copyright 2017 Andy Bao
+Copyright 2019 Andy Bao and contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

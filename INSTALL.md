@@ -7,7 +7,7 @@
 
 ### Requirements
 
-**OS -** TachiWeb currently only compiles properly on Linux.
+**OS -** TachiWeb can be built and compiled on most Linux and Mac systems.
 
 **Tools -** The following programs must be installed (and meet version requirements) to build this project:
 - bower >= 1.8.0
