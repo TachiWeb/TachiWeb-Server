@@ -10,7 +10,6 @@
 **OS -** TachiWeb can be built and compiled on most Linux and Mac systems.
 
 **Tools -** The following programs must be installed (and meet version requirements) to build this project:
-- bower >= 1.8.0
 - npm >= 3.0.0
 - curl
 - zip

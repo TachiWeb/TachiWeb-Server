@@ -1,0 +1,53 @@
+matrix:
+  include:
+    - sudo: required
+      language: node_js
+      services:
+        - docker
+      node_js:
+        - "10"
+      dist: trusty
+      before_install:
+        - sudo apt-get install --allow-unauthenticated -y apt-transport-https
+        # Wine
+        # - wget -nc https://dl.winehq.org/wine-builds/Release.key
+        # - sudo apt-key add Release.key
+        # - sudo apt-add-repository -y https://dl.winehq.org/wine-builds/ubuntu/
+        # Mono
+        # - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+        # - echo "deb https://download.mono-project.com/repo/ubuntu stable-trusty main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+        # Actually install packages (we no longer need 'winehq-stable mono-complete' since we have docker)
+        - sudo apt-get update
+        - sudo apt-get install --allow-unauthenticated -y --install-recommends realpath openjdk-8-jdk gcc-multilib g++-multilib rpm bsdtar
+        # Mono again
+        # - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
+        # - wine msiexec /i /tmp/mono.msi
+        # Docker
+      script: bash -c "CI=false scripts/build.sh --linux" && bash -c "cd bootui/tachiweb-bootstrap && bash ../../scripts/buildWindowsInDocker.sh"
+      before_deploy:
+        - sudo apt-get install rsync
+        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win32-portable.zip win-ia32-unpacked"
+        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win64-portable.zip win-unpacked"
+      deploy:
+        skip_cleanup: true
+        provider: script
+        script: bash scripts/travisDeploy.sh
+        on:
+          all_branches: true
+    - os: osx
+      osx_image: xcode9.4
+      language: node_js
+      node_js:
+        - "10"
+      before_install:
+        - brew update
+        - brew outdated coreutils || brew upgrade coreutils
+        - brew outdated maven || brew upgrade maven
+        - brew install yarn --ignore-dependencies
+      script: bash -c "CI=false scripts/build.sh"
+      deploy:
+        skip_cleanup: true
+        provider: script
+        script: bash scripts/travisDeploy.sh
+        on:
+          all_branches: true
