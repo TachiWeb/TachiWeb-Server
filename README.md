@@ -1,4 +1,4 @@
-# TachiWeb-Server ![Travis status](https://api.travis-ci.org/TachiWeb/TachiWeb-Server.svg?branch=develop)
+# TachiWeb-Server [![Travis status](https://api.travis-ci.org/TachiWeb/TachiWeb-Server.svg?branch=develop)](https://travis-ci.org/TachiWeb/TachiWeb-Server)
 TachiWeb-Server is a port of [Tachiyomi](https://github.com/inorichi/tachiyomi) to the desktop and server platforms.
 
 ## Downloads
