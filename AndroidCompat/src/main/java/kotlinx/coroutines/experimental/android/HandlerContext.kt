@@ -1,5 +1,5 @@
 package kotlinx.coroutines.experimental.android
 
-import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.GlobalScope
 
-val UI = DefaultDispatcher
+val UI = GlobalScope.coroutineContext

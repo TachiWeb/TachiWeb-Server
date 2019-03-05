@@ -2,11 +2,7 @@ package eu.kanade.tachiyomi.network
 
 import android.content.Context
 import android.os.Build
-import okhttp3.Cache
-import okhttp3.CipherSuite
-import okhttp3.ConnectionSpec
-import okhttp3.OkHttpClient
-import okhttp3.TlsVersion
+import okhttp3.*
 import java.io.File
 import java.io.IOException
 import java.net.InetAddress
@@ -15,11 +11,7 @@ import java.net.UnknownHostException
 import java.security.KeyManagementException
 import java.security.KeyStore
 import java.security.NoSuchAlgorithmException
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocket
-import javax.net.ssl.SSLSocketFactory
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 
 class NetworkHelper(context: Context) {
 

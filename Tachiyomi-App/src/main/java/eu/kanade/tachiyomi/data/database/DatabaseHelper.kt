@@ -1,11 +1,13 @@
 package eu.kanade.tachiyomi.data.database
 
+import android.arch.persistence.db.SupportSQLiteOpenHelper
 import android.content.Context
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite
 import eu.kanade.tachiyomi.data.database.mappers.*
 import eu.kanade.tachiyomi.data.database.models.*
 import eu.kanade.tachiyomi.data.database.queries.*
 import eu.kanade.tachiyomi.data.database.resolvers.EntryUpdateQueries
+import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 
 /**
  * This class provides operations to manage the database through its interfaces.
@@ -13,8 +15,13 @@ import eu.kanade.tachiyomi.data.database.resolvers.EntryUpdateQueries
 open class DatabaseHelper(context: Context)
 : MangaQueries, ChapterQueries, TrackQueries, CategoryQueries, MangaCategoryQueries, HistoryQueries, EntryUpdateQueries {
 
+    private val configuration = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(DbOpenCallback.DATABASE_NAME)
+            .callback(DbOpenCallback())
+            .build()
+
     override val db = DefaultStorIOSQLite.builder()
-            .sqliteOpenHelper(DbOpenHelper(context))
+            .sqliteOpenHelper(RequerySQLiteOpenHelperFactory().create(configuration))
             .addTypeMapping(Manga::class.java, MangaTypeMapping())
             .addTypeMapping(Chapter::class.java, ChapterTypeMapping())
             .addTypeMapping(Track::class.java, TrackTypeMapping())

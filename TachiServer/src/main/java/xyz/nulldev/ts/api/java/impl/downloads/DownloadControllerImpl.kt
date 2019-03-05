@@ -66,7 +66,7 @@ class DownloadControllerImpl : DownloadController {
         validateOperation(chapter, true)
 
         downloadManager.queue.remove(chapter)
-        downloadManager.deleteChapter(chapter, manga, source)
+        downloadManager.deleteChapters(listOf(chapter), manga, source)
     }
 
     private fun validateOperation(chapter: Chapter,

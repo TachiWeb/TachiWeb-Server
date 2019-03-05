@@ -59,8 +59,6 @@ class PreferencesHelper(val context: Context) {
 
     fun imageScaleType() = rxPrefs.getInteger(Keys.imageScaleType, 1)
 
-    fun imageDecoder() = rxPrefs.getInteger(Keys.imageDecoder, 0)
-
     fun zoomStart() = rxPrefs.getInteger(Keys.zoomStart, 1)
 
     fun readerTheme() = rxPrefs.getInteger(Keys.readerTheme, 0)
@@ -82,8 +80,6 @@ class PreferencesHelper(val context: Context) {
     fun updateOnlyNonCompleted() = prefs.getBoolean(Keys.updateOnlyNonCompleted, false)
 
     fun autoUpdateTrack() = prefs.getBoolean(Keys.autoUpdateTrack, true)
-
-    fun askUpdateTrack() = prefs.getBoolean(Keys.askUpdateTrack, false)
 
     fun lastUsedCatalogueSource() = rxPrefs.getLong(Keys.lastUsedCatalogueSource, -1)
 

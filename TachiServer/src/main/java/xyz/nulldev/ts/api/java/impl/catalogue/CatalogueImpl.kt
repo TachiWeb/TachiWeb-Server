@@ -6,17 +6,20 @@ import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.preference.getOrDefault
-import eu.kanade.tachiyomi.source.*
+import eu.kanade.tachiyomi.source.CatalogueSource
+import eu.kanade.tachiyomi.source.LocalSource
+import eu.kanade.tachiyomi.source.SourceInjector
+import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.LoginSource
-import eu.kanade.tachiyomi.source.online.fetchPageListFromCacheThenNet
 import eu.kanade.tachiyomi.util.syncChaptersWithSource
 import xyz.nulldev.ts.api.java.model.catalogue.Catalogue
 import xyz.nulldev.ts.api.java.model.catalogue.CataloguePage
 import xyz.nulldev.ts.api.java.util.*
+import xyz.nulldev.ts.ext.fetchPageListFromCacheThenNet
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.util.*
 

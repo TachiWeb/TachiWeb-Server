@@ -1,11 +1,7 @@
 package eu.kanade.tachiyomi.network
 
 import com.squareup.duktape.Duktape
-import okhttp3.CacheControl
-import okhttp3.HttpUrl
-import okhttp3.Interceptor
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 
 class CloudflareInterceptor : Interceptor {
 

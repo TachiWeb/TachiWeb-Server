@@ -27,9 +27,6 @@ dependencies {
     // OkHttp
     compile "com.squareup.okhttp3:okhttp:3.6.0"
 
-    // SQLite
-    compile "com.pushtorefresh.storio:sqlite:1.12.2"
-
     // RxRelay
     compile "com.jakewharton.rxrelay:rxrelay:1.2.0"
 

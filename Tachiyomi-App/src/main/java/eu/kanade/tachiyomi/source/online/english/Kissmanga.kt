@@ -5,10 +5,7 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.source.model.*
 import eu.kanade.tachiyomi.source.online.ParsedHttpSource
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import timber.log.Timber
@@ -28,6 +25,11 @@ class Kissmanga : ParsedHttpSource() {
     override val supportsLatest = true
 
     override val client: OkHttpClient = network.cloudflareClient
+
+    override fun headersBuilder(): Headers.Builder {
+        return Headers.Builder()
+                .add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60")
+    }
 
     override fun popularMangaSelector() = "table.listing tr:gt(1)"
 
@@ -154,9 +156,17 @@ class Kissmanga : ParsedHttpSource() {
             it.evaluate(ca)
             it.evaluate(lo)
 
-            // Find all the urls and decrypt them in JS.
-            val p = Pattern.compile("""lstImages.push\((.*)\);""")
-            val m = p.matcher(body)
+            // There are two functions in an inline script needed to decrypt the urls. We find and
+            // execute them.
+            var p = Pattern.compile("(var.*CryptoJS.*)")
+            var m = p.matcher(body)
+            while (m.find()) {
+                it.evaluate(m.group(1))
+            }
+
+            // Finally find all the urls and decrypt them in JS.
+            p = Pattern.compile("""lstImages.push\((.*)\);""")
+            m = p.matcher(body)
 
             var i = 0
             while (m.find()) {

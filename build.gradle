@@ -1,5 +1,5 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.50" apply false // Also in settings.gradle
+    id "org.jetbrains.kotlin.jvm" version "1.3.21" apply false // Also in settings.gradle
     id "java"
 }
 
@@ -16,6 +16,9 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://dl.bintray.com/inorichi/maven" }
+        maven { url "https://dl.google.com/dl/android/maven2/" }
 
         maven {
             url new File(rootProject.rootDir, "local-repo").toURI().toURL().toExternalForm()

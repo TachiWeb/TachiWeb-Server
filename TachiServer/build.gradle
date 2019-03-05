@@ -27,6 +27,11 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.+"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
 
+    // Vert.x (v3 web API)
+    def vertx_version = '3.6.3'
+    compile "io.vertx:vertx-web:$vertx_version"
+    compile "io.vertx:vertx-web-api-contract:$vertx_version"
+
     // Tests
     compile "junit:junit:4.12"
 
@@ -47,6 +52,17 @@ dependencies {
 
     // Json path
     compile 'com.jayway.jsonpath:json-path:2.3.0'
+
+    // Tika content-type detection
+    def tika_version = "1.20"
+    compile group: 'org.apache.tika', name: 'tika-core', version: tika_version
+    compile "org.apache.tika:tika-parsers:$tika_version"
+    compile group: 'org.apache.tika', name: 'tika-java7', version: tika_version
+}
+
+// Exclude regular ASM as dex2jar needs debug ASM
+configurations.all {
+    exclude group: "org.ow2.asm", module: "asm"
 }
 
 def getGitHash = { ->
@@ -97,8 +113,10 @@ task fatJar(type: Jar) {
         attributes 'Implementation-Version': version,
                 'Main-Class': mainClassName
     }
+    zip64 = true
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude ('META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA')
     with jar
 }
 

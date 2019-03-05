@@ -5,18 +5,16 @@ import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.source.online.fetchImageFromCacheThenNet
-import xyz.nulldev.androidcompat.util.file
-import xyz.nulldev.androidcompat.util.java
 import xyz.nulldev.ts.api.java.model.image.ImageController
-import xyz.nulldev.ts.api.java.util.*
+import xyz.nulldev.ts.api.java.util.pageList
+import xyz.nulldev.ts.api.java.util.sourceObj
+import xyz.nulldev.ts.api.java.util.updateInfo
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.nio.file.Files
-import java.nio.file.Paths
 
 class ImageControllerImpl : ImageController {
     private val coverCache: CoverCache by kInstanceLazy()
@@ -106,7 +104,9 @@ class ImageControllerImpl : ImageController {
     }
 
     override fun fetchImage(chapter: Chapter, page: Page, stream: OutputStream): String {
-        val manga = chapter.manga.ensureInDatabase()
+        throw NotImplementedError("Deprecated, use v3 API instead!")
+
+        /*val manga = chapter.manga.ensureInDatabase()
         val source = manga.sourceObj.ensureLoaded()
 
         //TODO Accept offline sources
@@ -131,6 +131,6 @@ class ImageControllerImpl : ImageController {
             }
         } catch (e: Exception) {
             throw IOException("Failed to download page!", e)
-        }
+        }*/
     }
 }

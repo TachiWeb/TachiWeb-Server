@@ -50,8 +50,9 @@ git clone https://github.com/null-dev/tachiyomi
 
 echo "Filtering source code..."
 # Include
-keepFile "ui.reader" "ChapterLoader.kt"
-keepFile "ui.reader" "ReaderChapter.kt"
+keepFolder "ui.reader.loader"
+keepFile "ui.reader.model" "ReaderChapter.kt"
+keepFile "ui.reader.model" "ReaderPage.kt"
 keepFile "ui.library" "LibrarySort.kt"
 keepFile "" "AppModule.kt"
 keepFolder "data"

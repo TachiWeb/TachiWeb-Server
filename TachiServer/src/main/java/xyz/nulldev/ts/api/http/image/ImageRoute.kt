@@ -21,28 +21,20 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.source.online.fetchImageFromCacheThenNet
+import eu.kanade.tachiyomi.ui.reader.loader.ChapterLoader
+import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
+import org.apache.tika.metadata.Metadata
+import org.apache.tika.metadata.TikaCoreProperties
+import org.apache.tika.mime.MimeTypes
 import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
 import spark.utils.IOUtils
-import xyz.nulldev.androidcompat.util.file
-import xyz.nulldev.androidcompat.util.java
 import xyz.nulldev.ts.api.http.TachiWebRoute
-import xyz.nulldev.ts.api.java.util.isDownloaded
-import xyz.nulldev.ts.api.java.util.pageList
 import xyz.nulldev.ts.ext.enableCache
 import xyz.nulldev.ts.ext.kInstanceLazy
-import java.io.FileInputStream
-import java.nio.file.Files
-import java.nio.file.Paths
 
-/**
- * Project: TachiServer
- * Author: nulldev
- * Creation Date: 30/09/16
- */
+// TODO Alternative HttpPageLoader
 class ImageRoute : TachiWebRoute() {
 
     private val downloadManager: DownloadManager by kInstanceLazy()
@@ -50,6 +42,8 @@ class ImageRoute : TachiWebRoute() {
     private val db: DatabaseHelper by kInstanceLazy()
 
     private val logger = LoggerFactory.getLogger(javaClass)
+
+    private val detector = MimeTypes()
 
     override fun handleReq(request: Request, response: Response): Any {
         val mangaId = request.params(":mangaId")?.toLong()
@@ -61,6 +55,7 @@ class ImageRoute : TachiWebRoute() {
         if (page == null || page < 0) {
             page = 0
         }
+
         val manga = db.getManga(mangaId).executeAsBlocking()
                 ?: return error("The specified manga does not exist!")
         val source: CatalogueSource?
@@ -75,40 +70,43 @@ class ImageRoute : TachiWebRoute() {
 
         val chapter = db.getChapter(chapterId).executeAsBlocking()
                 ?: return error("The specified chapter does not exist!")
-        //TODO Error handling
-        val pages = chapter.pageList
-        var pageObj: Page? = pages.firstOrNull { it.index == page } ?: return error("Could not find specified page!")
-
-        //Get downloaded image if downloaded
-        if (chapter.isDownloaded) {
-            pageObj = downloadManager.buildPageList(source, manga, chapter)
-                    .toBlocking()
-                    .first().first { it.index == page }
-        }
-        //TODO Accept offline sources
-        if(source !is HttpSource) {
-            return error("This source is currently unsupported!")
-        }
-        //Download image if not downloaded
-        if (pageObj!!.status != Page.READY) {
-            pageObj = source.fetchImageFromCacheThenNet(pageObj).toBlocking().first()
-        }
+        val readerChapter = ReaderChapter(chapter).apply { ref() }
         try {
+            ChapterLoader(downloadManager, manga, source).loadChapter(readerChapter).await()
+            if (readerChapter.state is ReaderChapter.State.Error) {
+                logger.error("Failed to load chapter!")
+                return error("Failed to load chapter!")
+            }
+            val pageObj = readerChapter.pages!!.firstOrNull { it.index == page }
+                    ?: return error("Could not find specified page!")
+            val pageStatus = readerChapter.pageLoader!!.getPage(pageObj).toBlocking().toIterable()
+            for (status in pageStatus) {
+                if (status == Page.READY) break
+                else if (status == Page.ERROR) {
+                    logger.error("Failed to download page!")
+                    return error("Failed to download page!")
+                }
+            }
+
             response.raw().outputStream.use { outputStream ->
-                if (pageObj!!.status == Page.READY && pageObj.uri != null) {
-                    response.status(200)
-                    response.enableCache()
-                    response.type(Files.probeContentType(Paths.get(pageObj.uri!!.java())))
-                    IOUtils.copy(
-                            FileInputStream(pageObj.uri!!.file()),
-                            outputStream)
-                } else {
-                    throw IllegalStateException()
+                response.status(200)
+                response.enableCache()
+                pageObj.stream!!().buffered().use { inputStream ->
+                    // Detect content type
+                    inputStream.mark(detector.minLength)
+                    response.type(detector.detect(inputStream, Metadata().apply {
+                        if (!pageObj.imageUrl.isNullOrBlank()) this[TikaCoreProperties.IDENTIFIER] = pageObj.imageUrl
+                    }).toString())
+                    inputStream.reset()
+
+                    IOUtils.copy(inputStream, outputStream)
                 }
             }
         } catch (e: Exception) {
             logger.error("Failed to download page!", e)
             return error("Failed to download page!")
+        } finally {
+            readerChapter.unref()
         }
 
         return ""

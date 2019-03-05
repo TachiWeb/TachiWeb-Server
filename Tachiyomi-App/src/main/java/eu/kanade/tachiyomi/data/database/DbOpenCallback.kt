@@ -1,15 +1,13 @@
 package eu.kanade.tachiyomi.data.database
 
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
+import android.arch.persistence.db.SupportSQLiteDatabase
+import android.arch.persistence.db.SupportSQLiteOpenHelper
 import eu.kanade.tachiyomi.data.database.models.Updatable
 import eu.kanade.tachiyomi.data.database.models.UpdateTarget
 import eu.kanade.tachiyomi.data.database.queries.getGenerateAllEntryUpdatesQueries
 import eu.kanade.tachiyomi.data.database.tables.*
 
-class DbOpenHelper(context: Context)
-: SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DbOpenCallback : SupportSQLiteOpenHelper.Callback(DATABASE_VERSION) {
 
     companion object {
         /**
@@ -20,10 +18,10 @@ class DbOpenHelper(context: Context)
         /**
          * Version of the database.
          */
-        const val DATABASE_VERSION = 8
+        const val DATABASE_VERSION = 9
     }
 
-    override fun onCreate(db: SQLiteDatabase) = with(db) {
+    override fun onCreate(db: SupportSQLiteDatabase) = with(db) {
         execSQL(MangaTable.createTableQuery)
         execSQL(ChapterTable.createTableQuery)
         execSQL(TrackTable.createTableQuery)
@@ -34,20 +32,21 @@ class DbOpenHelper(context: Context)
 
         // DB indexes
         execSQL(MangaTable.createUrlIndexQuery)
-        execSQL(MangaTable.createFavoriteIndexQuery)
+        execSQL(MangaTable.createLibraryIndexQuery)
         execSQL(ChapterTable.createMangaIdIndexQuery)
+        execSQL(ChapterTable.createUnreadChaptersIndexQuery)
         execSQL(HistoryTable.createChapterIdIndexQuery)
-    
+
         // Gen and apply triggers for sync
         UpdateTarget.registeredObjects.flatMap(Updatable::getTriggers).forEach {
             execSQL(it)
         }
     }
-    
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+
+    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) {
             db.execSQL(ChapterTable.sourceOrderUpdateQuery)
-            
+
             // Fix kissmanga covers after supporting cloudflare
             db.execSQL("""UPDATE mangas SET thumbnail_url =
                     REPLACE(thumbnail_url, '93.174.95.110', 'kissmanga.com') WHERE source = 4""")
@@ -70,6 +69,11 @@ class DbOpenHelper(context: Context)
             db.execSQL(TrackTable.addLibraryId)
         }
         if (oldVersion < 8) {
+            db.execSQL("DROP INDEX IF EXISTS mangas_favorite_index")
+            db.execSQL(MangaTable.createLibraryIndexQuery)
+            db.execSQL(ChapterTable.createUnreadChaptersIndexQuery)
+        }
+        if (oldVersion < 9) {
             // Create sync updates table
             db.execSQL(SyncUpdatesTable.createTableQuery)
 
@@ -86,9 +90,9 @@ class DbOpenHelper(context: Context)
             }
         }
     }
-    
-    override fun onConfigure(db: SQLiteDatabase) {
+
+    override fun onConfigure(db: SupportSQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
     }
-    
+
 }

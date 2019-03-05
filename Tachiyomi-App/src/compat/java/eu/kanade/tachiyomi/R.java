@@ -22,6 +22,7 @@ import xyz.nulldev.androidcompat.res.RCompat;
  * Fake resource reference class.
  */
 public class R extends RCompat {
+    // TODO Eventually generate these from strings.xml
     public static class string {
         public static int app_name = sres("TachiWeb");
         public static int reading = sres("Reading");
@@ -36,6 +37,8 @@ public class R extends RCompat {
         public static int download_notifier_no_network = sres("No network connection available");
 
         public static int local_source = sres("Local manga");
+
+        public static int source_not_installed = sres("Source not installed: %1$s");
 
         public static int pref_theme_key = sres("pref_theme_key");
 

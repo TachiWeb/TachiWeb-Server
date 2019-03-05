@@ -46,7 +46,7 @@ data class InstalledPackage(val root: File) {
             }
 
             it.signatures = (parsed.apkSingers.flatMap { it.certificateMetas }
-                    + parsed.apkV2Singers.flatMap { it.certificateMetas })
+                    /*+ parsed.apkV2Singers.flatMap { it.certificateMetas }*/) // Blocked by: https://github.com/hsiafan/apk-parser/issues/72
                     .map { Signature(it.data) }.toTypedArray()
         }
 

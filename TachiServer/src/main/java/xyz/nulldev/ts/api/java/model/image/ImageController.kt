@@ -13,6 +13,7 @@ interface ImageController {
      * @param stream The stream to write the fetched cover to
      * @return The mime-type of the cover image
      */
+    @Deprecated("Use v3 API")
     fun fetchCover(manga: Manga, stream: OutputStream): String
 
     /**
@@ -23,6 +24,7 @@ interface ImageController {
      * @param stream The stream to write the fetched image to
      * @return The mime-type of the image
      */
+    @Deprecated("Use v3 API")
     fun fetchImage(chapter: Chapter, page: Int, stream: OutputStream): String
 
     /**
@@ -33,5 +35,6 @@ interface ImageController {
      * @param stream The stream to write the fetched image to
      * @return The mime-type of the image
      */
+    @Deprecated("Use v3 API")
     fun fetchImage(chapter: Chapter, page: Page, stream: OutputStream): String
 }
