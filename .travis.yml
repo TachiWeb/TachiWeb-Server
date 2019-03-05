@@ -26,8 +26,8 @@ matrix:
       script: bash -c "CI=false scripts/build.sh --linux" && bash -c "cd bootui/tachiweb-bootstrap && bash ../../scripts/buildWindowsInDocker.sh"
       before_deploy:
         - sudo apt-get install rsync
-        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r tachiweb-win32.zip win-ia32-unpacked"
-        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r tachiweb-win64.zip win-unpacked"
+        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win32-portable.zip win-ia32-unpacked"
+        - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win64-portable.zip win-unpacked"
       deploy:
         skip_cleanup: true
         provider: script
