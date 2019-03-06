@@ -10,12 +10,25 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.0.1"
+    "version" : "3.0.2"
   },
+  "servers" : [ {
+    "url" : "{protocol}://{host}:{port}",
+    "description" : "",
+    "variables" : {
+      "protocol" : {
+        "default" : "http",
+        "description" : ""
+      },
+      "host" : {
+        "default" : "localhost"
+      },
+      "port" : {
+        "default" : "4567"
+      }
+    }
+  } ],
   "paths" : {
-    "/api/v3/" : {
-      "summary" : "The API root."
-    },
     "/api/v3/manga" : {
       "summary" : "Path used to manage the list of manga.",
       "description" : "The REST endpoint/path used to list `manga` entities.  This path contains a `GET` operation to perform the list task.",
@@ -2244,6 +2257,21 @@
         "responses" : {
           "200" : {
             "description" : "Successful response, indicates that the server shutdown process has started."
+          }
+        }
+      }
+    },
+    "/api/v3" : {
+      "summary" : "The API root.",
+      "get" : {
+        "summary" : "Returns the OpenAPI specification for this API",
+        "operationId" : "getApiSpec",
+        "responses" : {
+          "200" : {
+            "description" : "An OpenAPI specification in JSON format.",
+            "content" : {
+              "application/json" : { }
+            }
           }
         }
       }
