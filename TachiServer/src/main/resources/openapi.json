@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.2"
+    "version" : "3.1.3"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -1166,6 +1166,7 @@
         "description" : "",
         "operationId" : "loginToSource",
         "requestBody" : {
+          "description" : "The login credentials.",
           "content" : {
             "application/json" : {
               "schema" : {
@@ -1180,7 +1181,14 @@
             "description" : "The login succeeded."
           },
           "400" : {
-            "description" : "The source does not require login."
+            "description" : "The source does not require authentication or the user is already logged in.\n\nThe exact failure reason is provided in the response body.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "enum" : [ "AUTH_UNSUPPORTED", "ALREADY_LOGGED_IN" ]
+                }
+              }
+            }
           },
           "401" : {
             "description" : "The login failed (usually this means the credentials are invalid)."
@@ -1804,7 +1812,7 @@
       "post" : {
         "summary" : "Logout of a tracking service.",
         "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`).",
-        "operationId" : "logoutFromTrackingService",
+        "operationId" : "logoutOfTrackingService",
         "responses" : {
           "200" : {
             "description" : "Successfully logged out of the tracking service."
@@ -2275,6 +2283,41 @@
           }
         }
       }
+    },
+    "/api/v3/sources/{sourceId}/logout" : {
+      "summary" : "Path used to logout of a source.",
+      "post" : {
+        "summary" : "Logout of a source",
+        "description" : "",
+        "operationId" : "logoutOfSource",
+        "responses" : {
+          "204" : {
+            "description" : "The logout succeeded."
+          },
+          "400" : {
+            "description" : "The source does not require authentication or the user is not logged in.\n\nThe exact failure reason is provided in the response body.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "enum" : [ "AUTH_UNSUPPORTED", "NOT_LOGGED_IN" ]
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No source exists with the provided `id`."
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "sourceId",
+        "in" : "path",
+        "description" : "The `id` of the source.",
+        "required" : true,
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
     }
   },
   "components" : {
