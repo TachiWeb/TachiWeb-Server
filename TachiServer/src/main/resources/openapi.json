@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.0.2"
+    "version" : "3.1.2"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -35,7 +35,7 @@
       "get" : {
         "summary" : "List all manga",
         "description" : "Gets a list of all `manga` entities.",
-        "operationId" : "getManga",
+        "operationId" : "getMangas",
         "parameters" : [ {
           "name" : "only-downloaded",
           "in" : "query",
@@ -106,7 +106,7 @@
       "get" : {
         "summary" : "Get a manga",
         "description" : "Gets the details of a single instance of a `manga`.",
-        "operationId" : "getMangaByMangaId",
+        "operationId" : "getManga",
         "responses" : {
           "200" : {
             "description" : "Successful response - returns a single `manga`.",
@@ -138,7 +138,7 @@
       "summary" : "Get the cover/thumbnail of a manga.",
       "get" : {
         "summary" : "Get a manga's cover/thumbnail.",
-        "operationId" : "getCoverOfMangaByMangaId",
+        "operationId" : "getMangaCover",
         "parameters" : [ {
           "name" : "use-placeholder",
           "in" : "query",
@@ -185,7 +185,7 @@
       "get" : {
         "summary" : "Get a manga's flags",
         "description" : "Gets the details of a single instance of a manga's flags.",
-        "operationId" : "getFlagsOfMangaByMangaId",
+        "operationId" : "getMangaFlags",
         "responses" : {
           "200" : {
             "description" : "Successful response - returns a single manga's flags.",
@@ -205,7 +205,7 @@
       "put" : {
         "summary" : "Replace all of a manga's flags",
         "description" : "Replaces all a manga's flags with the supplied flags.",
-        "operationId" : "putFlagsOfMangaByMangaId",
+        "operationId" : "setMangaFlags",
         "requestBody" : {
           "description" : "The new flags to replace the existing flags with.",
           "content" : {
@@ -250,7 +250,7 @@
       "put" : {
         "summary" : "Set a manga's favorite status.",
         "description" : "",
-        "operationId" : "putFavoriteOfMangaByMangaId",
+        "operationId" : "setMangaFavorited",
         "requestBody" : {
           "description" : "The new favorite status of the manga.",
           "content" : {
@@ -295,7 +295,7 @@
       "put" : {
         "summary" : "Set a manga's viewer.",
         "description" : "",
-        "operationId" : "putViewerOfMangaByMangaId",
+        "operationId" : "setMangaViewer",
         "requestBody" : {
           "description" : "The new manga viewer.",
           "content" : {
@@ -407,7 +407,7 @@
       "get" : {
         "summary" : "Get a category",
         "description" : "Gets the details of a single instance of a `category`.",
-        "operationId" : "getCategoryByCategoryId",
+        "operationId" : "getCategory",
         "responses" : {
           "200" : {
             "description" : "Successful response - returns a single `category`.",
@@ -427,7 +427,7 @@
       "put" : {
         "summary" : "Update a category",
         "description" : "Updates an existing `category`.",
-        "operationId" : "putCategoryByCategoryId",
+        "operationId" : "editCategory",
         "requestBody" : {
           "description" : "Updated `category` information.",
           "content" : {
@@ -458,7 +458,7 @@
       "delete" : {
         "summary" : "Delete a category",
         "description" : "Deletes an existing `category`.",
-        "operationId" : "deleteCategoryByCategoryId",
+        "operationId" : "deleteCategory",
         "responses" : {
           "204" : {
             "description" : "Successful response."
@@ -484,7 +484,7 @@
       "get" : {
         "summary" : "Get a list of all chapter associated with this manga sorted by the manga's flags.",
         "description" : "",
-        "operationId" : "getChaptersOfMangaByMangaId",
+        "operationId" : "getMangaChapters",
         "parameters" : [ {
           "name" : "apply-filters",
           "in" : "query",
@@ -530,7 +530,7 @@
       "post" : {
         "summary" : "Update a manga's metadata/info.",
         "description" : "It is recommended for UIs to call this when the initialized field of the manga is `false`.\n\nCalling this will update the initialized field of the manga to `true` if the request succeeds.",
-        "operationId" : "applyUpdateToMangaByMangaId",
+        "operationId" : "updateMangaInfo",
         "responses" : {
           "200" : {
             "description" : "Metadata/info update successful.\n\nThe new manga metadata is returned.",
@@ -574,7 +574,7 @@
       "post" : {
         "summary" : "Update a manga's chapters.",
         "description" : "It is recommended for UIs to call this when the user transitions from the catalogue screen to the manga screen.",
-        "operationId" : "applyUpdateToChaptersOfMangaByMangaId",
+        "operationId" : "updateMangaChapters",
         "responses" : {
           "200" : {
             "description" : "Manga chapters update successful.\n\nThe new chapter list will be returned.",
@@ -642,7 +642,7 @@
       "summary" : "Path used to manage a single chapter.",
       "get" : {
         "summary" : "Get a single chapter by it's id.",
-        "operationId" : "getChapterByChapterId",
+        "operationId" : "getChapter",
         "responses" : {
           "200" : {
             "description" : "Successful response.",
@@ -675,7 +675,7 @@
       "post" : {
         "summary" : "Get a chapter's page count.",
         "description" : "This is POST request for technical reasons.",
-        "operationId" : "getPageCountOfChapterByChapterId",
+        "operationId" : "getChapterPageCount",
         "responses" : {
           "200" : {
             "description" : "Successful response.",
@@ -718,7 +718,7 @@
       "summary" : "Updates the time this chapter was last read",
       "get" : {
         "summary" : "Get the reading status of a chapter.",
-        "operationId" : "getReadingStatusOfChapterByChapterId",
+        "operationId" : "getChapterReadingStatus",
         "responses" : {
           "200" : {
             "description" : "Successful response.",
@@ -736,9 +736,9 @@
         }
       },
       "put" : {
-        "summary" : "Set the reading status of a chapter.",
+        "summary" : "Replace the reading status of a chapter.",
         "description" : "Will also update the tracking information associated with this manga.",
-        "operationId" : "putReadingStatusOfChapterByChapterId",
+        "operationId" : "setChapterReadingStatus",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -780,7 +780,7 @@
       "summary" : "Path used to manage the download associated with this chapter",
       "get" : {
         "summary" : "Get the download associated with this chapter.",
-        "operationId" : "getDownloadOfChapterByChapterId",
+        "operationId" : "getChapterDownload",
         "responses" : {
           "200" : {
             "description" : "Success response.",
@@ -806,7 +806,7 @@
       },
       "post" : {
         "summary" : "Begin downloading a chapter",
-        "operationId" : "applyBeginToDownloadOfChapterByChapterId",
+        "operationId" : "beginChapterDownload",
         "responses" : {
           "200" : {
             "description" : "Success response.\n\nThe newly created download is returned.",
@@ -836,7 +836,7 @@
       "delete" : {
         "summary" : "Delete the download associated with this chapter.",
         "description" : "Note that only fully downloaded downloads can be deleted.",
-        "operationId" : "deleteDownloadFromChapterByChapterId",
+        "operationId" : "deleteChapterDownload",
         "responses" : {
           "204" : {
             "description" : "The download was successfully deleted."
@@ -891,7 +891,7 @@
       "summary" : "Path to manage the pause state of the chapter downloader.",
       "get" : {
         "summary" : "Gets whether or not the downloader is paused.",
-        "operationId" : "getPausedOfDownloader",
+        "operationId" : "isDownloaderPaused",
         "responses" : {
           "200" : {
             "description" : "Success response, returns whether or not the downloader is paused.",
@@ -907,7 +907,7 @@
       },
       "put" : {
         "summary" : "Updates the pause state of the downloader.",
-        "operationId" : "putPausedOfDownloader",
+        "operationId" : "setDownloaderPaused",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -936,7 +936,7 @@
       "summary" : "Path used to clear the downloader's queue.",
       "post" : {
         "summary" : "Clear the downloader's queue.",
-        "operationId" : "applyClearToDownloader",
+        "operationId" : "clearDownloader",
         "responses" : {
           "200" : {
             "description" : "Success response, the new downloader is returned.",
@@ -956,7 +956,7 @@
       "get" : {
         "summary" : "Get the image associated with a chapter page.",
         "description" : "Note that the page image may be animated.",
-        "operationId" : "getImageOfPageByPageIndexOfChapterByChapterId",
+        "operationId" : "getChapterPageImage",
         "responses" : {
           "200" : {
             "description" : "Success response. The page's image is returned.",
@@ -1013,7 +1013,7 @@
       "summary" : "Create a backup",
       "post" : {
         "summary" : "Create a backup",
-        "operationId" : "applyBackupToBackups",
+        "operationId" : "backupAll",
         "responses" : {
           "200" : {
             "description" : "The backup was created successfully.",
@@ -1028,7 +1028,7 @@
       "summary" : "Restore a backup.",
       "post" : {
         "summary" : "Restore a backup.",
-        "operationId" : "applyRestoreToBackups",
+        "operationId" : "restoreAll",
         "requestBody" : {
           "content" : {
             "application/octet-stream" : { }
@@ -1075,7 +1075,7 @@
       "summary" : "Path used to manage a single task.",
       "get" : {
         "summary" : "Get a task.",
-        "operationId" : "getTaskByTaskUuid",
+        "operationId" : "getTask",
         "responses" : {
           "200" : {
             "description" : "Success response.",
@@ -1132,7 +1132,7 @@
       "get" : {
         "summary" : "Get a source",
         "description" : "Gets the details of a single instance of a `source`.",
-        "operationId" : "getSourceById",
+        "operationId" : "getSource",
         "responses" : {
           "200" : {
             "description" : "Successful response - returns a single `source`.",
@@ -1164,7 +1164,7 @@
       "post" : {
         "summary" : "Login to a source.",
         "description" : "",
-        "operationId" : "applyLoginToSourceBySourceId",
+        "operationId" : "loginToSource",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1204,7 +1204,7 @@
       "summary" : "Manage the filters for a source",
       "get" : {
         "summary" : "Get the filters for a source.",
-        "operationId" : "getFiltersOfSourceBySourceId",
+        "operationId" : "getSourceFilters",
         "responses" : {
           "200" : {
             "description" : "Success response.",
@@ -1235,7 +1235,7 @@
       "summary" : "Manage a catalogue page.",
       "post" : {
         "summary" : "Request a catalogue page.",
-        "operationId" : "applyCatalogueToSourceById",
+        "operationId" : "getSourceCatalogue",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1286,7 +1286,7 @@
       "summary" : "Manage a latest-updates catalogue page.",
       "post" : {
         "summary" : "Request a latest-updates catalogue page.",
-        "operationId" : "applyUpdatesToSourceById",
+        "operationId" : "getSourceLatestUpdates",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1337,7 +1337,7 @@
       "summary" : "Sync endpoint",
       "post" : {
         "summary" : "Sync endpoint.",
-        "operationId" : "applySync",
+        "operationId" : "sync",
         "requestBody" : {
           "content" : {
             "application/octet-stream" : { }
@@ -1384,7 +1384,7 @@
       "get" : {
         "summary" : "Get a preference",
         "description" : "Gets the details of a single instance of a `preference`.",
-        "operationId" : "getPreferenceByPreferenceKey",
+        "operationId" : "getPreference",
         "responses" : {
           "200" : {
             "description" : "Successful response - returns a single `preference`.",
@@ -1401,7 +1401,7 @@
       "put" : {
         "summary" : "Update a preference",
         "description" : "Updates an existing `preference`.",
-        "operationId" : "putPreferenceByPreferenceKey",
+        "operationId" : "setPreference",
         "requestBody" : {
           "description" : "Updated `preference` value.",
           "content" : {
@@ -1429,7 +1429,7 @@
       "summary" : "Get the preference schema (used to render preferences).",
       "get" : {
         "summary" : "Get the preference schema.",
-        "operationId" : "getSchemaOfPreferences",
+        "operationId" : "getPreferencesSchema",
         "responses" : {
           "200" : {
             "description" : "Success response.",
@@ -1443,8 +1443,8 @@
     "/api/v3/manga/recently-read" : {
       "get" : {
         "summary" : "List recently read manga",
-        "description" : "Hardcoded to return a maximum of 25 entries.",
-        "operationId" : "getMangaRecentlyRead",
+        "description" : "Hardcoded to return a maximum of 25 entries. Includes the chapter that was last read in each manga.",
+        "operationId" : "getRecentlyReadManga",
         "responses" : {
           "200" : {
             "description" : "Successful response - returns an array of `recently-read` entities sorted by most to least recent.",
@@ -1466,7 +1466,7 @@
       "summary" : "Manage information on when this chapter was last read",
       "delete" : {
         "summary" : "Deletes the information on when this chapter was last read",
-        "operationId" : "deleteLastReadFromReadingStatusOfChapterByChapterId",
+        "operationId" : "deleteChapterLastRead",
         "responses" : {
           "200" : {
             "description" : "Success response."
@@ -1491,7 +1491,7 @@
       "summary" : "Path to manage a category's manga.",
       "patch" : {
         "summary" : "Add/remove manga from a category.",
-        "operationId" : "patchMangaOfCategoryByCategoryId",
+        "operationId" : "editCategoryManga",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1589,7 +1589,7 @@
       "summary" : "Path to manage a single extension",
       "get" : {
         "summary" : "Get information about a specific extension",
-        "operationId" : "getExtensionByPackageName",
+        "operationId" : "getExtension",
         "responses" : {
           "200" : {
             "description" : "Successful response.",
@@ -1609,7 +1609,7 @@
       "delete" : {
         "summary" : "Delete an extension.",
         "description" : "Extensions that are present in the central repository will not be deleted. Instead, their `status`' will be changed to `AVAILABLE`.",
-        "operationId" : "deleteExtensionByPackageName",
+        "operationId" : "deleteExtension",
         "responses" : {
           "200" : {
             "description" : "The extension was successfully deleted."
@@ -1634,7 +1634,7 @@
       "post" : {
         "summary" : "Installs or updates an extension from the central repository.",
         "description" : "The extension must either have a `status` of `AVAILABLE` or it's `hasUpdate` field is `true`.",
-        "operationId" : "applyInstallToExtensionByPackageName",
+        "operationId" : "installExtension",
         "responses" : {
           "200" : {
             "description" : "The extension was successfully installed/updated.",
@@ -1678,7 +1678,7 @@
       "post" : {
         "summary" : "Trust a signature hash.",
         "description" : "Multiple extensions may have the same signature hash.\n\nTrusting a signature hash will also cause future extensions that have the same signature hash to be trusted.",
-        "operationId" : "applyTrustToExtensions",
+        "operationId" : "trustExtensionSignatureHash",
         "requestBody" : {
           "description" : "The signature hash.",
           "content" : {
@@ -1703,7 +1703,7 @@
     "/api/v3/extensions/{extensionPackage}/icon" : {
       "get" : {
         "summary" : "Get the icon of an extension.",
-        "operationId" : "getIconOfExtensionByPackageName",
+        "operationId" : "getExtensionIcon",
         "responses" : {
           "200" : {
             "description" : "Successful response.",
@@ -1731,7 +1731,7 @@
       "post" : {
         "summary" : "Fetch available extension list from central repository.",
         "description" : "Also checks for extension updates.",
-        "operationId" : "applyReloadAvailableToExtensions",
+        "operationId" : "reloadAvailableExtensions",
         "responses" : {
           "200" : {
             "description" : "Successful response. The new extension list is returned (including extensions of any `status`).",
@@ -1752,7 +1752,7 @@
     "/api/v3/tracking/services" : {
       "get" : {
         "summary" : "List all tracking services.",
-        "operationId" : "getServicesOfTracking",
+        "operationId" : "getTrackingServices",
         "responses" : {
           "200" : {
             "description" : "Returns a list of all tracking services.",
@@ -1773,7 +1773,7 @@
     "/api/v3/tracking/services/{trackingServiceId}" : {
       "get" : {
         "summary" : "Get information about a single tracking service.",
-        "operationId" : "getServiceOfTrackingByTrackingServiceId",
+        "operationId" : "getTrackingService",
         "responses" : {
           "200" : {
             "description" : "Successful response.",
@@ -1804,7 +1804,7 @@
       "post" : {
         "summary" : "Logout of a tracking service.",
         "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`).",
-        "operationId" : "applyLogoutToServiceOfTracking",
+        "operationId" : "logoutFromTrackingService",
         "responses" : {
           "200" : {
             "description" : "Successfully logged out of the tracking service."
@@ -1831,7 +1831,7 @@
       "post" : {
         "summary" : "Logout of a tracking service.",
         "description" : "Can only be performed if the user is logged out of the tracking service (`loggedIn` field of the tracking service is `false`) and the tracking service is not an OAuth based service.",
-        "operationId" : "applyLoginToServiceOfTracking",
+        "operationId" : "loginToTrackingService",
         "requestBody" : {
           "description" : "The login credentials.",
           "content" : {
@@ -1876,7 +1876,7 @@
       "post" : {
         "summary" : "Handle an application URL",
         "description" : "This endpoint is used to handle `tachiyomi://` URLs.\n\nClients should intercept all URLs that have the `tachiyomi` scheme and POST these URLs to the server via this endpoint.",
-        "operationId" : "applyHandleUrl",
+        "operationId" : "handleUrl",
         "requestBody" : {
           "description" : "The entire URL (including the scheme, path and query parameters).",
           "content" : {
@@ -1909,7 +1909,7 @@
       "post" : {
         "summary" : "Search for manga in a tracking service",
         "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`).",
-        "operationId" : "applySearchToServiceOfTracking",
+        "operationId" : "searchTrackingService",
         "requestBody" : {
           "description" : "The search query. Should usually be the title of the manga to search for.",
           "content" : {
@@ -1966,7 +1966,7 @@
     "/api/v3/manga/{mangaId}/tracks" : {
       "get" : {
         "summary" : "List all tracking information associated with this manga.",
-        "operationId" : "getTracksOfMangaByMangaId",
+        "operationId" : "getMangaTracks",
         "responses" : {
           "200" : {
             "description" : "Returns a list of all tracking information associated with this manga.",
@@ -1988,7 +1988,7 @@
       },
       "post" : {
         "summary" : "Bind a manga to tracking information",
-        "operationId" : "createTrackOfMangaByMangaId",
+        "operationId" : "bindMangaTracking",
         "requestBody" : {
           "description" : "A tracking search result.",
           "content" : {
@@ -2040,7 +2040,7 @@
     "/api/v3/manga/{mangaId}/tracks/{trackingServiceId}" : {
       "get" : {
         "summary" : "Get tracking information on the specified tracking service associated with this manga.",
-        "operationId" : "getTrackByTrackingServiceIdOfMangaByMangaId",
+        "operationId" : "getMangaTrack",
         "responses" : {
           "200" : {
             "description" : "Returns tracking information on the specified tracking service associated with this manga.",
@@ -2066,7 +2066,7 @@
       },
       "put" : {
         "summary" : "Change the tracking information manually.",
-        "operationId" : "putTrackByTrackingServiceIdOfMangaByMangaId",
+        "operationId" : "editMangaTrack",
         "requestBody" : {
           "description" : "The new tracking information. It will overwrite the old tracking information.",
           "content" : {
@@ -2113,7 +2113,7 @@
       },
       "delete" : {
         "summary" : "Unbind a manga from it's tracking information.",
-        "operationId" : "deleteTrackByTrackingServiceIdOfMangaByMangaId",
+        "operationId" : "unbindMangaTracking",
         "responses" : {
           "200" : {
             "description" : "Manga successfully unbound from it's tracking information on the specified tracking service."
@@ -2211,7 +2211,7 @@
       "put" : {
         "summary" : "Set a manga's bookmarked status.",
         "description" : "",
-        "operationId" : "putBookmarkOfMangaByMangaId",
+        "operationId" : "setMangaBookmarked",
         "requestBody" : {
           "description" : "The new bookmarked status of the manga.",
           "content" : {
