@@ -31,7 +31,7 @@ TachiWeb-Server is a port of [Tachiyomi](https://github.com/inorichi/tachiyomi) 
 TachiWeb-Server provides a consistent and flexible API for programs using the Tachiyomi backend.
 TachiWeb-Server allows multiple programs to use the same Tachiyomi library at the same time and provides a foundation for alternative frontends to build on.
 
-Currently, this project comes bundled with a React frontend that is enabled by default and a bootstrapper to integrate the application with your desktop.
+Currently, this project comes bundled with a [React frontend](https://github.com/Ligerx/TachiWeb-React) that is enabled by default and a bootstrapper to integrate the application with your desktop.
 
 TachiWeb is not officially supported by Tachiyomi or it's contributors.
 
