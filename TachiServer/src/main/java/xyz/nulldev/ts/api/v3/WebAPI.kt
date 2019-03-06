@@ -18,7 +18,7 @@ class WebAPI {
     fun start() {
         val vertx = Vertx.vertx()
 
-        OpenAPI3RouterFactory.create(vertx, WebAPI::class.java.getResource("openapi.json").toURI().toURL().toString()) { ar ->
+        OpenAPI3RouterFactory.create(vertx, WebAPI::class.java.getResource(SPEC_LOCATION).toURI().toURL().toString()) { ar ->
             if (ar.succeeded()) {
                 // Spec loaded with success
                 val routerFactory = ar.result()
@@ -28,5 +28,9 @@ class WebAPI {
                 throw ar.cause()
             }
         }
+    }
+
+    companion object {
+        const val SPEC_LOCATION = "/openapi.json"
     }
 }

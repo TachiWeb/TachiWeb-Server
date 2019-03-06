@@ -44,6 +44,7 @@ import xyz.nulldev.ts.api.v2.http.extensions.ExtensionsController
 import xyz.nulldev.ts.api.v2.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.v2.http.library.LibraryController
 import xyz.nulldev.ts.api.v2.http.mangas.MangasController
+import xyz.nulldev.ts.api.v3.operations.APIOperations
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
@@ -217,6 +218,7 @@ class HttpAPI {
 
             exitProcess(0)
         })
+        getAPIRoute("/v3", Route { _, _ -> APIOperations().spec })
 
         //Sync route
         val syncRoute = SyncRoute()
