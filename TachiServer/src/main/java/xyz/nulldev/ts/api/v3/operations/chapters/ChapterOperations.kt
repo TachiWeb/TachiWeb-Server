@@ -20,25 +20,25 @@ class ChapterOperations : OperationGroup {
 
     override fun register(routerFactory: OpenAPI3RouterFactory) {
         routerFactory.op(::getChapters.name, ::getChapters)
-        routerFactory.opWithParams(::getChapterByChapterId.name, CHAPTER_ID_PARAM, ::getChapterByChapterId)
-        routerFactory.opWithParams(::getReadingStatusOfChapterByChapterId.name, CHAPTER_ID_PARAM, ::getReadingStatusOfChapterByChapterId)
-        routerFactory.opWithParams(::putReadingStatusOfChapterByChapterId.name, CHAPTER_ID_PARAM, ::putReadingStatusOfChapterByChapterId)
-        routerFactory.opWithParams(::deleteLastReadFromReadingStatusOfChapterByChapterId.name, CHAPTER_ID_PARAM, ::deleteLastReadFromReadingStatusOfChapterByChapterId)
+        routerFactory.opWithParams(::getChapter.name, CHAPTER_ID_PARAM, ::getChapter)
+        routerFactory.opWithParams(::getChapterReadingStatus.name, CHAPTER_ID_PARAM, ::getChapterReadingStatus)
+        routerFactory.opWithParams(::setChapterReadingStatus.name, CHAPTER_ID_PARAM, ::setChapterReadingStatus)
+        routerFactory.opWithParams(::deleteChapterLastRead.name, CHAPTER_ID_PARAM, ::deleteChapterLastRead)
     }
 
     suspend fun getChapters(): List<WChapter> {
         return db.getChapters().await().map { it.asWeb() }
     }
 
-    suspend fun getChapterByChapterId(chapterId: Long): WChapter {
+    suspend fun getChapter(chapterId: Long): WChapter {
         return db.getChapter(chapterId).await()?.asWeb() ?: notFound()
     }
 
-    suspend fun getReadingStatusOfChapterByChapterId(chapterId: Long): WChapterReadingStatus {
+    suspend fun getChapterReadingStatus(chapterId: Long): WChapterReadingStatus {
         return db.getChapter(chapterId).await()?.readingStatusAsWeb() ?: notFound()
     }
 
-    suspend fun putReadingStatusOfChapterByChapterId(chapterId: Long, wChapterReadingStatus: WChapterReadingStatus): WChapterReadingStatus {
+    suspend fun setChapterReadingStatus(chapterId: Long, wChapterReadingStatus: WChapterReadingStatus): WChapterReadingStatus {
         val existingChapter = db.getChapter(chapterId).await() ?: notFound()
 
         existingChapter.last_page_read = wChapterReadingStatus.lastPageRead.toInt()
@@ -54,7 +54,7 @@ class ChapterOperations : OperationGroup {
         return existingChapter.readingStatusAsWeb(history)
     }
 
-    suspend fun deleteLastReadFromReadingStatusOfChapterByChapterId(chapterId: Long): WChapterReadingStatus {
+    suspend fun deleteChapterLastRead(chapterId: Long): WChapterReadingStatus {
         val existingChapter = db.getChapter(chapterId).await() ?: notFound()
         val history = db.getHistoryByChapterUrl(existingChapter.url).await()
         if (history != null) {

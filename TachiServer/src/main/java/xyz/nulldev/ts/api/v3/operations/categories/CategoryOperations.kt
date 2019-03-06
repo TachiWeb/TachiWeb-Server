@@ -21,9 +21,9 @@ class CategoryOperations : OperationGroup {
     override fun register(routerFactory: OpenAPI3RouterFactory) {
         routerFactory.op(::getCategories.name, ::getCategories)
         routerFactory.op(::createCategory.name, ::createCategory)
-        routerFactory.opWithParams(::getCategoryByCategoryId.name, CATEGORY_ID_PARAM, ::getCategoryByCategoryId)
-        routerFactory.opWithParams(::putCategoryByCategoryId.name, CATEGORY_ID_PARAM, ::putCategoryByCategoryId)
-        routerFactory.opWithParams(::deleteCategoryByCategoryId.name, CATEGORY_ID_PARAM, ::deleteCategoryByCategoryId)
+        routerFactory.opWithParams(::getCategory.name, CATEGORY_ID_PARAM, ::getCategory)
+        routerFactory.opWithParams(::editCategory.name, CATEGORY_ID_PARAM, ::editCategory)
+        routerFactory.opWithParams(::deleteCategory.name, CATEGORY_ID_PARAM, ::deleteCategory)
     }
 
     suspend fun getCategories(): List<WCategory> {
@@ -33,9 +33,9 @@ class CategoryOperations : OperationGroup {
     }
 
     suspend fun createCategory(request: WMutateCategoryRequest): WCategory {
-        validateMutationRequest(request)
-
         val existingCategories = db.getCategories().await()
+        validateMutationRequest(existingCategories, request)
+
         val newCategory = Category.create(request.name).apply {
             order = request.order?.toInt() ?: existingCategories.maxBy { it.order }?.order ?: 1
         }
@@ -44,32 +44,32 @@ class CategoryOperations : OperationGroup {
         return newCategory.asWeb()
     }
 
-    suspend fun getCategoryByCategoryId(categoryId: Int): WCategory {
+    suspend fun getCategory(categoryId: Int): WCategory {
         return db.getCategory(categoryId).await()?.asWeb() ?: notFound()
     }
 
-    suspend fun putCategoryByCategoryId(categoryId: Int, request: WMutateCategoryRequest): WCategory {
-        validateMutationRequest(request)
+    suspend fun editCategory(categoryId: Int, request: WMutateCategoryRequest): WCategory {
+        val existingCategoriesWithoutSelf = db.getCategories().await().filter {
+            it.id != categoryId
+        }
+        validateMutationRequest(existingCategoriesWithoutSelf, request)
 
         val category = db.getCategory(categoryId).await()?.apply {
             name = request.name
-            order = request.order?.toInt() ?: db.getCategories().await().filter {
-                it.id != categoryId
-            }.maxBy { it.order }?.order ?: 1
+            order = request.order?.toInt() ?: existingCategoriesWithoutSelf.maxBy { it.order }?.order ?: 1
         } ?: notFound()
         db.insertCategory(category).await()
         return category.asWeb()
     }
 
-    suspend fun deleteCategoryByCategoryId(categoryId: Int) {
+    suspend fun deleteCategory(categoryId: Int) {
         db.deleteCategory(db.getCategory(categoryId).await() ?: notFound()).await()
     }
 
-    private suspend fun validateMutationRequest(request: WMutateCategoryRequest) {
-        val existingCategories = db.getCategories().await()
-        if (existingCategories.any { it.name.equals(request.name, true) })
+    private suspend fun validateMutationRequest(categoryList: List<Category>, request: WMutateCategoryRequest) {
+        if (categoryList.any { it.name.equals(request.name, true) })
             abort(409, NAME_CONFLICT)
-        if (request.order != null && existingCategories.any { it.order.toLong() == request.order })
+        if (request.order != null && categoryList.any { it.order.toLong() == request.order })
             abort(409, ORDER_CONFLICT)
     }
 
