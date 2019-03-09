@@ -20,6 +20,9 @@ interface OperationGroup {
 
     fun notFound(): Nothing = abort(404)
     fun notFound(enumError: WErrorTypes): Nothing = abort(404, enumError)
+
+    fun internalError(): Nothing = abort(500)
+    fun internalError(enumError: WErrorTypes): Nothing = abort(500, enumError)
 }
 
 internal val apiSerializer = ObjectMapper().registerKotlinModule().setSerializationInclusion(JsonInclude.Include.NON_NULL)

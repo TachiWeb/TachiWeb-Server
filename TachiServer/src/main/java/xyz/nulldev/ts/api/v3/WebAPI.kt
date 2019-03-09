@@ -6,6 +6,7 @@ import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import xyz.nulldev.ts.api.v3.operations.APIOperations
 import xyz.nulldev.ts.api.v3.operations.categories.CategoryOperations
 import xyz.nulldev.ts.api.v3.operations.chapters.ChapterOperations
+import xyz.nulldev.ts.api.v3.operations.preferences.PreferenceOperations
 import xyz.nulldev.ts.api.v3.operations.server.ServerOperations
 import xyz.nulldev.ts.api.v3.operations.sources.SourceOperations
 import kotlin.coroutines.resume
@@ -24,7 +25,8 @@ class WebAPI {
             ChapterOperations(vertx),
             ServerOperations(vertx),
             SourceOperations(vertx),
-            APIOperations(vertx)
+            APIOperations(vertx),
+            PreferenceOperations(vertx)
     )
 
     suspend fun start() = suspendCoroutine<WebAPIInfo> { cont ->

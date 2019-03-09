@@ -149,9 +149,7 @@ public class JsonSharedPreferences implements SharedPreferences {
 
     @Override
     public synchronized Map<String, ?> getAll() {
-        Map<String, Object> clone = new HashMap<>();
-        clone.putAll(prefs);
-        return clone;
+        return new HashMap<>(prefs);
     }
 
     private <T> T fallbackIfNull(T obj, T fallback) {
@@ -191,13 +189,17 @@ public class JsonSharedPreferences implements SharedPreferences {
         return fallbackIfNull((Boolean) prefs.get(s), b);
     }
 
+    public synchronized Object get(String s, Object b) {
+        return fallbackIfNull(prefs.get(s), b);
+    }
+
     @Override
     public synchronized boolean contains(String s) {
         return prefs.containsKey(s);
     }
 
     @Override
-    public Editor edit() {
+    public JsonSharedPreferencesEditor edit() {
         return new JsonSharedPreferencesEditor();
     }
 
@@ -215,16 +217,27 @@ public class JsonSharedPreferences implements SharedPreferences {
         listeners.remove(onSharedPreferenceChangeListener);
     }
 
-    private class JsonSharedPreferencesEditor implements Editor {
+    public class JsonSharedPreferencesEditor implements Editor {
 
         Map<String, Object> prefsClone = new HashMap<>(prefs);
 
         List<String> affectedKeys = new ArrayList<>(); //List of all affected keys to invoke listeners on once changes applied
 
+        private JsonSharedPreferencesEditor() {
+        }
+
         private void recordChange(String key) {
             if (!affectedKeys.contains(key)) {
                 affectedKeys.add(key);
             }
+        }
+
+        public synchronized Editor put(String s, Object o) {
+            PrefType.fromObject(o); // Will throw if 'o' is invalid
+
+            prefsClone.put(s, o);
+            recordChange(s);
+            return this;
         }
 
         @Override

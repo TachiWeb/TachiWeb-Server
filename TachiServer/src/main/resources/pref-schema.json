@@ -1,0 +1,136 @@
+[
+  {
+    "label": "General",
+    "type": "nested",
+    "prefs": [
+      {
+        "label": "Manga label background",
+        "description": "The color of the manga label background in the catalogue and library.",
+        "default": "gradient",
+        "type": "select-single",
+        "key": "pref_manga_card_label_background",
+        "choices": {
+          "gradient": "Gradient",
+          "solid": "Solid"
+        }
+      }
+    ]
+  },
+  {
+    "label": "Reader",
+    "type": "nested",
+    "prefs": [
+      {
+        "label": "Default viewer",
+        "type": "select-single",
+        "default": "left_to_right",
+        "key": "pref_default_viewer_key",
+        "choices": {
+          "left_to_right": "Left to right",
+          "right_to_left": "Right to left"
+        }
+      },
+      {
+        "label": "Background color",
+        "type": "select-single",
+        "default": "white",
+        "key": "pref_reader_theme_key",
+        "choices": {
+          "white": "White",
+          "black": "Black"
+        }
+      },
+      {
+        "label": "Enable transitions",
+        "description": "Play an animation when flipping pages.",
+        "default": true,
+        "key": "pref_reader_enable_transitions",
+        "type": "switch"
+      }
+    ]
+  },
+  {
+    "label": "Downloads",
+    "type": "nested",
+    "prefs": [
+      {
+        "label": "Simultaneous downloads",
+        "type": "select-single",
+        "default": "3",
+        "key": "pref_download_slots_key",
+        "choices": {
+          "1": "1",
+          "2": "2",
+          "3": "3"
+        }
+      }
+    ]
+  },
+  {
+    "label": "Sources",
+    "type": "nested",
+    "prefs": [
+      {
+        "key": [
+          "source_languages",
+          "hidden_catalogues"
+        ],
+        "type": "sources",
+        "pref_types": {
+          "source_languages": "string_set",
+          "hidden_catalogues": "string_set"
+        },
+        "error_message": "Unable to fetch source list!",
+        "default": {
+          "source_languages": [
+            "en"
+          ],
+          "hidden_catalogues": []
+        }
+      }
+    ]
+  },
+  {
+    "label": "Sync",
+    "type": "nested",
+    "prefs": []
+  },
+  {
+    "label": "Server",
+    "type": "nested",
+    "prefs": [
+      {
+        "label": "Authentication",
+        "type": "nested",
+        "prefs": [
+          {
+            "label": "Password authentication",
+            "type": "text-password",
+            "default": "",
+            "key": "pref_ts_server_password",
+            "hint": "Enter a password"
+          },
+          {
+            "label": "Clear sessions",
+            "description": "Log out all other users.",
+            "type": "api-call",
+            "success_message": "Successfully cleared sessions!",
+            "error_message": "Failed to clear sessions!",
+            "button_icon": "delete",
+            "command": "ClearSessions"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Advanced",
+    "type": "nested",
+    "prefs": []
+  },
+  {
+    "label": "About",
+    "type": "nested",
+    "prefs": []
+  }
+]
