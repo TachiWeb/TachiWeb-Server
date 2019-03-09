@@ -1,5 +1,6 @@
 package xyz.nulldev.ts.api.v3
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -21,7 +22,7 @@ interface OperationGroup {
     fun notFound(enumError: WErrorTypes): Nothing = abort(404, enumError)
 }
 
-internal val apiSerializer = ObjectMapper().registerKotlinModule()
+internal val apiSerializer = ObjectMapper().registerKotlinModule().setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
 internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.op(
         operationId: String,

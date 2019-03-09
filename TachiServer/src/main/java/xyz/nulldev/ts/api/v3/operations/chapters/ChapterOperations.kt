@@ -3,6 +3,7 @@ package xyz.nulldev.ts.api.v3.operations.chapters
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.History
+import io.vertx.core.Vertx
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import xyz.nulldev.ts.api.v2.java.impl.util.getChapters
 import xyz.nulldev.ts.api.v3.OperationGroup
@@ -15,7 +16,7 @@ import xyz.nulldev.ts.ext.kInstanceLazy
 
 private const val CHAPTER_ID_PARAM = "chapterId"
 
-class ChapterOperations : OperationGroup {
+class ChapterOperations(private val vertx: Vertx) : OperationGroup {
     private val db: DatabaseHelper by kInstanceLazy()
 
     override fun register(routerFactory: OpenAPI3RouterFactory) {

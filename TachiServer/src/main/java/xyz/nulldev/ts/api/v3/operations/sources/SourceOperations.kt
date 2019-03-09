@@ -5,6 +5,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.LoginSource
+import io.vertx.core.Vertx
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import xyz.nulldev.ts.api.v3.OperationGroup
@@ -20,7 +21,7 @@ import java.util.*
 
 private const val SOURCE_ID_PARAM = "sourceId"
 
-class SourceOperations : OperationGroup {
+class SourceOperations(private val vertx: Vertx) : OperationGroup {
     private val sourceManager: SourceManager by kInstanceLazy()
 
     override fun register(routerFactory: OpenAPI3RouterFactory) {

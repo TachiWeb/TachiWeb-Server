@@ -3,6 +3,7 @@ package xyz.nulldev.ts
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import eu.kanade.tachiyomi.App
+import kotlinx.coroutines.runBlocking
 import spark.Spark
 import xyz.nulldev.androidcompat.AndroidCompat
 import xyz.nulldev.androidcompat.AndroidCompatInitializer
@@ -83,7 +84,7 @@ class TachiServer {
 
         if(!syncConfig.syncOnlyMode) {
             //Start HTTP API
-            HttpAPI().start()
+            runBlocking { HttpAPI().start() }
 
             // Postconfigure UI if started
             ui?.postConfigure()

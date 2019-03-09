@@ -16,6 +16,11 @@
 
 package xyz.nulldev.ts.api.http
 
+import mu.KotlinLogging
+import okhttp3.Headers
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import spark.Route
 import spark.Spark
 import xyz.nulldev.ts.api.http.auth.CheckSessionRoute
@@ -44,11 +49,10 @@ import xyz.nulldev.ts.api.v2.http.extensions.ExtensionsController
 import xyz.nulldev.ts.api.v2.http.jvcompat.JavalinShim
 import xyz.nulldev.ts.api.v2.http.library.LibraryController
 import xyz.nulldev.ts.api.v2.http.mangas.MangasController
-import xyz.nulldev.ts.api.v3.operations.APIOperations
+import xyz.nulldev.ts.api.v3.WebAPI
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
-import kotlin.system.exitProcess
 
 /**
  * Project: TachiServer
@@ -58,7 +62,9 @@ import kotlin.system.exitProcess
 class HttpAPI {
     private val serverConfig by lazy { kInstance<ConfigManager>().module<ServerConfig>() }
 
-    fun start() {
+    private val logger = KotlinLogging.logger { }
+
+    suspend fun start() {
         //Get an image from a chapter
         val imageRoute = ImageRoute()
         getAPIRoute("/img/:mangaId/:chapterId/:page", imageRoute)
@@ -211,19 +217,65 @@ class HttpAPI {
         getAPIRoute("/v2/extensions/:extensions/icon", JavalinShim(ExtensionsController::getIcon))
         postAPIRoute("/v2/extensions/:extensions/install", JavalinShim(ExtensionsController::install))
 
-        // Fake v3 APIs
-        postAPIRoute("/v3/server/stop", Route { request, response ->
-            response.status(200)
-            response.raw().outputStream.close()
-
-            exitProcess(0)
-        })
-        getAPIRoute("/v3", Route { _, _ -> APIOperations().spec })
-
         //Sync route
         val syncRoute = SyncRoute()
         getAPIRoute("/sync", syncRoute)
         postAPIRoute("/sync", syncRoute)
+
+        // Start v3 web API and proxy to it
+        val v3Api = WebAPI().start()
+        val proxyHttpClient = OkHttpClient.Builder()
+                .cache(null)
+                .followRedirects(true) // Our web client can't handle proxied redirects
+                .followSslRedirects(false) // v3 shouldn't be doing this
+                .build()
+        val v3Route = Route { incoming, outgoing ->
+            val targetUrl = "http://localhost:${v3Api.port}${incoming.contextPath() ?: ""}${incoming.servletPath()
+                    ?: ""}${incoming.pathInfo() ?: ""}?${incoming.queryString() ?: ""}"
+
+            logger.info {
+                val originalUrl = "${incoming.requestMethod()} ${incoming.contextPath() ?: ""}${incoming.servletPath()
+                        ?: ""}${incoming.pathInfo() ?: ""}?${incoming.queryString() ?: ""}"
+                "Proxying v3 API request: $originalUrl --> $targetUrl"
+            }
+
+            val request = Request.Builder()
+                    .url(targetUrl)
+                    .apply {
+                        if (incoming.requestMethod() in listOf("POST", "PUT", "DELETE", "PATCH"))
+                            method(incoming.requestMethod(), RequestBody.create(null, incoming.bodyAsBytes()))
+                    }
+                    .headers(Headers.of(incoming.headers().associateWith { incoming.headers(it) }))
+                    .build()
+
+            val result = proxyHttpClient.newCall(request).execute()
+
+            outgoing.status(result.code())
+            result.headers().toMultimap().forEach { name, values ->
+                values.forEach { value ->
+                    outgoing.header(name, value)
+                }
+            }
+            result.body().byteStream().use { resultBody ->
+                resultBody.copyTo(outgoing.raw().outputStream)
+            }
+
+            ""
+        }
+
+        fun proxyPath(path: String) {
+            Spark.get(buildAPIPath(path), v3Route)
+            Spark.post(buildAPIPath(path), v3Route)
+            Spark.put(buildAPIPath(path), v3Route)
+            Spark.patch(buildAPIPath(path), v3Route)
+            Spark.delete(buildAPIPath(path), v3Route)
+            Spark.head(buildAPIPath(path), v3Route)
+            Spark.trace(buildAPIPath(path), v3Route)
+            Spark.connect(buildAPIPath(path), v3Route)
+            Spark.options(buildAPIPath(path), v3Route)
+        }
+        proxyPath("/v3/*")
+        proxyPath("/v3")
     }
 
     private fun buildAPIPath(path: String): String {

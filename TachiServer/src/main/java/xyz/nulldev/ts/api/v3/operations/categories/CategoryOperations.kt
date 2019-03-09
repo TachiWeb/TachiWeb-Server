@@ -2,6 +2,7 @@ package xyz.nulldev.ts.api.v3.operations.categories
 
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Category
+import io.vertx.core.Vertx
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import xyz.nulldev.ts.api.v3.OperationGroup
 import xyz.nulldev.ts.api.v3.models.categories.WCategory
@@ -15,7 +16,7 @@ import xyz.nulldev.ts.ext.kInstanceLazy
 
 private const val CATEGORY_ID_PARAM = "categoryId"
 
-class CategoryOperations : OperationGroup {
+class CategoryOperations(private val vertx: Vertx) : OperationGroup {
     private val db: DatabaseHelper by kInstanceLazy()
 
     override fun register(routerFactory: OpenAPI3RouterFactory) {
