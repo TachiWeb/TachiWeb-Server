@@ -28,7 +28,7 @@ matrix:
         - sudo apt-get install rsync
         - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win32-portable.zip win-ia32-unpacked"
         - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win64-portable.zip win-unpacked"
-        - bash -c 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc'
+        - bash -c 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc'
         - bash -c 'PKG_VERSION="v1.0.0-alpha.$TRAVIS_BUILD_NUMBER" NODE_ENV="development" scripts/updateApiClients.sh'
       deploy:
         skip_cleanup: true
