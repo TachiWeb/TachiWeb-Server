@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.2",
   "info" : {
-    "title" : "TachiWeb",
+    "title" : "TachiWeb-Api",
     "description" : "**Security:**\n\nAuthentication is currently not supported. Clients should use the *No Security* option until authentication is implemented.",
     "contact" : {
       "url" : "https://github.com/TachiWeb/TachiWeb-Server"
@@ -350,11 +350,6 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/category"
-                  }
-                },
-                "examples" : {
-                  "Sample response" : {
-                    "value" : "[\n    {\n        \"id\": 15,\n        \"name\": \"some text\",\n        \"order\": 22\n    },\n    {\n        \"id\": 94,\n        \"name\": \"some text\",\n        \"order\": 72\n    }\n]"
                   }
                 }
               }
@@ -1009,46 +1004,6 @@
         }
       } ]
     },
-    "/api/v3/backups/backup" : {
-      "summary" : "Create a backup",
-      "post" : {
-        "summary" : "Create a backup",
-        "operationId" : "backupAll",
-        "responses" : {
-          "200" : {
-            "description" : "The backup was created successfully.",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          }
-        }
-      }
-    },
-    "/api/v3/backups/restore" : {
-      "summary" : "Restore a backup.",
-      "post" : {
-        "summary" : "Restore a backup.",
-        "operationId" : "restoreAll",
-        "requestBody" : {
-          "content" : {
-            "application/octet-stream" : { }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "202" : {
-            "description" : "Restore started. The UUID of the task where the restore is running in is supplied in the response body.\n\nThe data field of the task will be of the `restore-task-data` datatype once the restore is completed.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v3/tasks" : {
       "summary" : "List all uncompleted tasks",
       "get" : {
@@ -1341,27 +1296,6 @@
         }
       } ]
     },
-    "/api/v3/sync" : {
-      "summary" : "Sync endpoint",
-      "post" : {
-        "summary" : "Sync endpoint.",
-        "operationId" : "sync",
-        "requestBody" : {
-          "content" : {
-            "application/octet-stream" : { }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "The sync completed successfully.",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          }
-        }
-      }
-    },
     "/api/v3/preferences" : {
       "summary" : "Path used to manage the list of preferences.",
       "description" : "",
@@ -1385,53 +1319,6 @@
           }
         }
       }
-    },
-    "/api/v3/preferences/{preferenceKey}" : {
-      "summary" : "Path used to manage a single preference.",
-      "description" : "",
-      "get" : {
-        "summary" : "Get a preference",
-        "description" : "Gets the details of a single instance of a `preference`.",
-        "operationId" : "getPreference",
-        "responses" : {
-          "200" : {
-            "description" : "Successful response - returns a single `preference`.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/preference"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put" : {
-        "summary" : "Update a preference",
-        "description" : "Updates an existing `preference`.",
-        "operationId" : "setPreference",
-        "requestBody" : {
-          "description" : "Updated `preference` value.",
-          "content" : {
-            "application/json" : { }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Successful response."
-          }
-        }
-      },
-      "parameters" : [ {
-        "name" : "preferenceKey",
-        "in" : "path",
-        "description" : "The key of the preference.",
-        "required" : true,
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
     },
     "/api/v3/preferences/schema" : {
       "summary" : "Get the preference schema (used to render preferences).",
@@ -1536,62 +1423,6 @@
           "type" : "integer"
         }
       } ]
-    },
-    "/api/v3/extensions" : {
-      "summary" : "Path to manage extensions.",
-      "get" : {
-        "summary" : "List all extensions.",
-        "description" : "Includes all extensions, regardless of their `status`.",
-        "operationId" : "getExtensions",
-        "responses" : {
-          "200" : {
-            "description" : "Successful response.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/extension"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Imports an extension from an APK file.",
-        "operationId" : "createExtensionFromAPK",
-        "requestBody" : {
-          "description" : "The extension APK.",
-          "content" : {
-            "application/vnd.android.package-archive" : { }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Successful response. The extension was successfully imported.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/extension"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "The request body did not contain a valid extension or the extension could not be imported.\n\nThe exact failure reason is supplied in the response body.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
     },
     "/api/v3/extensions/{extensionPackage}" : {
       "summary" : "Path to manage a single extension",
@@ -2318,6 +2149,219 @@
           "type" : "string"
         }
       } ]
+    },
+    "/api/v3/backups/backup" : {
+      "summary" : "Create a backup",
+      "post" : {
+        "summary" : "Create a backup",
+        "operationId" : "backupAll",
+        "responses" : {
+          "200" : {
+            "description" : "The backup was created successfully.",
+            "content" : {
+              "application/octet-stream" : {
+                "schema" : {
+                  "format" : "binary",
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v3/backups/restore" : {
+      "summary" : "Restore a backup.",
+      "post" : {
+        "summary" : "Restore a backup.",
+        "operationId" : "restoreAll",
+        "requestBody" : {
+          "content" : {
+            "application/octet-stream" : {
+              "schema" : {
+                "format" : "binary",
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "202" : {
+            "description" : "Restore started. The UUID of the task where the restore is running in is supplied in the response body.\n\nThe data field of the task will be of the `restore-task-data` datatype once the restore is completed.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "format" : "binary",
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v3/sync" : {
+      "summary" : "Sync endpoint",
+      "post" : {
+        "summary" : "Sync endpoint.",
+        "operationId" : "sync",
+        "requestBody" : {
+          "content" : {
+            "application/octet-stream" : {
+              "schema" : {
+                "format" : "binary",
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "The sync completed successfully.",
+            "content" : {
+              "application/octet-stream" : {
+                "schema" : {
+                  "format" : "binary",
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v3/preferences/{preferenceKey}" : {
+      "summary" : "Path used to manage a single preference.",
+      "description" : "",
+      "get" : {
+        "summary" : "Get a preference",
+        "description" : "Gets the details of a single instance of a `preference`.",
+        "operationId" : "getPreference",
+        "responses" : {
+          "200" : {
+            "description" : "Successful response - returns a single `preference`.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/preference"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No preference exists with the supplied `preferenceKey`."
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update a preference",
+        "description" : "Updates an existing `preference`.",
+        "operationId" : "setPreference",
+        "requestBody" : {
+          "description" : "Updated `preference` value.",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "anyOf" : [ {
+                  "type" : "string"
+                }, {
+                  "type" : "integer"
+                }, {
+                  "type" : "number"
+                }, {
+                  "type" : "boolean"
+                }, {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                } ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successful response."
+          },
+          "404" : {
+            "description" : "No preference exists with the supplied `preferenceKey`."
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "preferenceKey",
+        "in" : "path",
+        "description" : "The key of the preference.",
+        "required" : true,
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
+    },
+    "/api/v3/extensions" : {
+      "summary" : "Path to manage extensions.",
+      "get" : {
+        "summary" : "List all extensions.",
+        "description" : "Includes all extensions, regardless of their `status`.",
+        "operationId" : "getExtensions",
+        "responses" : {
+          "200" : {
+            "description" : "Successful response.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/extension"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Imports an extension from an APK file.",
+        "operationId" : "createExtensionFromAPK",
+        "requestBody" : {
+          "description" : "The extension APK.",
+          "content" : {
+            "application/vnd.android.package-archive" : {
+              "schema" : {
+                "format" : "binary",
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successful response. The extension was successfully imported.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/extension"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "The request body did not contain a valid extension or the extension could not be imported.\n\nThe exact failure reason is supplied in the response body.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -2746,22 +2790,6 @@
         },
         "example" : "{\n    \"page\": 86\n}"
       },
-      "preference" : {
-        "title" : "Root Type for preference",
-        "description" : "A single preference.",
-        "required" : [ "key", "value" ],
-        "type" : "object",
-        "properties" : {
-          "key" : {
-            "description" : "A unique key for the preference.",
-            "type" : "string"
-          },
-          "value" : {
-            "description" : "The value of the preference."
-          }
-        },
-        "example" : "{\n    \"key\": \"pref_reader_theme_key\",\n    \"value\": \"white\"\n}"
-      },
       "category" : {
         "title" : "Root Type for category",
         "description" : "A manga category.",
@@ -3137,11 +3165,6 @@
         },
         "example" : "{\n    \"lastChapterRead\": 3,\n    \"totalChapters\": 58,\n    \"score\": 2,\n    \"displayScore\": \"😊\",\n    \"status\": 0,\n    \"trackingUrl\": \"https://anilist.co/manga/97626/Dumbbell-Nan-Kilo-Moteru\"\n}"
       },
-      "catalogue-filters" : {
-        "description" : "The filters for a source.\n\nThere are no OpenAPI docs for this data type as it is too difficult to express.",
-        "type" : "object",
-        "example" : "[  // List of filters (MUST be rendered in order on the page)\n\t{\n\t\t\"_cmaps\": {                     // Data on what Java types each JSON field is for internal use. \n                                           // DO NOT USE THIS as it can be removed/changed at any time\n                                           // without warning.\n                                           // This data MUST NOT be modified and MUST be retained when calling the search API with the filters JSON.\n\t\t\t\"name\": \"java.lang.String\"  // Example: The 'name' field is a Java String type\n\t\t},\n\t\t\"name\": \"Lorem ipsum\",          // The name of the header\n\t\t\"_type\": \"HEADER\"               // The type of the filter\n                                           // The HEADER filter is a single line of non-editable text used to provide information to the user\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"\",                     // Should be ignored in separator filters\n\t\t\"_type\": \"SEPARATOR\"            // The SEPARATOR filter is a horizontal line used to divide two sections of filters\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.Boolean\"\n\t\t},\n\t\t\"name\": \"Show R-18\",            // The name of the filter\n\t\t\"state\": true,                  // The initial state of the filter\n\t\t\"_type\": \"CHECKBOX\"             // The CHECKBOX filter is a two-state, toggleable filter\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"Author\",               // The name of the filter\n\t\t\"state\": \"\",                    // The initial state of the filter\n\t\t\"_type\": \"TEXT\"                 // The TEXT filter is a single-line, editable text filter\n\t},\n\t{\n\t\t\"values\": [                     // All possible values of the filter\n\t\t\t\"All\",\n\t\t\t\"Japanese Manga\",\n\t\t\t\"Korean Manhwa\",\n\t\t\t\"Chinese Manhua\"\n\t\t],\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.Integer\"\n\t\t},\n\t\t\"name\": \"Type\",                 // The name of the filter\n\t\t\"state\": 0,                     // The initial state of the filter\n\t\t\"_type\": \"SELECT\"               // The SELECT filter is a drop-down, single-selection filter\n                                           // One (no more, no less) item can be selected at a time\n                                           // It's state is the index of the selected item (0-indexed)\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.Integer\"\n\t\t},\n\t\t\"name\": \"Completed\",            // The name of the filter\n\t\t\"state\": 0,                     // The initial state of the filter\n\t\t\"_type\": \"TRISTATE\"             // The TRISTATE filter is a triple-state filter\n                                           // Users can cycle through the three states:\n                                           // +-------+---------+\n                                           // | Index | State   |\n                                           // +-------+---------+\n                                           // | 0     | IGNORE  |\n                                           // | 1     | INCLUDE |\n                                           // | 2     | EXCLUDE |\n                                           // +-------+---------+\n\t},\n\t{\n\t\t\"state\": [\n\t\t\t{\n\t\t\t\t\"_cmaps\": {\n\t\t\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\t\t\"state\": \"java.lang.Integer\"\n\t\t\t\t},\n\t\t\t\t\"name\": \"Action\",\n\t\t\t\t\"state\": 0,\n\t\t\t\t\"_type\": \"TRISTATE\"\n\t\t\t}\n\t\t],\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"Genres\",               // The name of the group\n\t\t\"_type\": \"GROUP\"                // The GROUP filter is used to group multiple filters together\n                                           // Although nested groups are currently not used, they may be supported in the future\n\t},\n\t{\n\t\t\"values\": [                     // All the different attributes we can sort by\n\t\t\t\"Series name\",\n\t\t\t\"Rating\",\n\t\t\t\"Views\",\n\t\t\t\"Total chapters\",\n\t\t\t\"Last chapter\"\n\t\t],\n\t\t\"state\": {                      // The initial state of the filter\n\t\t\t\"index\": 2,                 // The current attribute we are sorting by\n\t\t\t\"ascending\": false          // Are we sorting the attribute ascending or descending?\n\t\t},\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"Order by\",             // The name of the filters\n\t\t\"_type\": \"SORT\"                 // The SORT filters allows the user to sort by one (no more, no less) specific attribute\n                                           // The attribute can be sorted ascending or descending\n\t}\n]"
-      },
       "mutate-track-request" : {
         "description" : "A request to change tracking data.",
         "required" : [ "lastChapterRead", "status" ],
@@ -3161,6 +3184,41 @@
           }
         },
         "example" : "{\n    \"lastChapterRead\": 5,\n    \"score\": 3,\n    \"status\": 0\n}"
+      },
+      "catalogue-filters" : {
+        "format" : "binary",
+        "description" : "The filters for a source.\n\nThere are no OpenAPI docs for this data type as it is too difficult to express.",
+        "type" : "string",
+        "example" : "[  // List of filters (MUST be rendered in order on the page)\n\t{\n\t\t\"_cmaps\": {                     // Data on what Java types each JSON field is for internal use. \n                                           // DO NOT USE THIS as it can be removed/changed at any time\n                                           // without warning.\n                                           // This data MUST NOT be modified and MUST be retained when calling the search API with the filters JSON.\n\t\t\t\"name\": \"java.lang.String\"  // Example: The 'name' field is a Java String type\n\t\t},\n\t\t\"name\": \"Lorem ipsum\",          // The name of the header\n\t\t\"_type\": \"HEADER\"               // The type of the filter\n                                           // The HEADER filter is a single line of non-editable text used to provide information to the user\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"\",                     // Should be ignored in separator filters\n\t\t\"_type\": \"SEPARATOR\"            // The SEPARATOR filter is a horizontal line used to divide two sections of filters\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.Boolean\"\n\t\t},\n\t\t\"name\": \"Show R-18\",            // The name of the filter\n\t\t\"state\": true,                  // The initial state of the filter\n\t\t\"_type\": \"CHECKBOX\"             // The CHECKBOX filter is a two-state, toggleable filter\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"Author\",               // The name of the filter\n\t\t\"state\": \"\",                    // The initial state of the filter\n\t\t\"_type\": \"TEXT\"                 // The TEXT filter is a single-line, editable text filter\n\t},\n\t{\n\t\t\"values\": [                     // All possible values of the filter\n\t\t\t\"All\",\n\t\t\t\"Japanese Manga\",\n\t\t\t\"Korean Manhwa\",\n\t\t\t\"Chinese Manhua\"\n\t\t],\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.Integer\"\n\t\t},\n\t\t\"name\": \"Type\",                 // The name of the filter\n\t\t\"state\": 0,                     // The initial state of the filter\n\t\t\"_type\": \"SELECT\"               // The SELECT filter is a drop-down, single-selection filter\n                                           // One (no more, no less) item can be selected at a time\n                                           // It's state is the index of the selected item (0-indexed)\n\t},\n\t{\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\"state\": \"java.lang.Integer\"\n\t\t},\n\t\t\"name\": \"Completed\",            // The name of the filter\n\t\t\"state\": 0,                     // The initial state of the filter\n\t\t\"_type\": \"TRISTATE\"             // The TRISTATE filter is a triple-state filter\n                                           // Users can cycle through the three states:\n                                           // +-------+---------+\n                                           // | Index | State   |\n                                           // +-------+---------+\n                                           // | 0     | IGNORE  |\n                                           // | 1     | INCLUDE |\n                                           // | 2     | EXCLUDE |\n                                           // +-------+---------+\n\t},\n\t{\n\t\t\"state\": [\n\t\t\t{\n\t\t\t\t\"_cmaps\": {\n\t\t\t\t\t\"name\": \"java.lang.String\",\n\t\t\t\t\t\"state\": \"java.lang.Integer\"\n\t\t\t\t},\n\t\t\t\t\"name\": \"Action\",\n\t\t\t\t\"state\": 0,\n\t\t\t\t\"_type\": \"TRISTATE\"\n\t\t\t}\n\t\t],\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"Genres\",               // The name of the group\n\t\t\"_type\": \"GROUP\"                // The GROUP filter is used to group multiple filters together\n                                           // Although nested groups are currently not used, they may be supported in the future\n\t},\n\t{\n\t\t\"values\": [                     // All the different attributes we can sort by\n\t\t\t\"Series name\",\n\t\t\t\"Rating\",\n\t\t\t\"Views\",\n\t\t\t\"Total chapters\",\n\t\t\t\"Last chapter\"\n\t\t],\n\t\t\"state\": {                      // The initial state of the filter\n\t\t\t\"index\": 2,                 // The current attribute we are sorting by\n\t\t\t\"ascending\": false          // Are we sorting the attribute ascending or descending?\n\t\t},\n\t\t\"_cmaps\": {\n\t\t\t\"name\": \"java.lang.String\"\n\t\t},\n\t\t\"name\": \"Order by\",             // The name of the filters\n\t\t\"_type\": \"SORT\"                 // The SORT filters allows the user to sort by one (no more, no less) specific attribute\n                                           // The attribute can be sorted ascending or descending\n\t}\n]"
+      },
+      "preference" : {
+        "title" : "Root Type for preference",
+        "description" : "A single preference.",
+        "required" : [ "key", "value" ],
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "description" : "A unique key for the preference.",
+            "type" : "string"
+          },
+          "value" : {
+            "anyOf" : [ {
+              "type" : "string"
+            }, {
+              "type" : "integer"
+            }, {
+              "type" : "number"
+            }, {
+              "type" : "boolean"
+            }, {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            } ]
+          }
+        },
+        "example" : "{\n    \"key\": \"pref_reader_theme_key\",\n    \"value\": \"white\"\n}"
       }
     },
     "securitySchemes" : {
