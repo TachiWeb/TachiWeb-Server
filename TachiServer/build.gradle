@@ -31,6 +31,8 @@ dependencies {
     def vertx_version = '3.6.3'
     compile "io.vertx:vertx-web:$vertx_version"
     compile "io.vertx:vertx-web-api-contract:$vertx_version"
+    compile "io.vertx:vertx-lang-kotlin:$vertx_version"
+    compile "io.vertx:vertx-lang-kotlin-coroutines:$vertx_version"
 
     // Tests
     compile "junit:junit:4.12"

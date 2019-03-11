@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes
@@ -55,8 +56,7 @@ internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.opWith
         noinline function: suspend (Input, RoutingContext) -> Output
 ) {
     addHandlerByOperationId(operationId) {
-        // TODO Fix this scoping
-        GlobalScope.launch {
+        GlobalScope.launch(it.vertx().dispatcher()) {
             val input: Any? = if (Input::class != Unit::class) {
                 apiSerializer.readValue<Input>(it.bodyAsString)
             } else Unit

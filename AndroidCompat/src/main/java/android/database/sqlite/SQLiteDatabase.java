@@ -2046,7 +2046,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
     private boolean transactionStackInvalidated = false;
     private ReentrantLock transactionLock = new ReentrantLock();
 
-    private synchronized void B_initDriver() {
+    private void B_initDriver() {
         try {
             Class.forName(DRIVER_CLASS);
         } catch (ClassNotFoundException e) {
@@ -2065,7 +2065,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    public synchronized void B_validateSql(String sql, CancellationSignal cancellationSignal) {
+    public void B_validateSql(String sql, CancellationSignal cancellationSignal) {
         try {
             connection.prepareStatement(sql).close();
         } catch (java.sql.SQLException e) {
@@ -2098,7 +2098,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private synchronized boolean B_inTransaction() {
+    private boolean B_inTransaction() {
         try {
             return connection.getAutoCommit();
         } catch (java.sql.SQLException e) {
