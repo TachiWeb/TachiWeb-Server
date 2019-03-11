@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.4"
+    "version" : "3.1.5"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -2260,10 +2260,11 @@
         "description" : "Updates an existing `preference`.",
         "operationId" : "setPreference",
         "requestBody" : {
-          "description" : "Updated `preference` value.",
+          "description" : "Updated `preference` value",
           "content" : {
             "application/json" : {
               "schema" : {
+                "$ref" : "#/components/schemas/mutate-preference-request",
                 "anyOf" : [ {
                   "type" : "string"
                 }, {
@@ -3219,6 +3220,30 @@
           }
         },
         "example" : "{\n    \"key\": \"pref_reader_theme_key\",\n    \"value\": \"white\"\n}"
+      },
+      "mutate-preference-request" : {
+        "description" : "A request to mutate a preference.",
+        "required" : [ ],
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "description" : "The new value of the preference.",
+            "anyOf" : [ {
+              "type" : "string"
+            }, {
+              "type" : "integer"
+            }, {
+              "type" : "number"
+            }, {
+              "type" : "boolean"
+            }, {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            } ]
+          }
+        }
       }
     },
     "securitySchemes" : {
