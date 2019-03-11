@@ -1,8 +1,10 @@
 package xyz.nulldev.ts.api.v3
 
 import io.vertx.core.Vertx
+import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
+import io.vertx.ext.web.handler.CorsHandler
 import xyz.nulldev.ts.api.v3.operations.APIOperations
 import xyz.nulldev.ts.api.v3.operations.categories.CategoryOperations
 import xyz.nulldev.ts.api.v3.operations.chapters.ChapterOperations
@@ -34,6 +36,12 @@ class WebAPI {
             if (ar.succeeded()) {
                 // Spec loaded with success
                 val routerFactory = ar.result()
+
+                // Allow CORS
+                routerFactory.addGlobalHandler(CorsHandler.create("*")
+                        .allowedMethods(HttpMethod.values().toSet())
+                        .allowedHeader("*")
+                        /* TODO .allowCredentials(true) */)
 
                 // Load operations
                 operations.forEach { it.register(routerFactory) }

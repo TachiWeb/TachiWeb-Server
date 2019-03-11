@@ -3,13 +3,13 @@ package xyz.nulldev.ts.api.v3
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes
 import xyz.nulldev.ts.api.v3.models.exceptions.WException
+import xyz.nulldev.ts.ext.kInstance
 
 interface OperationGroup {
     fun register(routerFactory: OpenAPI3RouterFactory)
@@ -25,7 +25,9 @@ interface OperationGroup {
     fun internalError(enumError: WErrorTypes): Nothing = abort(500, enumError)
 }
 
-internal val apiSerializer = ObjectMapper().registerKotlinModule().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+internal val apiSerializer by lazy {
+    kInstance<ObjectMapper>().copy().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+}
 
 internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.op(
         operationId: String,

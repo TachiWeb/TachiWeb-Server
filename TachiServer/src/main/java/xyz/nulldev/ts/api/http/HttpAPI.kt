@@ -241,10 +241,11 @@ class HttpAPI {
 
             val request = Request.Builder()
                     .url(targetUrl)
-                    .apply {
-                        if (incoming.requestMethod() in listOf("POST", "PUT", "DELETE", "PATCH"))
-                            method(incoming.requestMethod(), RequestBody.create(null, incoming.bodyAsBytes()))
-                    }
+                    .method(incoming.requestMethod(),
+                            if (incoming.requestMethod() in listOf("POST", "PUT", "DELETE", "PATCH"))
+                                RequestBody.create(null, incoming.bodyAsBytes())
+                            else null
+                    )
                     .headers(Headers.of(incoming.headers().associateWith { incoming.headers(it) }))
                     .build()
 

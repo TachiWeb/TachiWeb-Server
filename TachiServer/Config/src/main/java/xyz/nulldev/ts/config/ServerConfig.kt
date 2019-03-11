@@ -4,12 +4,14 @@ import com.typesafe.config.Config
 import java.io.File
 
 class ServerConfig(config: Config) : ConfigModule(config) {
-    val port = config.getInt("port")
     val ip = config.getString("ip")
+    val port = config.getInt("port")
 
     val allowConfigChanges = config.getBoolean("allowConfigChanges")
     val enableWebUi = config.getBoolean("enableWebUi")
     val useOldWebUi = config.getBoolean("useOldWebUi")
+    val prettyPrintApi = config.getBoolean("prettyPrintApi")
+    // TODO Apply to operation IDs
     val disabledApiEndpoints = config.getStringList("disabledApiEndpoints").map(String::toLowerCase)
     val enabledApiEndpoints = config.getStringList("enabledApiEndpoints").map(String::toLowerCase)
     val httpInitializedPrintMessage = config.getString("httpInitializedPrintMessage")
