@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.5"
+    "version" : "3.1.6"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -34,55 +34,8 @@
       "description" : "The REST endpoint/path used to list `manga` entities.  This path contains a `GET` operation to perform the list task.",
       "get" : {
         "summary" : "List all manga",
-        "description" : "Gets a list of all `manga` entities.",
+        "description" : "Gets a list of all `manga` entities.\n\nThis operation can be slow and return large amounts of data.\nIt is recommended to be used sparingly.",
         "operationId" : "getMangas",
-        "parameters" : [ {
-          "name" : "only-downloaded",
-          "in" : "query",
-          "description" : "Whether or not to only show downloaded manga.\n\nDefaults to: `false`",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "only-unread",
-          "in" : "query",
-          "description" : "Whether or not to show only unread manga.\n\nDefaults to: `false`",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "only-completed",
-          "in" : "query",
-          "description" : "Whether or not to show only completed manga.\n\nDefaults to: `false`",
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "sort",
-          "in" : "query",
-          "description" : "The method used to sort the returned results.",
-          "required" : true,
-          "schema" : {
-            "enum" : [ "ALPHA", "LAST_READ", "LAST_UPDATED", "UNREAD_CHAPTERS", "TOTAL_CHAPTERS", "SOURCE_NAME" ]
-          }
-        }, {
-          "name" : "only-favorited",
-          "in" : "query",
-          "description" : "Whether or not to show only favorited manga.\n\nDefaults to: `false`",
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "sort-direction",
-          "in" : "query",
-          "description" : "The sort direction.",
-          "required" : true,
-          "schema" : {
-            "enum" : [ "ASCENDING", "DESCENDING" ]
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "Successful response - returns an array of `manga` entities.",
@@ -2363,6 +2316,36 @@
           }
         }
       }
+    },
+    "/api/v3/manga/library" : {
+      "get" : {
+        "summary" : "Get all favorited manga along with some extra information about each manga.",
+        "operationId" : "getLibraryMangas",
+        "parameters" : [ {
+          "name" : "include-download-info",
+          "in" : "query",
+          "description" : "Set to `true` to include the `downloadedChapters` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/library-manga"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -3242,6 +3225,28 @@
                 "type" : "string"
               }
             } ]
+          }
+        }
+      },
+      "library-manga" : {
+        "description" : "A wrapper around `manga` containing more useful information.",
+        "required" : [ "totalUnread", "totalChapters", "manga" ],
+        "type" : "object",
+        "properties" : {
+          "manga" : {
+            "$ref" : "#/components/schemas/manga"
+          },
+          "totalChapters" : {
+            "description" : "The total number of chapters in this manga.",
+            "type" : "integer"
+          },
+          "totalUnread" : {
+            "description" : "The amount of unread chapters in this manga.",
+            "type" : "integer"
+          },
+          "totalDownloaded" : {
+            "description" : "The amount of downloaded chapters in this manga.\n\nWill only be present in some cases. Refer to the specific endpoint for more information.",
+            "type" : "integer"
           }
         }
       }
