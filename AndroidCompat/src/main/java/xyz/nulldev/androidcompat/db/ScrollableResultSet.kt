@@ -26,6 +26,11 @@ class ScrollableResultSet(val parent: ResultSet) : ResultSet by parent {
     init {
         val columnCount = columnCount
 
+        // TODO
+        // Profiling reveals that this is a bottleneck (average ms for this call is: 48ms)
+        // How can we optimize this?
+        // We need to fill the cache as the set is loaded
+
         //Fill cache
         while(parent.next()) {
             cachedContent += ResultSetEntry().apply {

@@ -484,6 +484,7 @@ public class CursorWindow extends SQLiteClosable {
     }
 
     private void jumpToRow(int row) {
+        // TODO Optimize
         resultSet.first();
         for(int i = 0; i < row; i++) {
             resultSet.next();

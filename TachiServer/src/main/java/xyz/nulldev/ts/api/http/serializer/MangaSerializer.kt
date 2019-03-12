@@ -17,6 +17,7 @@
 package xyz.nulldev.ts.api.http.serializer
 
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
+import eu.kanade.tachiyomi.data.database.models.LibraryManga
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.SourceManager
@@ -26,7 +27,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import xyz.nulldev.ts.api.http.manga.MangaFlag
 import xyz.nulldev.ts.api.java.util.isDownloaded
-import xyz.nulldev.ts.api.java.util.unread
 import xyz.nulldev.ts.ext.kInstanceLazy
 
 /**
@@ -47,8 +47,10 @@ class MangaSerializer {
                 .put(KEY_CHAPTER_COUNT, db.getChapters(manga).executeAsBlocking().size)
                 .put(KEY_ID, manga.id)
 
-        if(fromLibrary)
-                builtResponse.put(KEY_UNREAD, manga.unread)
+        if (fromLibrary) {
+            manga as LibraryManga
+            builtResponse.put(KEY_UNREAD, manga.unread)
+        }
 
         val source = sourceManager.get(manga.source)
         var url = ""

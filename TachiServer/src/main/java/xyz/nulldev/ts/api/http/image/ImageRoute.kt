@@ -43,7 +43,7 @@ class ImageRoute : TachiWebRoute() {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val detector = MimeTypes()
+    private val detector: MimeTypes by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any {
         val mangaId = request.params(":mangaId")?.toLong()

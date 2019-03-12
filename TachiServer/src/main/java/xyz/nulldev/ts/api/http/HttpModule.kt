@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 import com.google.gson.JsonParser
+import org.apache.tika.mime.MimeTypes
 import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import xyz.nulldev.ts.api.http.serializer.MangaSerializer
 import xyz.nulldev.ts.api.task.TaskManager
@@ -33,5 +34,7 @@ class HttpModule {
             if (serverConfig.prettyPrintApi) mapper = mapper.enable(SerializationFeature.INDENT_OUTPUT)
             mapper
         }
+
+        bind<MimeTypes>() with singleton { MimeTypes.getDefaultMimeTypes() }
     }
 }
