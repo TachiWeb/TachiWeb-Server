@@ -22,11 +22,11 @@ echo "API client versions: Remote=$REMOTE_VERSION, Local=$SCHEMA_VERSION"
 if [[ "$REMOTE_VERSION" != "$SCHEMA_VERSION" ]]; then
     echo "Version mismatch, rebuilding API client!"
 
-    mkdir -p /tmp/openapitools
-    curl https://raw.githubusercontent.com/OpenAPITools/openapi-generator/master/bin/utils/openapi-generator-cli.sh > /tmp/openapitools/openapi-generator-cli
-    chmod u+x /tmp/openapitools/openapi-generator-cli
-    OPENAPI_GENERATOR_VERSION=v4.0.0-beta2 /tmp/openapitools/openapi-generator-cli generate -i "$SCHEMA_LOCATION" -g javascript-flowtyped
+    echo "Downloading OpenAPI Generator..."
+    wget http://central.maven.org/maven2/org/openapitools/openapi-generator-cli/4.0.0-beta2/openapi-generator-cli-4.0.0-beta2.jar -O /tmp/openapi-generator-cli.jar
+    java -jar /tmp/openapi-generator-cli.jar generate -i "$SCHEMA_LOCATION" -g javascript-flowtyped
 
+    echo "Building API client..."
     cat package.json | jq ".version=\"$SCHEMA_VERSION\" | .license=\"Apache-2.0\" | .name=\"@tachiweb/api-client\" | .repository=\"https://github.com/TachiWeb/TachiWeb-Server\"" > package.json.out
     mv package.json.out package.json
     sed -i -e 's/tachi_web_api@1.0.0/@tachiweb\/api-client/g' README.md
@@ -34,6 +34,7 @@ if [[ "$REMOTE_VERSION" != "$SCHEMA_VERSION" ]]; then
     npm install
     npm run build
 
+    echo "Publishing API client..."
     npm publish --access public
 fi
 
