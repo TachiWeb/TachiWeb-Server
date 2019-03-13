@@ -25,7 +25,7 @@ if [[ "$REMOTE_VERSION" != "$SCHEMA_VERSION" ]]; then
     mkdir -p /tmp/openapitools
     curl https://raw.githubusercontent.com/OpenAPITools/openapi-generator/master/bin/utils/openapi-generator-cli.sh > /tmp/openapitools/openapi-generator-cli
     chmod u+x /tmp/openapitools/openapi-generator-cli
-    /tmp/openapitools/openapi-generator-cli generate -i "$SCHEMA_LOCATION" -g javascript-flowtyped
+    OPENAPI_GENERATOR_VERSION=v4.0.0-beta2 /tmp/openapitools/openapi-generator-cli generate -i "$SCHEMA_LOCATION" -g javascript-flowtyped
 
     cat package.json | jq ".version=\"$SCHEMA_VERSION\" | .license=\"Apache-2.0\" | .name=\"@tachiweb/api-client\" | .repository=\"https://github.com/TachiWeb/TachiWeb-Server\"" > package.json.out
     mv package.json.out package.json
