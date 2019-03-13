@@ -62,7 +62,7 @@ class CoverRoute : TachiWebRoute() {
         var url = manga.thumbnail_url
         try {
             if (url.isNullOrEmpty()) {
-                libraryUpdater.silentUpdateMangaInfo(manga)
+                libraryUpdater._silentUpdateMangaInfo(manga)
                 url = manga.thumbnail_url
             }
         } catch (e: Exception) {

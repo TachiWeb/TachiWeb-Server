@@ -64,7 +64,7 @@ class UpdateRoute : TachiWebRoute() {
         if (updateType == UpdateType.INFO) {
             //Update manga info
             try {
-                libraryUpdater.updateMangaInfo(manga, source)
+                libraryUpdater._updateMangaInfo(manga, source)
             } catch (e: Exception) {
                 logger.warn(e) {
                     "Error updating info for manga: $mangaId!"
@@ -74,7 +74,7 @@ class UpdateRoute : TachiWebRoute() {
         } else if (updateType == UpdateType.CHAPTERS) {
             //Update manga chapters
             try {
-                val results = libraryUpdater.updateChapters(manga, source)
+                val results = libraryUpdater._updateChapters(manga, source)
                 //Return the results in JSON
                 val toReturn = success()
                 toReturn.put(KEY_ADDED, results.first)

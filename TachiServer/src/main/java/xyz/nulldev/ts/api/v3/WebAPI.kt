@@ -8,6 +8,7 @@ import io.vertx.ext.web.handler.CorsHandler
 import xyz.nulldev.ts.api.v3.operations.APIOperations
 import xyz.nulldev.ts.api.v3.operations.categories.CategoryOperations
 import xyz.nulldev.ts.api.v3.operations.chapters.ChapterOperations
+import xyz.nulldev.ts.api.v3.operations.manga.MangaOperations
 import xyz.nulldev.ts.api.v3.operations.preferences.PreferenceOperations
 import xyz.nulldev.ts.api.v3.operations.server.ServerOperations
 import xyz.nulldev.ts.api.v3.operations.sources.SourceOperations
@@ -25,6 +26,7 @@ class WebAPI {
     private val operations = listOf(
             CategoryOperations(vertx),
             ChapterOperations(vertx),
+            MangaOperations(vertx),
             ServerOperations(vertx),
             SourceOperations(vertx),
             APIOperations(vertx),

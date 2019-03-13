@@ -17,10 +17,7 @@
 package xyz.nulldev.ts.api.http
 
 import mu.KotlinLogging
-import okhttp3.Headers
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
 import spark.Route
 import spark.Spark
 import xyz.nulldev.ts.api.http.auth.CheckSessionRoute
@@ -53,6 +50,7 @@ import xyz.nulldev.ts.api.v3.WebAPI
 import xyz.nulldev.ts.config.ConfigManager
 import xyz.nulldev.ts.config.ServerConfig
 import xyz.nulldev.ts.ext.kInstance
+import java.util.concurrent.TimeUnit
 
 /**
  * Project: TachiServer
@@ -228,6 +226,11 @@ class HttpAPI {
                 .cache(null)
                 .followRedirects(true) // Our web client can't handle proxied redirects
                 .followSslRedirects(false) // v3 shouldn't be doing this
+                // Connection pool is causing issues so don't use it
+                .connectionPool(ConnectionPool(0, 1, TimeUnit.NANOSECONDS))
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
                 .build()
         val v3Route = Route { incoming, outgoing ->
             val targetUrl = "http://localhost:${v3Api.port}${incoming.contextPath() ?: ""}${incoming.servletPath()

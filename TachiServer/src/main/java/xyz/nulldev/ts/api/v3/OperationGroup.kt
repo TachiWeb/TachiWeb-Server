@@ -8,6 +8,7 @@ import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes
 import xyz.nulldev.ts.api.v3.models.exceptions.WException
 import xyz.nulldev.ts.ext.kInstance
@@ -24,6 +25,16 @@ interface OperationGroup {
 
     fun internalError(): Nothing = abort(500)
     fun internalError(enumError: WErrorTypes): Nothing = abort(500, enumError)
+
+    fun expectedError(responseCode: Int,
+                      message: String,
+                      type: WErrorTypes,
+                      throwable: Throwable = Exception(message)): Nothing = throw WException.expected(responseCode, message, type, throwable)
+
+    fun expectedError(responseCode: Int,
+                      type: WErrorTypes,
+                      throwable: Throwable): Nothing = throw WException.expected(responseCode, throwable.message
+            ?: "No message", type, throwable)
 }
 
 internal val apiSerializer by lazy {
@@ -66,14 +77,20 @@ internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.opWith
             val result: Any? = try {
                 function(input as Input, it)
             } catch (error: WException) {
-                response.statusCode = error.responseCode ?: 500
+                response.statusCode = error.data.responseCode
 
-                if (error.content != null)
-                    error.content
-                else Unit
+                when (val errorData = error.data) {
+                    is WException.DataType.GeneralError -> errorData.content ?: Unit
+                    is WException.DataType.ExpectedError -> {
+                        KotlinLogging.logger { }.warn {
+                            "API v3 error (${errorData.wError.type}): ${errorData.wError.message}\n${errorData.wError.stackTrace}"
+                        }
+                        errorData.wError
+                    }
+                }
             }
 
-            if (!response.ended()) {
+            if (!response.closed() && !response.ended()) {
                 if (result !is Unit) {
                     response.end(apiSerializer.writeValueAsString(result))
                 } else {

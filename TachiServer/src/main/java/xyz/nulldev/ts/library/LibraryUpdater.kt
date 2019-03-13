@@ -7,6 +7,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.util.syncChaptersWithSource
 import mu.KotlinLogging
+import xyz.nulldev.ts.api.v3.util.await
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.util.*
 
@@ -33,49 +34,52 @@ import java.util.*
  */
 class LibraryUpdater {
 
-    val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
-    val sourceManager: SourceManager by kInstanceLazy()
-
+    private val sourceManager: SourceManager by kInstanceLazy()
     private val db: DatabaseHelper by kInstanceLazy()
 
-    fun updateLibrary(updateAll: Boolean) {
+    @Deprecated("Use async variant instead")
+    fun _updateLibrary(updateAll: Boolean) {
         if(updateAll) {
             db.getMangas()
         } else {
             db.getFavoriteMangas()
         }.executeAsBlocking().forEach {
-            silentUpdateMangaInfo(it)
-            silentUpdateChapters(it)
+            _silentUpdateMangaInfo(it)
+            _silentUpdateChapters(it)
         }
     }
 
-    fun silentUpdateMangaInfo(manga: Manga) {
+    @Deprecated("Use async variant instead")
+    fun _silentUpdateMangaInfo(manga: Manga) {
         val source = sourceManager.get(manga.source)
         if(source == null) {
             logger.warn { "Manga ${manga.id} is missing it's source!" }
             return
         }
         try {
-            updateMangaInfo(manga, source)
+            _updateMangaInfo(manga, source)
         } catch (e: Exception) {
             logger.error("Error updating manga!", e)
         }
     }
 
-    fun updateMangaInfo(manga: Manga, source: Source) {
+    @Deprecated("Use async variant instead")
+    fun _updateMangaInfo(manga: Manga, source: Source) {
         manga.copyFrom(source.fetchMangaDetails(manga).toBlocking().first())
         db.insertManga(manga).executeAsBlocking()
     }
 
-    fun silentUpdateChapters(manga: Manga): Pair<List<Chapter>, List<Chapter>> {
+    @Deprecated("Use async variant instead")
+    fun _silentUpdateChapters(manga: Manga): Pair<List<Chapter>, List<Chapter>> {
         val source = sourceManager.get(manga.source)
         if(source == null) {
             logger.warn { "Manga ${manga.id} is missing it's source!" }
             return Pair(emptyList(), emptyList())
         }
         try {
-            return updateChapters(manga, source).apply {
+            return _updateChapters(manga, source).apply {
                 //If we find new chapters, update the "last update" field in the manga object
                 if(first.isNotEmpty() || second.isNotEmpty()) {
                     manga.last_update = Date().time
@@ -88,10 +92,18 @@ class LibraryUpdater {
         }
     }
 
-    fun updateChapters(manga: Manga, source: Source): Pair<List<Chapter>, List<Chapter>> {
+    @Deprecated("Use async variant instead")
+    fun _updateChapters(manga: Manga, source: Source): Pair<List<Chapter>, List<Chapter>> {
         return syncChaptersWithSource(db,
                 source.fetchChapterList(manga).toBlocking().first(),
                 manga,
                 source)
+    }
+
+    suspend fun updateMangaInfo(manga: Manga, source: Source) {
+        val networkManga = source.fetchMangaDetails(manga).toSingle().await()
+        manga.copyFrom(networkManga)
+        manga.initialized = true
+        db.insertManga(manga).await()
     }
 }

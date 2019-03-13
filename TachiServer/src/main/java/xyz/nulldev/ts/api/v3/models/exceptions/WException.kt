@@ -1,20 +1,36 @@
 package xyz.nulldev.ts.api.v3.models.exceptions
 
-class WException : Exception {
-    var responseCode: Int? = null
-    var content: String? = null
+import com.google.common.base.Throwables
+import xyz.nulldev.ts.api.v3.models.WError
 
-    constructor() : super()
-    constructor(message: String) : super(message)
-    constructor(message: String, cause: Throwable) : super(message, cause)
-    constructor(cause: Throwable) : super(cause)
-    constructor(message: String, cause: Throwable, enableSuppression: Boolean, writableStackTrace: Boolean) : super(message, cause, enableSuppression, writableStackTrace)
+class WException(val data: DataType) : Exception() {
+    constructor(responseCode: Int) : this(responseCode, null)
 
-    constructor(responseCode: Int) : super() {
-        this.responseCode = responseCode
+    constructor(responseCode: Int, enumError: WErrorTypes?) : this(
+            DataType.GeneralError(
+                    responseCode,
+                    enumError?.let { "\"${it.name}\"" }
+            )
+    )
+
+    constructor(responseCode: Int, wError: WError) : this(DataType.ExpectedError(responseCode, wError))
+
+    sealed class DataType(val responseCode: Int) {
+        class GeneralError(responseCode: Int, val content: String?) : DataType(responseCode)
+        class ExpectedError(responseCode: Int, val wError: WError) : DataType(responseCode)
     }
 
-    constructor(responseCode: Int, enumError: WErrorTypes) : this(responseCode) {
-        this.content = "\"${enumError.name}\""
+    companion object {
+        fun expected(responseCode: Int,
+                     message: String,
+                     type: WErrorTypes,
+                     throwable: Throwable = Exception(message)) = WException(
+                responseCode,
+                WError(
+                        message,
+                        Throwables.getStackTraceAsString(throwable),
+                        type.toString()
+                )
+        )
     }
 }

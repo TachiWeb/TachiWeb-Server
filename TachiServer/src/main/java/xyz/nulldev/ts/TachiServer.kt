@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import eu.kanade.tachiyomi.App
 import kotlinx.coroutines.runBlocking
+import org.apache.commons.lang3.SystemUtils
 import spark.Spark
 import xyz.nulldev.androidcompat.AndroidCompat
 import xyz.nulldev.androidcompat.AndroidCompatInitializer
@@ -12,6 +13,7 @@ import xyz.nulldev.ts.api.http.HttpModule
 import xyz.nulldev.ts.config.ConfigKodeinModule
 import xyz.nulldev.ts.config.GlobalConfigManager
 import xyz.nulldev.ts.config.ServerConfig
+import xyz.nulldev.ts.internal.Http2Agent
 import xyz.nulldev.ts.syncdeploy.SyncConfigModule
 import xyz.nulldev.ts.syncdeploy.TSSyncDeploy
 import java.io.File
@@ -56,6 +58,10 @@ class TachiServer {
     }
 
     fun run(args: Array<String>) {
+        // Install ALPN hack
+        if (SystemUtils.IS_JAVA_1_7 || SystemUtils.IS_JAVA_1_8)
+            Http2Agent.install()
+
         //Initialize internals
         initInternals()
 

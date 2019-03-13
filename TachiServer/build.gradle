@@ -60,6 +60,16 @@ dependencies {
     compile group: 'org.apache.tika', name: 'tika-core', version: tika_version
     compile "org.apache.tika:tika-parsers:$tika_version"
     compile group: 'org.apache.tika', name: 'tika-java7', version: tika_version
+
+    // Caching
+    def caffeine_version = '2.7.0'
+    compile "com.github.ben-manes.caffeine:caffeine:$caffeine_version"
+    compile "com.github.ben-manes.caffeine:guava:$caffeine_version"
+    compile "com.github.ben-manes.caffeine:jcache:$caffeine_version"
+
+    // ALPN hack
+    compile group: 'com.ea.agentloader', name: 'ea-agent-loader', version: '1.0.3'
+    compile group: 'org.mortbay.jetty.alpn', name: 'jetty-alpn-agent', version: '2.0.9'
 }
 
 // Exclude regular ASM as dex2jar needs debug ASM
