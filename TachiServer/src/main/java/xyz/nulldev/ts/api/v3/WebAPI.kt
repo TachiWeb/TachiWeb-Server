@@ -34,7 +34,7 @@ class WebAPI {
     )
 
     suspend fun start() = suspendCoroutine<WebAPIInfo> { cont ->
-        OpenAPI3RouterFactory.create(vertx, WebAPI::class.java.getResource(SPEC_LOCATION).toURI().toURL().toString()) { ar ->
+        OpenAPI3RouterFactory.create(vertx, SPEC_LOCATION) { ar ->
             if (ar.succeeded()) {
                 // Spec loaded with success
                 val routerFactory = ar.result()
