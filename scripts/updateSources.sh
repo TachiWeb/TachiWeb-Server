@@ -88,11 +88,6 @@ excludeFile "extension.util" "ExtensionInstallReceiver.kt"
 excludeFile "extension.util" "ExtensionInstaller.kt"
 excludeFile "extension.util" "ExtensionInstallActivity.kt"
 
-echo "Downloading JunRAR source code..."
-git clone "https://github.com/inorichi/junrar-android"
-rm -rf "../junrarandroid/src/main/java/junrar"
-mv "junrar-android/library/src/main/java/junrar" "../junrarandroid/src/main/java/"
-
 echo "Cleaning up..."
 popd
 rm -rf tmp

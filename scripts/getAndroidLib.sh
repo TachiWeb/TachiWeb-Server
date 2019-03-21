@@ -54,6 +54,7 @@ function downloadBintrayLib {
 # Download libraries here
 downloadCentralLib "com.jakewharton.timber:timber:4.5.1"
 downloadJitpackLib "com.github.seven332:unifile:1.0.0"
+downloadJitpackLib "com.github.inorichi:junrar-android:634c1f5"
 #downloadBintrayLib "inorichi/tachiyomi" "eu.kanade.tachiyomi:extensions-library:1.0"
 downloadBintrayLib "inorichi/maven" "eu.kanade.storio:storio:1.13.0"
 downloadBintrayLib "inorichi/maven" "eu.kanade.storio:storio-common:1.13.0"

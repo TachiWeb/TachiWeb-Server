@@ -16,9 +16,6 @@ include 'AndroidCompat'
 // Core Java patches
 include 'AndroidCompat/JVMPatch'
 
-// UnRAR library use in Tachiyomi
-include 'junrarandroid'
-
 // Original Tachiyomi source code (along with Android -> Server bridge code)
 include 'Tachiyomi-App'
 

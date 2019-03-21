@@ -28,7 +28,6 @@ allprojects {
 
 ext.javaProjects = [
         project(":AndroidCompat"),
-        project(":junrarandroid"),
         project(":TachiServer"),
         project(":TachiServer/Config"),
         project(":Tachiyomi-App")
@@ -45,13 +44,7 @@ configure(javaProjects) {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    compileTestKotlin {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             jvmTarget = "1.8"
         }

@@ -68,7 +68,6 @@ function dedup() {
 
 pushd ..
 dedup AndroidCompat/src/main/java
-dedup junrarandroid/src/main/java
 dedup TachiServer/src/main/java
 dedup Tachiyomi-App/src/main/java
 dedup Tachiyomi-App/src/compat/java
