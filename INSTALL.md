@@ -1,5 +1,5 @@
 ## Installing from binary (recommended)
-1. Download the latest binary from here: `https://ci.nulldev.xyz/job/TachiWeb-Server/lastSuccessfulBuild/artifact/TachiServer/build/libs/TachiServer-all-1.0.jar`
+1. Download the latest binary from here: `http://travis.nd.ax/TachiWeb/TachiWeb-Server/39_8788b3542a2f5b804d680bee7165b5f30f135b67/server.jar`
 2. Run the JAR file: `java -jar TachiServer-all-1.0.jar`.
 3. Access TachiWeb in your browser here: http://127.0.0.1:4567/.
 
