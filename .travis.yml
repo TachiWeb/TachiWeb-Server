@@ -17,14 +17,13 @@ matrix:
         # - echo "deb https://download.mono-project.com/repo/ubuntu stable-trusty main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         # Actually install packages (we no longer need 'winehq-stable mono-complete' since we have docker)
         - sudo apt-get update
-        - sudo apt-get install --allow-unauthenticated -y --install-recommends realpath openjdk-8-jdk gcc-multilib g++-multilib rpm bsdtar jq
+        - sudo apt-get install --allow-unauthenticated -y --install-recommends realpath openjdk-8-jdk gcc-multilib g++-multilib rpm bsdtar jq rsync
         # Mono again
         # - wget "http://dl.winehq.org/wine/wine-mono/4.7.2/wine-mono-4.7.2.msi" -O /tmp/mono.msi
         # - wine msiexec /i /tmp/mono.msi
         # Docker
       script: bash -c "CI=false scripts/build.sh --linux" && bash -c "cd bootui/tachiweb-bootstrap && bash ../../scripts/buildWindowsInDocker.sh"
       before_deploy:
-        - sudo apt-get install rsync
         - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win32-portable.zip win-ia32-unpacked"
         - bash -c "cd bootui/tachiweb-bootstrap/dist/ && zip -r TachiWeb-win64-portable.zip win-unpacked"
         - bash -c 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc'
