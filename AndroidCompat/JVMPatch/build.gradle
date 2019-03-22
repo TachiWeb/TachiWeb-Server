@@ -1,8 +1,6 @@
 apply plugin: "java"
 
 dependencies {
-    // ICU Library
-    compile group: 'com.ibm.icu', name: 'icu4j', version: '59.1'
 }
 
 task fatJar(type: Jar) {
