@@ -15,7 +15,6 @@ import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionModel
 import xyz.nulldev.ts.api.v2.java.model.extensions.ExtensionStatus
 import java.net.URL
 import java.net.URLConnection
-import java.nio.file.Files
 
 class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionCollection,
         List<ExtensionModel> by ProxyList(pkgName, { ExtensionCollectionProxy(it) }) {
@@ -64,7 +63,7 @@ class ExtensionCollectionImpl(override val pkgName: List<String>): ExtensionColl
                 is Extension.Untrusted -> controller.findPackage(it.pkgName)?.icon?.let {
                     if(!it.exists()) return@let null
 
-                    Files.probeContentType(it.toPath()) to PreparedInputStream.from {
+                    "image/png" to PreparedInputStream.from {
                         it.inputStream()
                     }
                 }
