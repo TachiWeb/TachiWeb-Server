@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.7"
+    "version" : "3.1.8"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -182,7 +182,7 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
+            "description" : "Successful response. Returns the new manga flags.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2007,51 +2007,6 @@
         }
       } ]
     },
-    "/api/v3/manga/{mangaId}/bookmark" : {
-      "summary" : "Path used to manage a single manga's bookmarked status.",
-      "description" : "",
-      "put" : {
-        "summary" : "Set a manga's bookmarked status.",
-        "description" : "",
-        "operationId" : "setMangaBookmarked",
-        "requestBody" : {
-          "description" : "The new bookmarked status of the manga.",
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "boolean"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Successful response.\n\nThe new bookmarked status of the manga is returned.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "boolean"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "No manga with the supplied `mangaId` exists."
-          }
-        }
-      },
-      "parameters" : [ {
-        "name" : "mangaId",
-        "in" : "path",
-        "description" : "The `manga`'s `id`.",
-        "required" : true,
-        "schema" : {
-          "format" : "int64",
-          "type" : "integer"
-        }
-      } ]
-    },
     "/api/v3/server/stop" : {
       "post" : {
         "summary" : "Stop/shutdown the server.",
@@ -2356,6 +2311,51 @@
           }
         }
       }
+    },
+    "/api/v3/chapters/{chapterId}/bookmark" : {
+      "summary" : "Path used to manage a single chapter's bookmarked status.",
+      "description" : "",
+      "put" : {
+        "summary" : "Set a chapter's bookmarked status.",
+        "description" : "",
+        "operationId" : "setChapterBookmarked",
+        "requestBody" : {
+          "description" : "The new bookmarked status of the chapter.",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "boolean"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successful response.\n\nThe new bookmarked status of the chapter is returned.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "boolean"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No chapter exists with the supplied `chapterId`."
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "chapterId",
+        "in" : "path",
+        "description" : "The chapter id.",
+        "required" : true,
+        "schema" : {
+          "format" : "int64",
+          "type" : "integer"
+        }
+      } ]
     }
   },
   "components" : {
@@ -3406,15 +3406,11 @@
       },
       "library-manga" : {
         "description" : "A wrapper around `manga` containing more useful information.",
-        "required" : [ "totalUnread", "totalChapters", "manga" ],
+        "required" : [ "totalUnread", "manga" ],
         "type" : "object",
         "properties" : {
           "manga" : {
             "$ref" : "#/components/schemas/manga"
-          },
-          "totalChapters" : {
-            "description" : "The total number of chapters in this manga.",
-            "type" : "integer"
           },
           "totalUnread" : {
             "description" : "The amount of unread chapters in this manga.",
