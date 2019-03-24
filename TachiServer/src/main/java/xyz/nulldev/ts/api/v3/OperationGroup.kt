@@ -3,6 +3,7 @@ package xyz.nulldev.ts.api.v3
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.common.base.Throwables
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.coroutines.dispatcher
@@ -80,7 +81,12 @@ internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.opWith
                 response.statusCode = error.data.responseCode
 
                 when (val errorData = error.data) {
-                    is WException.DataType.GeneralError -> errorData.content ?: Unit
+                    is WException.DataType.GeneralError -> {
+                        KotlinLogging.logger { }.warn {
+                            "API v3 error ($errorData): ${Throwables.getStackTraceAsString(error)}"
+                        }
+                        errorData.content ?: Unit
+                    }
                     is WException.DataType.ExpectedError -> {
                         KotlinLogging.logger { }.warn {
                             "API v3 error (${errorData.wError.type}): ${errorData.wError.message}\n${errorData.wError.stackTrace}"
@@ -169,18 +175,24 @@ internal inline fun <reified PathParam1, reified PathParam2, reified Output> Ope
     function(rc.pathParamObj(pathParam1Name), rc.pathParamObj(pathParam2Name), rc)
 }
 
-internal inline fun <reified T> RoutingContext.pathParamObj(name: String): T {
-    val param: String? = pathParam(name)
+internal inline fun <reified T> RoutingContext.pathParamObj(name: String) = convertString<T>(pathParam(name))
 
+inline fun <reified T> RoutingContext.queryParamObjs(name: String) = queryParam(name).map {
+    convertString<T>(it)
+}
+
+inline fun <reified T> RoutingContext.queryParamObj(name: String) = convertString<T>(queryParam(name).first())
+
+inline fun <reified T> convertString(obj: String?): T {
     val result: Any? = when (T::class) {
-        String::class -> param
-        Int::class -> param?.toInt()
-        Long::class -> param?.toLong()
-        Boolean::class -> param?.toBoolean()
-        Float::class -> param?.toFloat()
-        Double::class -> param?.toDouble()
+        String::class -> obj
+        Int::class -> obj?.toInt()
+        Long::class -> obj?.toLong()
+        Boolean::class -> obj?.toBoolean()
+        Float::class -> obj?.toFloat()
+        Double::class -> obj?.toDouble()
         else -> error("Unknown object type: ${T::class.qualifiedName}")
     }
 
-    return result as? T ?: error("Path param '$param' could not be casted!")
+    return result as? T ?: error("Parameter value '$obj' could not be casted!")
 }

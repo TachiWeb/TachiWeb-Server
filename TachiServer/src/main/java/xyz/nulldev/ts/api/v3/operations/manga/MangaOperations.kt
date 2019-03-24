@@ -1,7 +1,10 @@
 package xyz.nulldev.ts.api.v3.operations.manga
 
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
+import eu.kanade.tachiyomi.data.database.models.Manga
+import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.SourceManager
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
@@ -21,9 +24,10 @@ import mu.KotlinLogging
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.metadata.TikaCoreProperties
 import org.apache.tika.mime.MimeTypes
-import xyz.nulldev.ts.api.v3.OperationGroup
+import xyz.nulldev.ts.api.v3.*
+import xyz.nulldev.ts.api.v3.models.WSortDirection
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes.*
-import xyz.nulldev.ts.api.v3.opWithParamsAndContext
+import xyz.nulldev.ts.api.v3.models.manga.*
 import xyz.nulldev.ts.api.v3.util.*
 import xyz.nulldev.ts.cache.AsyncDiskLFUCache
 import xyz.nulldev.ts.ext.kInstanceLazy
@@ -41,6 +45,7 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
     private val libraryUpdater: LibraryUpdater by kInstanceLazy()
     private val coverCache: AsyncDiskLFUCache by kInstanceLazy()
     private val detector: MimeTypes by kInstanceLazy()
+    private val downloadManager: DownloadManager by kInstanceLazy()
 
     private val httpClient by lazy {
         vertx.createHttpClient(httpClientOptionsOf(
@@ -54,7 +59,63 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
     }
 
     override fun register(routerFactory: OpenAPI3RouterFactory) {
+        routerFactory.op(::getMangas.name, ::getMangas)
+        routerFactory.opWithContext(::getLibraryMangas.name, ::getLibraryMangas)
         routerFactory.opWithParamsAndContext(::getMangaCover.name, MANGA_ID_PARAM, ::getMangaCover)
+        routerFactory.opWithParams(::getMangaFlags.name, MANGA_ID_PARAM, ::getMangaFlags)
+        routerFactory.opWithParams(::setMangaFlags.name, MANGA_ID_PARAM, ::setMangaFlags)
+    }
+
+    suspend fun getMangas(): List<WManga> {
+        return db.getMangas().await().map { it.asWeb() }
+    }
+
+    suspend fun getLibraryMangas(rc: RoutingContext): List<WLibraryManga> {
+        val mangas = db.getLibraryMangas().await()
+        val includeDownloadInfo = rc.queryParamObjs<Boolean>("include-download-info").firstOrNull() ?: false
+
+        return mangas.groupBy {
+            it.id
+        }.map { (_, mangasWithDifferentCategories) ->
+            val referenceManga = mangasWithDifferentCategories.first()
+            WLibraryManga(
+                    referenceManga.asWeb(mangasWithDifferentCategories.map { it.category }),
+                    if (includeDownloadInfo)
+                        downloadManager.getDownloadCount(referenceManga)
+                    else null,
+                    referenceManga.unread
+            )
+        }
+    }
+
+    suspend fun getMangaFlags(mangaId: Long): WMangaFlags {
+        val manga = db.getManga(mangaId).await() ?: notFound(NO_MANGA)
+
+        return WMangaFlags(
+                WMangaBookmarkedFilter.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE),
+                WMangaDisplayMode.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE),
+                WMangaDownloadedFilter.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE),
+                WMangaReadFilter.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE),
+                WSortDirection.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE),
+                WMangaSortType.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE)
+        )
+    }
+
+    suspend fun setMangaFlags(mangaId: Long, flags: WMangaFlags) {
+        val manga = db.getManga(mangaId).await() ?: notFound(NO_MANGA)
+
+        val newFlags: List<WMangaFlag> = listOf(
+                flags.bookmarkedFilter,
+                flags.displayMode,
+                flags.downloadedFilter,
+                flags.readFilter,
+                flags.sortDirection,
+                flags.sortType
+        )
+
+        newFlags.forEach {
+            manga.setFlag(it)
+        }
     }
 
     suspend fun getMangaCover(mangaId: Long, rc: RoutingContext) {
@@ -90,7 +151,7 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
                 val asyncFile = fs.openAwait(path, OpenOptions())
                 try {
                     rc.response().putHeader(HttpHeaders.CONTENT_LENGTH, pathProps.size().toString())
-                    serveResponse(url, asyncFile, rc.response())
+                    serveCoverResponse(url, asyncFile, rc.response())
                 } finally {
                     asyncFile.closeAwait()
                 }
@@ -127,7 +188,7 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
                 val coverResponseLengthLong = coverResponseLength?.toLongOrNull()
                         ?: expectedError(500, "Response from $url did not include valid Content-Length ($coverResponseLength)!", COVER_DOWNLOAD_ERROR)
                 rc.response().putHeader(HttpHeaders.CONTENT_LENGTH, coverResponseLength)
-                val written = serveResponse(url, coverResponse, combineWriteStreams(rc.response(), asyncFile))
+                val written = serveCoverResponse(url, coverResponse, combineWriteStreams(rc.response(), asyncFile))
 
                 if (written == coverResponseLengthLong) {
                     cacheEntry.commit()
@@ -145,7 +206,7 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         rc.response().tryEnd()
     }
 
-    private suspend fun serveResponse(url: String, input: ReadStream<Buffer>, response: WriteStream<Buffer>): Long {
+    private suspend fun serveCoverResponse(url: String, input: ReadStream<Buffer>, response: WriteStream<Buffer>): Long {
         // Read in some data for the mime type
         val (stream, buffer) = input.readBytes(detector.minLength)
         detector.detect(buffer.inputStream(), Metadata().apply {
@@ -162,6 +223,50 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         stream.resumeAndAwaitEnd()
 
         return totalBytesWritten
+    }
+
+    fun Manga.flagsAsWeb() = WMangaFlags(
+            WMangaBookmarkedFilter.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
+            WMangaDisplayMode.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
+            WMangaDownloadedFilter.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
+            WMangaReadFilter.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
+            WSortDirection.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
+            WMangaSortType.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE)
+    )
+
+    fun Manga.statusAsWeb() = when (status) {
+        SManga.UNKNOWN -> WMangaStatus.UNKNOWN
+        SManga.ONGOING -> WMangaStatus.ONGOING
+        SManga.COMPLETED -> WMangaStatus.COMPLETED
+        SManga.LICENSED -> WMangaStatus.LICENSED
+        else -> internalError(UNKNOWN_MANGA_STATUS)
+    }
+
+    fun Manga.viewerAsWeb() = WMangaViewer.values().getOrNull(viewer) ?: internalError(UNKNOWN_MANGA_VIEWER)
+
+    suspend fun Manga.asWeb(categories: List<Int>? = null): WManga {
+        val loadedCategories = (categories ?: db.getCategoriesForManga(this).await().map {
+            it.id
+        }).filter { it != 0 } // Filter out default category
+
+        return WManga(
+                artist,
+                author,
+                loadedCategories.map { it!!.toLong() },
+                description,
+                favorite,
+                flagsAsWeb(),
+                genre,
+                id!!,
+                initialized,
+                last_update,
+                source,
+                statusAsWeb(),
+                title,
+                listOf(), // TODO
+                url,
+                viewerAsWeb()
+        )
     }
 }
 

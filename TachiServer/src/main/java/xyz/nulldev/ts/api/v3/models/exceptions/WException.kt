@@ -9,7 +9,7 @@ class WException(val data: DataType) : Exception() {
     constructor(responseCode: Int, enumError: WErrorTypes?) : this(
             DataType.GeneralError(
                     responseCode,
-                    enumError?.let { "\"${it.name}\"" }
+                    enumError?.name
             )
     )
 

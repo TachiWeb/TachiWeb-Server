@@ -3,6 +3,7 @@ package xyz.nulldev.ts.api.v3.models.manga
 import xyz.nulldev.ts.api.v3.models.WSortDirection
 
 data class WMangaFlags(
+        val bookmarkedFilter: WMangaBookmarkedFilter,
         val displayMode: WMangaDisplayMode,
         val downloadedFilter: WMangaDownloadedFilter,
         val readFilter: WMangaReadFilter,

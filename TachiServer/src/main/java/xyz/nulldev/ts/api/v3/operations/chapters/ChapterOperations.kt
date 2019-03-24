@@ -22,6 +22,7 @@ class ChapterOperations(private val vertx: Vertx) : OperationGroup {
     override fun register(routerFactory: OpenAPI3RouterFactory) {
         routerFactory.op(::getChapters.name, ::getChapters)
         routerFactory.opWithParams(::getChapter.name, CHAPTER_ID_PARAM, ::getChapter)
+        routerFactory.opWithParams(::setChapterBookmarked.name, CHAPTER_ID_PARAM, ::setChapterBookmarked)
         routerFactory.opWithParams(::getChapterReadingStatus.name, CHAPTER_ID_PARAM, ::getChapterReadingStatus)
         routerFactory.opWithParams(::setChapterReadingStatus.name, CHAPTER_ID_PARAM, ::setChapterReadingStatus)
         routerFactory.opWithParams(::deleteChapterLastRead.name, CHAPTER_ID_PARAM, ::deleteChapterLastRead)
@@ -33,6 +34,14 @@ class ChapterOperations(private val vertx: Vertx) : OperationGroup {
 
     suspend fun getChapter(chapterId: Long): WChapter {
         return db.getChapter(chapterId).await()?.asWeb() ?: notFound()
+    }
+
+    suspend fun setChapterBookmarked(chapterId: Long, bookmarked: Boolean): Boolean {
+        val chapter = db.getChapter(chapterId).await() ?: notFound()
+
+        chapter.bookmark = bookmarked
+
+        return bookmarked
     }
 
     suspend fun getChapterReadingStatus(chapterId: Long): WChapterReadingStatus {
