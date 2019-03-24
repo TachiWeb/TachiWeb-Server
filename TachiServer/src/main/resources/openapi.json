@@ -118,6 +118,16 @@
                 }
               }
             }
+          },
+          "500" : {
+            "description" : "An error occured while loading the cover.\n\nThe exact failure reason is provided in the response body.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/error"
+                }
+              }
+            }
           }
         }
       },
@@ -2448,7 +2458,29 @@
             }
           }
         },
-        "example" : "{\n    \"id\": 1,\n    \"sourceId\": 123,\n    \"favorite\": true,\n    \"lastUpdate\": 1544920787968,\n    \"viewer\": {},\n    \"flags\": {\n        \"sortDirection\": \"DESCENDING\",\n        \"displayMode\": \"NAME\",\n        \"readFilter\": \"ALL\",\n        \"downloadedFilter\": \"ALL\",\n        \"sortType\": \"SOURCE\"\n    },\n    \"url\": \"https://mangadex.org/title/17709/kumo-desu-ga-nani-ka\",\n    \"title\": \"Kumo Desu ga, Nani ka?\",\n    \"artist\": \"Kakashi Asahiro\",\n    \"author\": \"Baba Okina\",\n    \"description\": \"When a mysterious explosion killed an entire class full of high school students, the souls of everyone in class were transported into a fantasy world and reincarnated. While some students were reincarnated as princes or prodigies, others were not as blessed.\\n\\nOur heroine, who was the lowest in the class, discovered that she was reincarnated as a spider! Now at the bottom of the food chain, she needs to adapt to the current situation with willpower in order to live. Stuck in a dangerous labyrinth filled with monsters, it's eat or be eaten!\\n\\nThis is the story of a spider doing whatever she can in order to survive!\",\n    \"genre\": \"Action, Adventure, Comedy, Drama, Fantasy, Isekai\",\n    \"status\": \"ONGOING\",\n    \"categories\": [2, 4],\n    \"initialized\": true\n}"
+        "example" : {
+          "id" : 1,
+          "sourceId" : 123,
+          "favorite" : true,
+          "lastUpdate" : 1544920787968,
+          "viewer" : "DEFAULT",
+          "flags" : {
+            "sortDirection" : "DESCENDING",
+            "displayMode" : "NAME",
+            "readFilter" : "ALL",
+            "downloadedFilter" : "ALL",
+            "sortType" : "SOURCE"
+          },
+          "url" : "https://mangadex.org/title/17709/kumo-desu-ga-nani-ka",
+          "title" : "Kumo Desu ga, Nani ka?",
+          "artist" : "Kakashi Asahiro",
+          "author" : "Baba Okina",
+          "description" : "When a mysterious explosion killed an entire class full of high school students, the souls of everyone in class were transported into a fantasy world and reincarnated. While some students were reincarnated as princes or prodigies, others were not as blessed.\n\nOur heroine, who was the lowest in the class, discovered that she was reincarnated as a spider! Now at the bottom of the food chain, she needs to adapt to the current situation with willpower in order to live. Stuck in a dangerous labyrinth filled with monsters, it's eat or be eaten!\n\nThis is the story of a spider doing whatever she can in order to survive!",
+          "genre" : "Action, Adventure, Comedy, Drama, Fantasy, Isekai",
+          "status" : "ONGOING",
+          "categories" : [ 2, 4 ],
+          "initialized" : true
+        }
       },
       "sort-direction" : {
         "description" : "An enum representing sort direction.",
@@ -2474,7 +2506,10 @@
             "type" : "integer"
           }
         },
-        "example" : "{\n    \"name\": \"Dropped\",\n    \"order\": 1\n}"
+        "example" : {
+          "name" : "Dropped",
+          "order" : 1
+        }
       },
       "chapter" : {
         "title" : "Root Type for chapter",
@@ -2533,7 +2568,22 @@
             "type" : "boolean"
           }
         },
-        "example" : "{\n    \"url\": \"https://mangadex.org/chapter/415934\",\n    \"name\": \"Ch. 29.2\",\n    \"dateUpload\": 1544928692640,\n    \"chapterNumber\": 29.2,\n    \"scanlator\": \"aumakua\",\n    \"id\": 35,\n    \"mangaId\": 1,\n    \"bookmark\": false,\n    \"dateFetch\": 1544928692640,\n    \"sourceOrder\": 0,\n    \"readingStatus\": {\n        \"read\": false,\n        \"lastPageRead\": 0\n    }\n}"
+        "example" : {
+          "url" : "https://mangadex.org/chapter/415934",
+          "name" : "Ch. 29.2",
+          "dateUpload" : 1544928692640,
+          "chapterNumber" : 29.2,
+          "scanlator" : "aumakua",
+          "id" : 35,
+          "mangaId" : 1,
+          "bookmark" : false,
+          "dateFetch" : 1544928692640,
+          "sourceOrder" : 0,
+          "readingStatus" : {
+            "read" : false,
+            "lastPageRead" : 0
+          }
+        }
       },
       "chapter-reading-status" : {
         "title" : "Root Type for chapter-reading-status",
@@ -2556,7 +2606,11 @@
             "type" : "integer"
           }
         },
-        "example" : "{\n    \"read\": false,\n    \"lastPageRead\": 0,\n    \"lastRead\": 1551218464314\n}"
+        "example" : {
+          "read" : false,
+          "lastPageRead" : 0,
+          "lastRead" : 1551218464314
+        }
       },
       "download" : {
         "title" : "Root Type for download",
@@ -2602,7 +2656,16 @@
             "enum" : [ "QUEUED", "DOWNLOADING", "DOWNLOADED", "ERROR" ]
           }
         },
-        "example" : "{\n    \"mangaTitle\": \"Kumo Desu ga, Nani ka?\",\n    \"chapterName\": \"Ch. 29.2\",\n    \"mangaId\": 1,\n    \"chapterId\": 2,\n    \"progress\": 0.51,\n    \"downloadedPages\": 10,\n    \"totalPages\": 20,\n    \"status\": \"DOWNLOADING\"\n}"
+        "example" : {
+          "mangaTitle" : "Kumo Desu ga, Nani ka?",
+          "chapterName" : "Ch. 29.2",
+          "mangaId" : 1,
+          "chapterId" : 2,
+          "progress" : 0.51,
+          "downloadedPages" : 10,
+          "totalPages" : 20,
+          "status" : "DOWNLOADING"
+        }
       },
       "downloader" : {
         "description" : "The chapter downloader on the server.",
@@ -2658,7 +2721,15 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"type\": \"RESTORE_BACKUP\",\n    \"completed\": true,\n    \"progress\": 1.0,\n    \"startedAt\": 1551594603012,\n    \"progressText\": \"Restored 10082 manga\",\n    \"data\": \"[100, 2, 4, 5]\",\n    \"uuid\": \"01ARZ3NDEKTSV4RRFFQ69G5FAV\"\n}"
+        "example" : {
+          "type" : "RESTORE_BACKUP",
+          "completed" : true,
+          "progress" : 1,
+          "startedAt" : 1551594603012,
+          "progressText" : "Restored 10082 manga",
+          "data" : "[100, 2, 4, 5]",
+          "uuid" : "01ARZ3NDEKTSV4RRFFQ69G5FAV"
+        }
       },
       "restore-task-data" : {
         "title" : "Root Type for restore-task-data",
@@ -2682,7 +2753,11 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"result\": \"SUCCESSFUL_WITH_ERRORS\",\n    \"errors\": [\"An error\", \"Another error\"],\n    \"log\": \"A very long log...\"\n}"
+        "example" : {
+          "result" : "SUCCESSFUL_WITH_ERRORS",
+          "errors" : [ "An error", "Another error" ],
+          "log" : "A very long log..."
+        }
       },
       "source" : {
         "title" : "Root Type for source",
@@ -2723,7 +2798,16 @@
             "type" : "boolean"
           }
         },
-        "example" : "{\n    \"id\": \"3\",\n    \"name\": \"MangaDex\",\n    \"lang\": \"fr\",\n    \"langName\": \"French\",\n    \"langDisplayName\": \"Français\",\n    \"supportsLatest\": true,\n    \"requiresLogin\": true,\n    \"loggedIn\": false\n}"
+        "example" : {
+          "id" : "3",
+          "name" : "MangaDex",
+          "lang" : "fr",
+          "langName" : "French",
+          "langDisplayName" : "Français",
+          "supportsLatest" : true,
+          "requiresLogin" : true,
+          "loggedIn" : false
+        }
       },
       "catalogue-page" : {
         "description" : "A catalogue/latest-updates page.",
@@ -2772,7 +2856,9 @@
             "type" : "integer"
           }
         },
-        "example" : "{\n    \"page\": 86\n}"
+        "example" : {
+          "page" : 86
+        }
       },
       "category" : {
         "title" : "Root Type for category",
@@ -2803,7 +2889,12 @@
             }
           }
         },
-        "example" : "{\n    \"id\": 321,\n    \"name\": \"Dropped\",\n    \"order\": 1,\n    \"manga\": [2, 5, 19, 26]\n}"
+        "example" : {
+          "id" : 321,
+          "name" : "Dropped",
+          "order" : 1,
+          "manga" : [ 2, 5, 19, 26 ]
+        }
       },
       "recently-read" : {
         "description" : "A recently read manga + chapter combination.",
@@ -2823,7 +2914,7 @@
       "manga-flags" : {
         "title" : "Root Type for manga-flags",
         "description" : "Flags specific to manga objects. Often describe sorting and filtering.",
-        "required" : [ "displayMode", "downloadedFilter", "readFilter", "sortDirection", "sortType" ],
+        "required" : [ "displayMode", "downloadedFilter", "readFilter", "sortDirection", "sortType", "bookmarkedFilter" ],
         "type" : "object",
         "properties" : {
           "sortDirection" : {
@@ -2836,18 +2927,28 @@
           },
           "readFilter" : {
             "description" : "Whether or not to show only read/unread chapters.",
-            "enum" : [ "READ", "UNREAD", "ALL" ]
+            "enum" : [ "SHOW_READ", "SHOW_UNREAD", "SHOW_ALL" ]
           },
           "downloadedFilter" : {
             "description" : "Whether or not to show only downloaded/not downloaded chapters.",
-            "enum" : [ "DOWNLOADED", "NOT_DOWNLOADED", "ALL" ]
+            "enum" : [ "SHOW_DOWNLOADED", "SHOW_NOT_DOWNLOADED", "SHOW_ALL" ]
           },
           "sortType" : {
             "description" : "The method used to sort chapters:\n- by the order they appear in the **source** website\n- by their chapter **number**",
             "enum" : [ "SOURCE", "NUMBER" ]
+          },
+          "bookmarkedFilter" : {
+            "description" : "Whether or not to show only read/non-bookmarked chapters.",
+            "enum" : [ "SHOW_BOOKMARKED", "SHOW_NOT_BOOKMARKED", "SHOW_ALL" ]
           }
         },
-        "example" : "{\n    \"sortDirection\": \"DESCENDING\",\n    \"displayMode\": \"NAME\",\n    \"readFilter\": \"ALL\",\n    \"downloadedFilter\": \"ALL\",\n    \"sortType\": \"SOURCE\"\n}"
+        "example" : {
+          "sortDirection" : "DESCENDING",
+          "displayMode" : "NAME",
+          "readFilter" : "ALL",
+          "downloadedFilter" : "ALL",
+          "sortType" : "SOURCE"
+        }
       },
       "mutate-category-manga-request" : {
         "description" : "A request to add/remove manga from a category.",
@@ -2916,7 +3017,16 @@
             "type" : "boolean"
           }
         },
-        "example" : "{\n    \"pkgName\": \"eu.kanade.tachiyomi.extension.en.dynasty\",\n    \"name\": \"Dynasty\",\n    \"status\": \"INSTALLED\",\n    \"versionName\": \"1.2.6\",\n    \"versionCode\": 6,\n    \"lang\": \"en\",\n    \"sources\": [\n        \"738706855355689486\"\n    ],\n    \"hasUpdate\": true\n}"
+        "example" : {
+          "pkgName" : "eu.kanade.tachiyomi.extension.en.dynasty",
+          "name" : "Dynasty",
+          "status" : "INSTALLED",
+          "versionName" : "1.2.6",
+          "versionCode" : 6,
+          "lang" : "en",
+          "sources" : [ "738706855355689486" ],
+          "hasUpdate" : true
+        }
       },
       "error" : {
         "description" : "An error.",
@@ -2936,7 +3046,11 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"type\": \"UNKNOWN\",\n    \"stackTrace\": \"java.lang.IllegalStateException: Not enough cheese!\\r\\n\\tat Line_3.<init>(Unknown Source)\\r\\n\\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\\r\\n\\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)\\r\\n\\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.ja\\r\\n\\tat java.lang.reflect.Constructor.newInstance(Constructor.java:423)\\r\\n\\tat org.jetbrains.kotlin.cli.common.repl.GenericReplEvaluator$eval$1$scriptInstance$1.invoke(Gener\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.configuration.SnippetExecutionInterceptor$Plain.execute(Snip\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplInterpreter$eval$evalRes$1.invoke(ReplInterpreter.kt:101\\r\\n\\tat org.jetbrains.kotlin.cli.common.repl.GenericReplEvaluator.eval(GenericReplEvaluator.kt:94)\\r\\n\\tat org.jetbrains.kotlin.cli.common.repl.GenericReplCompilingEvaluator.eval(GenericReplCompilingEv\\r\\n\\tat org.jetbrains.kotlin.cli.common.repl.GenericReplCompilingEvaluator.compileAndEval(GenericReplC\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplInterpreter.eval(ReplInterpreter.kt:96)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.eval(ReplFromTerminal.kt:115)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.one(ReplFromTerminal.kt:106)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.doRun(ReplFromTerminal.kt:71)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.access$doRun(ReplFromTerminal.kt:38)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal$Companion.run(ReplFromTerminal.kt:171)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:104)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:57)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.java:96)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.java:52)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:93)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:71)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:39)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLITool$Companion.doMainNoExit(CLITool.kt:204)\\r\\n\\tat org.jetbrains.kotlin.cli.common.CLITool$Companion.doMain(CLITool.kt:196)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler$Companion.main(K2JVMCompiler.kt:348)\\r\\n\\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.main(K2JVMCompiler.kt)\\r\\n\\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\\r\\n\\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\\r\\n\\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\\r\\n\\tat java.lang.reflect.Method.invoke(Method.java:498)\\r\\n\\tat org.jetbrains.kotlin.preloading.Preloader.run(Preloader.java:81)\\r\\n\\tat org.jetbrains.kotlin.preloading.Preloader.main(Preloader.java:43)\",\n    \"message\": \"The operation failed\"\n}"
+        "example" : {
+          "type" : "UNKNOWN",
+          "stackTrace" : "java.lang.IllegalStateException: Not enough cheese!\r\n\tat Line_3.<init>(Unknown Source)\r\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\r\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)\r\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.ja\r\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:423)\r\n\tat org.jetbrains.kotlin.cli.common.repl.GenericReplEvaluator$eval$1$scriptInstance$1.invoke(Gener\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.configuration.SnippetExecutionInterceptor$Plain.execute(Snip\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplInterpreter$eval$evalRes$1.invoke(ReplInterpreter.kt:101\r\n\tat org.jetbrains.kotlin.cli.common.repl.GenericReplEvaluator.eval(GenericReplEvaluator.kt:94)\r\n\tat org.jetbrains.kotlin.cli.common.repl.GenericReplCompilingEvaluator.eval(GenericReplCompilingEv\r\n\tat org.jetbrains.kotlin.cli.common.repl.GenericReplCompilingEvaluator.compileAndEval(GenericReplC\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplInterpreter.eval(ReplInterpreter.kt:96)\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.eval(ReplFromTerminal.kt:115)\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.one(ReplFromTerminal.kt:106)\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.doRun(ReplFromTerminal.kt:71)\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal.access$doRun(ReplFromTerminal.kt:38)\r\n\tat org.jetbrains.kotlin.cli.jvm.repl.ReplFromTerminal$Companion.run(ReplFromTerminal.kt:171)\r\n\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:104)\r\n\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:57)\r\n\tat org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.java:96)\r\n\tat org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.java:52)\r\n\tat org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:93)\r\n\tat org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:71)\r\n\tat org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:39)\r\n\tat org.jetbrains.kotlin.cli.common.CLITool$Companion.doMainNoExit(CLITool.kt:204)\r\n\tat org.jetbrains.kotlin.cli.common.CLITool$Companion.doMain(CLITool.kt:196)\r\n\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler$Companion.main(K2JVMCompiler.kt:348)\r\n\tat org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.main(K2JVMCompiler.kt)\r\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\r\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\r\n\tat java.lang.reflect.Method.invoke(Method.java:498)\r\n\tat org.jetbrains.kotlin.preloading.Preloader.run(Preloader.java:81)\r\n\tat org.jetbrains.kotlin.preloading.Preloader.main(Preloader.java:43)",
+          "message" : "The operation failed"
+        }
       },
       "login-request" : {
         "title" : "Root Type for source-login-request",
@@ -2954,7 +3068,10 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"username\": \"nulldev\",\n    \"password\": \"hunter7\"\n}"
+        "example" : {
+          "username" : "nulldev",
+          "password" : "hunter7"
+        }
       },
       "tracking-service" : {
         "description" : "A tracking service.",
@@ -3000,7 +3117,39 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"id\": 0,\n    \"possibleStatuses\": [\n        {\n            \"id\": 0,\n            \"displayName\": \"Plan to read\"\n        },\n        {\n            \"id\": 1,\n            \"displayName\": \"Reading\"\n        },\n        {\n            \"id\": 2,\n            \"displayName\": \"Completed\"\n        }\n    ],\n    \"possibleScores\": [\n        {\n            \"id\": 0,\n            \"score\": 1.0\n        },\n        {\n            \"id\": 1,\n            \"score\": 2.0\n        },\n        {\n            \"id\": 2,\n            \"score\": 3.0\n        },\n        {\n            \"id\": 3,\n            \"score\": 4.0\n        },\n        {\n            \"id\": 4,\n            \"score\": 5.0\n        }\n    ],\n    \"loggedIn\": true,\n    \"name\": \"MyAnimeList\",\n    \"themeColor\": \"#2E51A2\",\n    \"username\": \"nulldev\"\n}"
+        "example" : {
+          "id" : 0,
+          "possibleStatuses" : [ {
+            "id" : 0,
+            "displayName" : "Plan to read"
+          }, {
+            "id" : 1,
+            "displayName" : "Reading"
+          }, {
+            "id" : 2,
+            "displayName" : "Completed"
+          } ],
+          "possibleScores" : [ {
+            "id" : 0,
+            "score" : 1
+          }, {
+            "id" : 1,
+            "score" : 2
+          }, {
+            "id" : 2,
+            "score" : 3
+          }, {
+            "id" : 3,
+            "score" : 4
+          }, {
+            "id" : 4,
+            "score" : 5
+          } ],
+          "loggedIn" : true,
+          "name" : "MyAnimeList",
+          "themeColor" : "#2E51A2",
+          "username" : "nulldev"
+        }
       },
       "tracking-status" : {
         "description" : "The status of a manga in a tracking service.",
@@ -3016,7 +3165,10 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"id\": 5,\n    \"displayName\": \"Plan to read\"\n}"
+        "example" : {
+          "id" : 5,
+          "displayName" : "Plan to read"
+        }
       },
       "tracking-score" : {
         "description" : "A score the user can assign to a manga in a tracking service.",
@@ -3033,7 +3185,10 @@
             "type" : "number"
           }
         },
-        "example" : "{\n    \"id\": 2,\n    \"score\": 1.5\n}"
+        "example" : {
+          "id" : 2,
+          "score" : 1.5
+        }
       },
       "url-handle-result" : {
         "description" : "The result of handling a URL with a `tachiyomi` scheme.\n\nThe `data` field will hold:\n- A JSON object of type `tracking-oauth-login` if the value of the `type` field is `TRACKING_LOGIN`",
@@ -3111,7 +3266,18 @@
             "type" : "string"
           }
         },
-        "example" : "{\n    \"service\": 1,\n    \"extra\": \"{media_id: 1923, library_id: 8}\",\n    \"title\": \"Danberu nan kiro moteru?\",\n    \"chapters\": 58,\n    \"trackingUrl\": \"https://kitsu.io/manga/dumbbell-nan-kilo-moteru\",\n    \"coverUrl\": \"https://media.kitsu.io/manga/poster_images/38750/large.jpg\",\n    \"summary\": \"Sakura Hibiki is your average high school girl, with a voracious appetite. Noticing her clothes tightening in lieu of her slowly expanding waistline she decides to look into enrolling in the nearby gym. There she runs into a girl from her grade named Souryuuin Akemi.\\r\\n\\r\\nAkemi, who has a muscle fetish tries to get Hibiki to enroll in the gym despite its high ratio of macho men. Thankfully a beautiful trainer, Machio, appears and unknowingly convinces her to enroll and start her quest to a great body.\\r\\n\\r\\n(Source: MU)\",\n    \"status\": \"Publishing\",\n    \"type\": \"Manga\",\n    \"startDate\": \"Aug 5, 2016\"\n}"
+        "example" : {
+          "service" : 1,
+          "extra" : "{media_id: 1923, library_id: 8}",
+          "title" : "Danberu nan kiro moteru?",
+          "chapters" : 58,
+          "trackingUrl" : "https://kitsu.io/manga/dumbbell-nan-kilo-moteru",
+          "coverUrl" : "https://media.kitsu.io/manga/poster_images/38750/large.jpg",
+          "summary" : "Sakura Hibiki is your average high school girl, with a voracious appetite. Noticing her clothes tightening in lieu of her slowly expanding waistline she decides to look into enrolling in the nearby gym. There she runs into a girl from her grade named Souryuuin Akemi.\r\n\r\nAkemi, who has a muscle fetish tries to get Hibiki to enroll in the gym despite its high ratio of macho men. Thankfully a beautiful trainer, Machio, appears and unknowingly convinces her to enroll and start her quest to a great body.\r\n\r\n(Source: MU)",
+          "status" : "Publishing",
+          "type" : "Manga",
+          "startDate" : "Aug 5, 2016"
+        }
       },
       "track" : {
         "description" : "Tracking information associated with a manga.",
@@ -3147,7 +3313,14 @@
             "type" : "integer"
           }
         },
-        "example" : "{\n    \"lastChapterRead\": 3,\n    \"totalChapters\": 58,\n    \"score\": 2,\n    \"displayScore\": \"😊\",\n    \"status\": 0,\n    \"trackingUrl\": \"https://anilist.co/manga/97626/Dumbbell-Nan-Kilo-Moteru\"\n}"
+        "example" : {
+          "lastChapterRead" : 3,
+          "totalChapters" : 58,
+          "score" : 2,
+          "displayScore" : "😊",
+          "status" : 0,
+          "trackingUrl" : "https://anilist.co/manga/97626/Dumbbell-Nan-Kilo-Moteru"
+        }
       },
       "mutate-track-request" : {
         "description" : "A request to change tracking data.",
@@ -3167,7 +3340,11 @@
             "type" : "integer"
           }
         },
-        "example" : "{\n    \"lastChapterRead\": 5,\n    \"score\": 3,\n    \"status\": 0\n}"
+        "example" : {
+          "lastChapterRead" : 5,
+          "score" : 3,
+          "status" : 0
+        }
       },
       "catalogue-filters" : {
         "format" : "binary",
@@ -3202,7 +3379,10 @@
             } ]
           }
         },
-        "example" : "{\n    \"key\": \"pref_reader_theme_key\",\n    \"value\": \"white\"\n}"
+        "example" : {
+          "key" : "pref_reader_theme_key",
+          "value" : "white"
+        }
       },
       "mutate-preference-request" : {
         "description" : "A request to mutate a preference.",
