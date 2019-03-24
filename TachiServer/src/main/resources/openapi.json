@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.6"
+    "version" : "3.1.7"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -2482,10 +2482,6 @@
           "initialized" : true
         }
       },
-      "sort-direction" : {
-        "description" : "An enum representing sort direction.",
-        "enum" : [ "NAME", "NUMBER" ]
-      },
       "manga-viewer" : {
         "description" : "An enum representing a manga's viewer:\n\n- `DEFAULT`: The user's default viewer (stored in the user preferences)\n- `LEFT_TO_RIGHT`: A paged left-to-right viewer.\n- `RIGHT_TO_LEFT`: A paged right-to-left viewer.\n- `VERTICAL`: A paged top-to-bottom viewer.\n- `WEBTOON`: A continous top-to-bottom viewer.",
         "enum" : [ "DEFAULT", "LEFT_TO_RIGHT", "RIGHT_TO_LEFT", "VERTICAL", "WEBTOON" ]
@@ -3429,6 +3425,10 @@
             "type" : "integer"
           }
         }
+      },
+      "sort-direction" : {
+        "description" : "An enum representing sort direction.",
+        "enum" : [ "ASC", "DESC" ]
       }
     },
     "securitySchemes" : {
