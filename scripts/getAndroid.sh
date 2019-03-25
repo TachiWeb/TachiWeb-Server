@@ -61,7 +61,7 @@ function dedup() {
     do
         NAME="${class%.*}"
         echo "Processing class: $NAME"
-        zip --delete "$ABS_JAR" "$NAME.class" "$NAME\$*.class" "${NAME}Kt.class" "${NAME}Kt\$*.class"
+        zip --delete "$ABS_JAR" "$NAME.class" "$NAME\$*.class" "${NAME}Kt.class" "${NAME}Kt\$*.class" > /dev/null
     done
     popd
 }
