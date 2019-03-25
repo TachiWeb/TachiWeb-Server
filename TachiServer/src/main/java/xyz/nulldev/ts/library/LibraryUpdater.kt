@@ -7,6 +7,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.util.syncChaptersWithSource
 import mu.KotlinLogging
+import rx.schedulers.Schedulers
 import xyz.nulldev.ts.api.v3.util.await
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.util.*
@@ -101,7 +102,7 @@ class LibraryUpdater {
     }
 
     suspend fun updateMangaInfo(manga: Manga, source: Source) {
-        val networkManga = source.fetchMangaDetails(manga).toSingle().await()
+        val networkManga = source.fetchMangaDetails(manga).toSingle().await(Schedulers.io())
         manga.copyFrom(networkManga)
         manga.initialized = true
         db.insertManga(manga).await()

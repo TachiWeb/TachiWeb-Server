@@ -212,7 +212,7 @@ class AsyncDiskLFUCache(val folder: File,
             try {
                 return block(file)
             } finally {
-                if (!closed) onClose()
+                if (!closed) close()
             }
         }
 
@@ -220,7 +220,7 @@ class AsyncDiskLFUCache(val folder: File,
             try {
                 return block(file)
             } finally {
-                if (!closed) onClose()
+                if (!closed) close()
             }
         }
 

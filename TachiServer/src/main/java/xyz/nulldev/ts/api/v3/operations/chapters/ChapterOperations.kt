@@ -41,6 +41,8 @@ class ChapterOperations(private val vertx: Vertx) : OperationGroup {
 
         chapter.bookmark = bookmarked
 
+        db.insertChapter(chapter).await()
+
         return bookmarked
     }
 
@@ -60,6 +62,8 @@ class ChapterOperations(private val vertx: Vertx) : OperationGroup {
             db.updateHistoryLastRead(history).await()
             history
         } else null
+
+        db.insertChapter(existingChapter).await()
 
         return existingChapter.readingStatusAsWeb(history)
     }

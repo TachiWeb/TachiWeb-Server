@@ -8,6 +8,7 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.ext.web.handler.CorsHandler
+import io.vertx.kotlin.core.vertxOptionsOf
 import xyz.nulldev.ts.api.v3.operations.APIOperations
 import xyz.nulldev.ts.api.v3.operations.categories.CategoryOperations
 import xyz.nulldev.ts.api.v3.operations.chapters.ChapterOperations
@@ -17,6 +18,7 @@ import xyz.nulldev.ts.api.v3.operations.server.ServerOperations
 import xyz.nulldev.ts.api.v3.operations.sources.SourceOperations
 import xyz.nulldev.ts.ext.kInstanceLazy
 import java.io.File
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -28,7 +30,10 @@ data class WebAPIInfo(
 class WebAPI {
     private val mapper by kInstanceLazy<ObjectMapper>()
 
-    val vertx: Vertx = Vertx.vertx()
+    val vertx: Vertx = Vertx.vertx(vertxOptionsOf(
+            warningExceptionTime = 500,
+            warningExceptionTimeUnit = TimeUnit.MILLISECONDS
+    ))
 
     private val operations = listOf(
             CategoryOperations(vertx),
@@ -86,8 +91,11 @@ class WebAPI {
                 routerFactory.addSecurityHandler("account-cookie") { it.next() }
 
                 // Start http server
-                vertx.createHttpServer(HttpServerOptions())
-                        .requestHandler(routerFactory.router)
+                vertx.createHttpServer(HttpServerOptions().apply {
+                    isCompressionSupported = true
+                    compressionLevel = 6
+                    isDecompressionSupported = true
+                }).requestHandler(routerFactory.router)
                         .listen(0) {
                             // Select random available port
                             if (it.succeeded()) {

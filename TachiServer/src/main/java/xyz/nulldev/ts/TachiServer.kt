@@ -123,8 +123,8 @@ class TachiServer {
             //Register config modules early
             server.registerConfigModules()
 
-            //Check if JVM booted with bootstrap classpath
-            if(!System.getProperty(BOOTSTRAP_STATUS_PROPERTY).equals("true", true)) {
+            //Check if JVM booted with bootstrap classpath (disabled for now as there are no patches to apply)
+            /*if(!System.getProperty(BOOTSTRAP_STATUS_PROPERTY).equals("true", true)) {
                 try {
                     println("JVM not booted with bootstrap classpath/patched modules! Attempting to boot new JVM...")
                     println("\tExtracting patches...")
@@ -139,7 +139,7 @@ class TachiServer {
                     println("\tAn error occurred while booting the new JVM, running TachiServer in the current JVM instead!")
                     e.printStackTrace()
                 }
-            }
+            }*/
 
             server.run(args)
         }

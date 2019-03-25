@@ -62,12 +62,20 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         routerFactory.op(::getMangas.name, ::getMangas)
         routerFactory.opWithContext(::getLibraryMangas.name, ::getLibraryMangas)
         routerFactory.opWithParamsAndContext(::getMangaCover.name, MANGA_ID_PARAM, ::getMangaCover)
+        routerFactory.opWithParams(::getManga.name, MANGA_ID_PARAM, ::getManga)
+        routerFactory.opWithParams(::setMangaFavorited.name, MANGA_ID_PARAM, ::setMangaFavorited)
         routerFactory.opWithParams(::getMangaFlags.name, MANGA_ID_PARAM, ::getMangaFlags)
         routerFactory.opWithParams(::setMangaFlags.name, MANGA_ID_PARAM, ::setMangaFlags)
+        routerFactory.opWithParams(::setMangaViewer.name, MANGA_ID_PARAM, ::setMangaViewer)
+        routerFactory.opWithParams(::updateMangaInfo.name, MANGA_ID_PARAM, ::updateMangaInfo)
     }
 
     suspend fun getMangas(): List<WManga> {
-        return db.getMangas().await().map { it.asWeb() }
+        return db.getMangas().await().map { it.asWeb(db) }
+    }
+
+    suspend fun getManga(mangaId: Long): WManga {
+        return db.getManga(mangaId).await()?.asWeb(db) ?: notFound()
     }
 
     suspend fun getLibraryMangas(rc: RoutingContext): List<WLibraryManga> {
@@ -79,7 +87,7 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         }.map { (_, mangasWithDifferentCategories) ->
             val referenceManga = mangasWithDifferentCategories.first()
             WLibraryManga(
-                    referenceManga.asWeb(mangasWithDifferentCategories.map { it.category }),
+                    referenceManga.asWeb(db, mangasWithDifferentCategories.map { it.category }),
                     if (includeDownloadInfo)
                         downloadManager.getDownloadCount(referenceManga)
                     else null,
@@ -88,8 +96,18 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         }
     }
 
+    suspend fun setMangaFavorited(mangaId: Long, favorited: Boolean): Boolean {
+        val manga = db.getManga(mangaId).await() ?: notFound()
+
+        manga.favorite = favorited
+
+        db.insertManga(manga).await()
+
+        return favorited
+    }
+
     suspend fun getMangaFlags(mangaId: Long): WMangaFlags {
-        val manga = db.getManga(mangaId).await() ?: notFound(NO_MANGA)
+        val manga = db.getManga(mangaId).await() ?: notFound()
 
         return WMangaFlags(
                 WMangaBookmarkedFilter.values().firstForManga(manga) ?: internalError(UNKNOWN_FLAG_VALUE),
@@ -101,8 +119,8 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         )
     }
 
-    suspend fun setMangaFlags(mangaId: Long, flags: WMangaFlags) {
-        val manga = db.getManga(mangaId).await() ?: notFound(NO_MANGA)
+    suspend fun setMangaFlags(mangaId: Long, flags: WMangaFlags): WMangaFlags {
+        val manga = db.getManga(mangaId).await() ?: notFound()
 
         val newFlags: List<WMangaFlag> = listOf(
                 flags.bookmarkedFilter,
@@ -115,6 +133,36 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
 
         newFlags.forEach {
             manga.setFlag(it)
+        }
+
+        db.insertManga(manga).await()
+
+        return flags
+    }
+
+    suspend fun setMangaViewer(mangaId: Long, viewer: WMangaViewer): WMangaViewer {
+        val manga = db.getManga(mangaId).await() ?: notFound()
+
+        manga.viewer = viewer.ordinal
+
+        db.insertManga(manga).await()
+
+        return viewer
+    }
+
+    suspend fun updateMangaInfo(mangaId: Long): WManga {
+        val manga = db.getManga(mangaId).await() ?: notFound()
+        val source = sourceManager.get(manga.source) ?: expectedError(
+                500,
+                "Cannot find source for manga: $mangaId",
+                NO_SOURCE
+        )
+
+        try {
+            libraryUpdater.updateMangaInfo(manga, source)
+            return manga.asWeb(db)
+        } catch (t: Throwable) {
+            expectedError(500, MANGA_INFO_UPDATE_FAILED, t)
         }
     }
 
@@ -225,48 +273,48 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
         return totalBytesWritten
     }
 
-    fun Manga.flagsAsWeb() = WMangaFlags(
-            WMangaBookmarkedFilter.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
-            WMangaDisplayMode.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
-            WMangaDownloadedFilter.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
-            WMangaReadFilter.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
-            WSortDirection.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE),
-            WMangaSortType.values().firstForManga(this) ?: internalError(UNKNOWN_FLAG_VALUE)
-    )
-
-    fun Manga.statusAsWeb() = when (status) {
-        SManga.UNKNOWN -> WMangaStatus.UNKNOWN
-        SManga.ONGOING -> WMangaStatus.ONGOING
-        SManga.COMPLETED -> WMangaStatus.COMPLETED
-        SManga.LICENSED -> WMangaStatus.LICENSED
-        else -> internalError(UNKNOWN_MANGA_STATUS)
-    }
-
-    fun Manga.viewerAsWeb() = WMangaViewer.values().getOrNull(viewer) ?: internalError(UNKNOWN_MANGA_VIEWER)
-
-    suspend fun Manga.asWeb(categories: List<Int>? = null): WManga {
-        val loadedCategories = (categories ?: db.getCategoriesForManga(this).await().map {
-            it.id
-        }).filter { it != 0 } // Filter out default category
-
-        return WManga(
-                artist,
-                author,
-                loadedCategories.map { it!!.toLong() },
-                description,
-                favorite,
-                flagsAsWeb(),
-                genre,
-                id!!,
-                initialized,
-                last_update,
-                source,
-                statusAsWeb(),
-                title,
-                listOf(), // TODO
-                url,
-                viewerAsWeb()
-        )
-    }
 }
 
+fun Manga.flagsAsWeb() = WMangaFlags(
+        WMangaBookmarkedFilter.values().firstForManga(this)!!,
+        WMangaDisplayMode.values().firstForManga(this)!!,
+        WMangaDownloadedFilter.values().firstForManga(this)!!,
+        WMangaReadFilter.values().firstForManga(this)!!,
+        WSortDirection.values().firstForManga(this)!!,
+        WMangaSortType.values().firstForManga(this)!!
+)
+
+fun Manga.statusAsWeb() = when (status) {
+    SManga.UNKNOWN -> WMangaStatus.UNKNOWN
+    SManga.ONGOING -> WMangaStatus.ONGOING
+    SManga.COMPLETED -> WMangaStatus.COMPLETED
+    SManga.LICENSED -> WMangaStatus.LICENSED
+    else -> throw IllegalStateException("Unknown status: $status")
+}
+
+fun Manga.viewerAsWeb() = WMangaViewer.values().getOrNull(viewer) ?: error("Invalid viewer id: $viewer")
+
+suspend fun Manga.asWeb(db: DatabaseHelper, categories: List<Int>? = null): WManga {
+    val loadedCategories = (categories ?: db.getCategoriesForManga(this).await().map {
+        it.id
+    }).filter { it != 0 } // Filter out default category
+
+    return WManga(
+            artist,
+            author,
+            loadedCategories.map { it!!.toLong() },
+            description,
+            favorite,
+            flagsAsWeb(),
+            genre,
+            id!!,
+            initialized,
+            last_update,
+            source,
+            statusAsWeb(),
+            title,
+            listOf(), // TODO
+            url,
+            viewerAsWeb()
+    )
+}

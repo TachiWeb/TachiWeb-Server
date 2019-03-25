@@ -67,6 +67,7 @@ internal inline fun <reified Input, reified Output> OpenAPI3RouterFactory.opWith
         operationId: String,
         noinline function: suspend (Input, RoutingContext) -> Output
 ) {
+    KotlinLogging.logger { }.info { "[APIv3] Registered implementation for operation: $operationId" }
     addHandlerByOperationId(operationId) {
         GlobalScope.launch(it.vertx().dispatcher()) {
             val input: Any? = if (Input::class != Unit::class) {

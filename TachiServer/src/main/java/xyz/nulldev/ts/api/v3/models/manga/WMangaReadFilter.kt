@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.data.database.models.Manga
 enum class WMangaReadFilter(override val value: Int) : WMangaFlag {
     SHOW_READ(Manga.SHOW_READ),
     SHOW_UNREAD(Manga.SHOW_UNREAD),
-    ALL(Manga.SHOW_ALL);
+    SHOW_ALL(Manga.SHOW_ALL);
 
     override val mask = Manga.READ_MASK
 }

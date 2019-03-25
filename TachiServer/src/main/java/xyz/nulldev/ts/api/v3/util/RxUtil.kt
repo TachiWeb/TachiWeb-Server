@@ -3,13 +3,15 @@ package xyz.nulldev.ts.api.v3.util
 import com.pushtorefresh.storio.operations.PreparedOperation
 import com.pushtorefresh.storio.sqlite.operations.get.PreparedGetObject
 import kotlinx.coroutines.suspendCancellableCoroutine
+import rx.Scheduler
 import rx.Single
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-suspend fun <T> Single<T>.await(): T {
+suspend fun <T> Single<T>.await(subscribeOn: Scheduler? = null): T {
     return suspendCancellableCoroutine { continuation ->
-        val sub = subscribe({
+        val self = if (subscribeOn != null) subscribeOn(subscribeOn) else this
+        val sub = self.subscribe({
             continuation.resume(it)
         }, {
             if (!continuation.isCancelled)
