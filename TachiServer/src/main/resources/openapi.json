@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.8"
+    "version" : "3.1.9"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -1303,6 +1303,16 @@
         "summary" : "List recently read manga",
         "description" : "Hardcoded to return a maximum of 25 entries. Includes the chapter that was last read in each manga.",
         "operationId" : "getRecentlyReadManga",
+        "parameters" : [ {
+          "name" : "range-size-ms",
+          "in" : "query",
+          "description" : "How far back to look (in milliseconds) while finding the recently read manga.\n\nRecommended: `2592000000` ms = 1 month",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Successful response - returns an array of `recently-read` entities sorted by most to least recent.",
@@ -2287,9 +2297,25 @@
         "summary" : "Get all favorited manga along with some extra information about each manga.",
         "operationId" : "getLibraryMangas",
         "parameters" : [ {
-          "name" : "include-download-info",
+          "name" : "include-total-downloaded",
           "in" : "query",
-          "description" : "Set to `true` to include the `downloadedChapters` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
+          "description" : "Set to `true` to include the `totalDownloaded` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "include-last-read-index",
+          "in" : "query",
+          "description" : "Set to `true` to include the `lastReadIndex` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "include-total-chapters-index",
+          "in" : "query",
+          "description" : "Set to `true` to include the `totalChaptersIndex` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
           "required" : false,
           "schema" : {
             "type" : "boolean"
@@ -2829,7 +2855,7 @@
         "type" : "object",
         "properties" : {
           "page" : {
-            "description" : "The page number of the catalogue to obtain.",
+            "description" : "The 1-indexed page number of the catalogue to obtain.",
             "type" : "integer"
           },
           "query" : {
@@ -3418,6 +3444,14 @@
           },
           "totalDownloaded" : {
             "description" : "The amount of downloaded chapters in this manga.\n\nWill only be present in some cases. Refer to the specific endpoint for more information.",
+            "type" : "integer"
+          },
+          "lastReadIndex" : {
+            "description" : "The index this manga would have if it was in a list of all the library manga sorted by the time the manga was last read (most recent to least recent).\n\nWill only be present in some cases. Refer to the specific endpoint for more information. May also not be present if the manga was never read.",
+            "type" : "integer"
+          },
+          "totalChaptersIndex" : {
+            "description" : "The index this manga would have if it was in a list of all the library manga sorted by the total amount of chapters the manga had (least chapters to most chapters).\n\nWill only be present in some cases. Refer to the specific endpoint for more information.",
             "type" : "integer"
           }
         }
