@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.1.9"
+    "version" : "3.2.0"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -2398,9 +2398,8 @@
             "type" : "integer"
           },
           "sourceId" : {
-            "format" : "int64",
             "description" : "The id of the source this manga belongs to.",
-            "type" : "integer"
+            "type" : "string"
           },
           "favorite" : {
             "description" : "Whether or not the manga is favorited.",
@@ -3451,7 +3450,7 @@
             "type" : "integer"
           },
           "totalChaptersIndex" : {
-            "description" : "The index this manga would have if it was in a list of all the library manga sorted by the total amount of chapters the manga had (least chapters to most chapters).\n\nWill only be present in some cases. Refer to the specific endpoint for more information.",
+            "description" : "The index this manga would have if it was in a list of all the library manga sorted by the total amount of chapters the manga had (least chapters to most chapters).\n\nWill only be present in some cases. Refer to the specific endpoint for more information. Can also be `null` if the amount of chapters a manga has is unknown.",
             "type" : "integer"
           }
         }
