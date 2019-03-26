@@ -54,7 +54,7 @@ keepFolder "ui.reader.loader"
 keepFile "ui.reader.model" "ReaderChapter.kt"
 keepFile "ui.reader.model" "ReaderPage.kt"
 keepFile "ui.library" "LibrarySort.kt"
-keepFile "" "AppModule.kt"
+#keepFile "" "AppModule.kt" Replaced due to race condition
 keepFolder "data"
 keepFolder "util"
 keepFolder "source"

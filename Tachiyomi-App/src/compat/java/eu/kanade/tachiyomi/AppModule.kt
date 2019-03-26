@@ -50,11 +50,12 @@ class AppModule(val app: Application) : InjektModule {
 
         rxAsync { get<NetworkHelper>() }
 
-        rxAsync { get<SourceManager>() }
+        rxAsync {
+            get<SourceManager>()
+            get<DownloadManager>()
+        }
 
         rxAsync { get<DatabaseHelper>() }
-
-        rxAsync { get<DownloadManager>() }
 
     }
 

@@ -3,6 +3,7 @@ package xyz.nulldev.ts.api.v3.operations.manga
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.DownloadManager
+import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
@@ -20,6 +21,9 @@ import io.vertx.kotlin.core.file.closeAwait
 import io.vertx.kotlin.core.file.openAwait
 import io.vertx.kotlin.core.file.propsAwait
 import io.vertx.kotlin.core.http.httpClientOptionsOf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.metadata.TikaCoreProperties
@@ -27,6 +31,7 @@ import org.apache.tika.mime.MimeTypes
 import xyz.nulldev.ts.api.v3.*
 import xyz.nulldev.ts.api.v3.models.WSortDirection
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes.*
+import xyz.nulldev.ts.api.v3.models.exceptions.WException
 import xyz.nulldev.ts.api.v3.models.manga.*
 import xyz.nulldev.ts.api.v3.util.*
 import xyz.nulldev.ts.cache.AsyncDiskLFUCache
@@ -71,26 +76,43 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
     }
 
     suspend fun getMangas(): List<WManga> {
-        return db.getMangas().await().map { it.asWeb(db) }
+        return db.getMangas().await().map { it.asWeb(db, sourceManager) }
     }
 
     suspend fun getManga(mangaId: Long): WManga {
-        return db.getManga(mangaId).await()?.asWeb(db) ?: notFound()
+        return db.getManga(mangaId).await()?.asWeb(db, sourceManager) ?: notFound()
     }
 
-    suspend fun getLibraryMangas(rc: RoutingContext): List<WLibraryManga> {
+    suspend fun getLibraryMangas(rc: RoutingContext): List<WLibraryManga> = coroutineScope {
         val mangas = db.getLibraryMangas().await()
-        val includeDownloadInfo = rc.queryParamObjs<Boolean>("include-download-info").firstOrNull() ?: false
 
-        return mangas.groupBy {
+        val includeLastReadIndex = rc.queryParamObjs<Boolean>("include-last-read-index").firstOrNull() ?: false
+        val includeTotalChaptersIndex = rc.queryParamObjs<Boolean>("include-total-chapters-index").firstOrNull()
+                ?: false
+        val includeTotalDownloaded = rc.queryParamObjs<Boolean>("include-total-downloaded").firstOrNull() ?: false
+
+        val lastReadIndexes = if (includeLastReadIndex) {
+            var counter = 0
+            db.getLastReadManga().await().associate { it.id!! to counter++ }
+        } else null
+        val totalChaptersIndexes = if (includeTotalChaptersIndex) {
+            var counter = 0
+            db.getTotalChapterManga().await().associate { it.id!! to counter++ }
+        } else null
+
+        mangas.groupBy {
             it.id
         }.map { (_, mangasWithDifferentCategories) ->
             val referenceManga = mangasWithDifferentCategories.first()
+            val totalDownloaded = if (includeTotalDownloaded) {
+                withContext(Dispatchers.IO) { downloadManager.getDownloadCount(referenceManga) }
+            } else null
+
             WLibraryManga(
-                    referenceManga.asWeb(db, mangasWithDifferentCategories.map { it.category }),
-                    if (includeDownloadInfo)
-                        downloadManager.getDownloadCount(referenceManga)
-                    else null,
+                    lastReadIndexes?.get(referenceManga.id!!),
+                    referenceManga.asWeb(db, sourceManager, mangasWithDifferentCategories.map { it.category }),
+                    totalChaptersIndexes?.get(referenceManga.id!!),
+                    totalDownloaded,
                     referenceManga.unread
             )
         }
@@ -160,7 +182,7 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
 
         try {
             libraryUpdater.updateMangaInfo(manga, source)
-            return manga.asWeb(db)
+            return manga.asWeb(db, sourceManager, sourceObj = source)
         } catch (t: Throwable) {
             expectedError(500, MANGA_INFO_UPDATE_FAILED, t)
         }
@@ -187,6 +209,27 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
 
         if (url == null) notFound(NO_COVER)
 
+        try {
+            serveMangaCover(source, url, rc)
+        } catch (e: WException) {
+            // Retry failed cover downloads after updating the manga
+            if (!manga.initialized
+                    && (e.data as? WException.DataType.ExpectedError)?.wError?.type == COVER_DOWNLOAD_ERROR.name) {
+                val newUrl = try {
+                    libraryUpdater.updateMangaInfo(manga, source)
+                    manga.thumbnail_url
+                } catch (e: Exception) {
+                    expectedError(500, MANGA_INFO_UPDATE_FAILED, e)
+                }
+
+                if (newUrl != null && newUrl != url) {
+                    serveMangaCover(source, newUrl, rc)
+                } else throw e // New URL is bad too :(
+            } else throw e
+        }
+    }
+
+    suspend fun serveMangaCover(source: Source, url: String, rc: RoutingContext) {
         val fs = rc.vertx().fileSystem()
 
         // Try cache
@@ -294,7 +337,10 @@ fun Manga.statusAsWeb() = when (status) {
 
 fun Manga.viewerAsWeb() = WMangaViewer.values().getOrNull(viewer) ?: error("Invalid viewer id: $viewer")
 
-suspend fun Manga.asWeb(db: DatabaseHelper, categories: List<Int>? = null): WManga {
+suspend fun Manga.asWeb(db: DatabaseHelper,
+                        sourceManager: SourceManager,
+                        categories: List<Int>? = null,
+                        sourceObj: Source? = sourceManager.get(source)): WManga {
     val loadedCategories = (categories ?: db.getCategoriesForManga(this).await().map {
         it.id
     }).filter { it != 0 } // Filter out default category
@@ -310,11 +356,11 @@ suspend fun Manga.asWeb(db: DatabaseHelper, categories: List<Int>? = null): WMan
             id!!,
             initialized,
             last_update,
-            source,
+            source.toString(),
             statusAsWeb(),
             title,
             listOf(), // TODO
-            url,
+            (sourceObj as? HttpSource)?.mangaDetailsRequest(this)?.url()?.toString(),
             viewerAsWeb()
     )
 }

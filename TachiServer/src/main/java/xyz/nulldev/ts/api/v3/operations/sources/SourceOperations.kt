@@ -79,16 +79,19 @@ class SourceOperations(private val vertx: Vertx) : OperationGroup {
         )
 
         val filtersObj = source.getFilterList()
-        request.filters?.let {
+        val filtersAreDefault = request.filters?.let {
             try {
                 filtersSerializer.deserialize(filtersObj, jsonParser.parse(it).array)
             } catch (t: Throwable) {
                 expectedError(500, FILTER_DESERIALIZATION_FAILED, t)
             }
-        }
+
+            filtersObj == source.getFilterList()
+        } ?: true
+
 
         try {
-            val observable = if (!request.query.isNullOrEmpty() || request.filters != null) {
+            val observable = if (!request.query.isNullOrEmpty() || !filtersAreDefault) {
                 source.fetchSearchManga(request.page, request.query ?: "", filtersObj)
             } else {
                 source.fetchPopularManga(request.page)
@@ -121,7 +124,9 @@ class SourceOperations(private val vertx: Vertx) : OperationGroup {
         }
     }
 
-    suspend fun MangasPage.asWeb(sourceId: Long) = WCataloguePage(hasNextPage, mangas.map { networkToLocalManga(it, sourceId).asWeb(db) })
+    suspend fun MangasPage.asWeb(sourceId: Long) = WCataloguePage(hasNextPage, mangas.map {
+        networkToLocalManga(it, sourceId).asWeb(db, sourceManager)
+    })
 
     private suspend fun networkToLocalManga(sManga: SManga, sourceId: Long): Manga {
         var localManga = db.getManga(sManga.url, sourceId).await()

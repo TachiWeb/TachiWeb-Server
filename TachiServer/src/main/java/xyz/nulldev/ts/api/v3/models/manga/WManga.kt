@@ -13,7 +13,7 @@ data class WManga(
         val id: Long,
         val initialized: Boolean,
         val lastUpdate: Long,
-        val sourceId: Long,
+        val sourceId: String,
         val status: WMangaStatus,
         val title: String,
         val tracks: List<WTrack>,
