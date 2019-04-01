@@ -6,7 +6,7 @@ dependencies {
     compile fileTree(dir: new File(rootProject.rootDir, "libs/other"), include: "*.jar")
 
     // JSON
-    compile "org.json:json:20160810"
+    compile "com.google.code.gson:gson:2.8.5"
 
     // Javassist
     compile "org.javassist:javassist:3.21.0-GA"

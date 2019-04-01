@@ -1,8 +1,8 @@
 package xyz.nulldev.ts.api.http.library
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Category
-import org.json.JSONArray
 import org.json.JSONObject
 import spark.Request
 import spark.Response
@@ -16,6 +16,7 @@ import xyz.nulldev.ts.ext.kInstanceLazy
 class EditCategoriesRoute : TachiWebRoute() {
 
     private val db: DatabaseHelper by kInstanceLazy()
+    private val mapper: ObjectMapper by kInstanceLazy()
 
     override fun handleReq(request: Request, response: Response): Any? {
         val operation = request.params(":operation")
@@ -31,7 +32,7 @@ class EditCategoriesRoute : TachiWebRoute() {
                 val categories = request.queryParams("categories")
                     ?: return error("Categories not specified!")
 
-                val catArray = JSONArray(categories).map { it as Int }
+                val catArray = mapper.readTree(categories).map { it.intValue() }
 
                 val ordered = db.getCategories().executeAsBlocking()
                 ordered.forEach {
