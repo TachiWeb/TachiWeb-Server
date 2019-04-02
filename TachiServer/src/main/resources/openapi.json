@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.2.0"
+    "version" : "3.2.1"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -2040,7 +2040,8 @@
               "application/json" : { }
             }
           }
-        }
+        },
+        "security" : [ { } ]
       }
     },
     "/api/v3/sources/{sourceId}/logout" : {
@@ -2136,10 +2137,9 @@
         "operationId" : "sync",
         "requestBody" : {
           "content" : {
-            "application/octet-stream" : {
+            "application/json" : {
               "schema" : {
-                "format" : "binary",
-                "type" : "string"
+                "$ref" : "#/components/schemas/sync-request"
               }
             }
           },
@@ -2149,10 +2149,29 @@
           "200" : {
             "description" : "The sync completed successfully.",
             "content" : {
-              "application/octet-stream" : {
+              "application/json" : {
                 "schema" : {
-                  "format" : "binary",
-                  "type" : "string"
+                  "$ref" : "#/components/schemas/sync-response"
+                }
+              }
+            }
+          },
+          "426" : {
+            "description" : "The client's sync specification version does not match the server's sync specification version.\n\nThe server's sync specification version is returned.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "integer"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "An error occured during the syncing process and the sync was not performed.\n\nThe exact failure reason is provided in the repsonse body.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/error"
                 }
               }
             }
@@ -2380,6 +2399,98 @@
         "schema" : {
           "format" : "int64",
           "type" : "integer"
+        }
+      } ]
+    },
+    "/api/v3/auth/validate" : {
+      "get" : {
+        "summary" : "Validate that the client is authenticated",
+        "operationId" : "getAuthValid",
+        "responses" : {
+          "200" : {
+            "description" : "Successful response - the client's authentication is valid."
+          },
+          "401" : {
+            "description" : "The client's authentication is invalid."
+          }
+        }
+      }
+    },
+    "/api/v3/auth/tokens" : {
+      "summary" : "Endpoint for managing auth tokens",
+      "get" : {
+        "summary" : "List all auth tokens created by this user.",
+        "operationId" : "getAuthTokens",
+        "responses" : {
+          "200" : {
+            "description" : "Successful response.\n\nThe auth tokens are returned (without their secrets).",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/auth-token"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create an auth token.",
+        "operationId" : "createAuthToken",
+        "requestBody" : {
+          "description" : "The name of the device creating the auth token.",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string"
+              },
+              "examples" : {
+                "Sample request" : {
+                  "value" : "Joe Schmoe's Samsung Galaxy S10"
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successful response.\n\nThe new authentication token is returned (including the secret).",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/auth-token"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v3/auth/tokens/{tokenId}" : {
+      "summary" : "Endpoint used to manage a single auth token.",
+      "delete" : {
+        "summary" : "Delete the auth token.",
+        "operationId" : "deleteAuthToken",
+        "responses" : {
+          "200" : {
+            "description" : "Successful response - the token was successfully deleted."
+          },
+          "404" : {
+            "description" : "No auth token exists with the specified identifier."
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "tokenId",
+        "in" : "path",
+        "description" : "The auth token's identifier.",
+        "required" : true,
+        "schema" : {
+          "type" : "string"
         }
       } ]
     }
@@ -3458,6 +3569,115 @@
       "sort-direction" : {
         "description" : "An enum representing sort direction.",
         "enum" : [ "ASC", "DESC" ]
+      },
+      "auth-token" : {
+        "description" : "An authentication token.",
+        "required" : [ "id", "deviceName" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "description" : "The identifier of the auth token. \nNo two auth tokens will have the same authentication (even across multiple users).\n\nIdentifiers follow the ULID specification: https://github.com/ulid/spec.\nThis means that you can extract the time this token was generated out of the identifer as ULIDs contain a timestamp.",
+            "type" : "string"
+          },
+          "secret" : {
+            "description" : "The authentication secret.\n\nWill only be present when the auth token is generated (and not when listing auth tokens).\n\nThis value is opaque, clients should not attempt to parse this value.",
+            "type" : "string"
+          },
+          "deviceName" : {
+            "description" : "The name of the device that generated this auth token.",
+            "type" : "string"
+          }
+        },
+        "example" : {
+          "id" : "0123456789ABCDEFGHJKMNPQRSTVWXYZ",
+          "secret" : "96ca77e9412cc7c5a6bef55133ed4345e03fb3f1a13933a0e5b61804595ff61b8dba7d15418d26b897aecc54d02b99c039f985749a929f0d84cef82fe5696c15",
+          "deviceName" : "Joe Schmoe's Samsung Galaxy S10"
+        }
+      },
+      "sync-request" : {
+        "description" : "A sync request.",
+        "required" : [ "version", "events" ],
+        "type" : "object",
+        "properties" : {
+          "version" : {
+            "description" : "The sync specification version the client implements.\n\nNote that this number is different from the API version.",
+            "type" : "integer"
+          },
+          "events" : {
+            "description" : "The sync events, in order from most recent to least recent.\n\nThe ordering of the events is used to order events that occur in the same millisecond (should rarely be needed).",
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/sync-event"
+            }
+          }
+        },
+        "example" : {
+          "version" : 1,
+          "events" : [ {
+            "t" : "EDIT_CATEGORY",
+            "r" : 1554194924789,
+            "name" : "completed",
+            "order" : 2
+          }, {
+            "t" : "EDIT_CATEGORY",
+            "r" : 1554194924789,
+            "name" : "dropped",
+            "order" : 1
+          }, {
+            "t" : "CREATE_CATEGORY",
+            "r" : 1554194103643,
+            "name" : "dropped",
+            "order" : 2,
+            "updateInterval" : 1176
+          } ]
+        }
+      },
+      "sync-event" : {
+        "description" : "A sync event.\n\nSync events may have more fields that just the ones specified here.",
+        "required" : [ "r", "t" ],
+        "type" : "object",
+        "properties" : {
+          "t" : {
+            "description" : "The type of this event.",
+            "type" : "string"
+          },
+          "r" : {
+            "format" : "int64",
+            "description" : "The time in milliseconds since epoch this sync event was recorded.",
+            "type" : "integer"
+          }
+        },
+        "example" : {
+          "t" : "CREATE_CATEGORY",
+          "r" : 1554194103643,
+          "name" : "dropped",
+          "order" : 2,
+          "updateInterval" : 1176
+        }
+      },
+      "sync-response" : {
+        "description" : "A sync response.",
+        "required" : [ "events" ],
+        "type" : "object",
+        "properties" : {
+          "events" : {
+            "description" : "The events the client should apply.",
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/sync-event"
+            }
+          }
+        },
+        "example" : {
+          "events" : [ {
+            "t" : "CREATE_MANGA",
+            "r" : 1554195011312,
+            "sourceId" : 1207429308912,
+            "key" : "/title/17709/kumo-desu-ga-nani-ka",
+            "title" : "Kumo Desu ga, Nani ka?",
+            "cover" : "https://mangadex.org/images/manga/17709.jpg?1547694253"
+          } ]
+        }
       }
     },
     "securitySchemes" : {
@@ -3468,8 +3688,20 @@
       },
       "account-cookie" : {
         "type" : "apiKey",
-        "description" : "Provide account in the following format: `{USERNAME} {BASE64 ENCODED PASSWORD}`.",
-        "name" : "TW-Auth",
+        "description" : "Provide the credentials in the following format: `{USERNAME} {BASE64 ENCODED PASSWORD}`.",
+        "name" : "TW-Auth-Account",
+        "in" : "cookie"
+      },
+      "auth-token-header" : {
+        "type" : "apiKey",
+        "description" : "Authenticate using an auth token secret obtained from `POST /api/v3/auth/tokens` in a request header.",
+        "name" : "TW-Auth-Token",
+        "in" : "header"
+      },
+      "auth-token-cookie" : {
+        "type" : "apiKey",
+        "description" : "Authenticate using an auth token secret obtained from `POST /api/v3/auth/tokens` in a cookie.",
+        "name" : "TW-Auth-Token",
         "in" : "cookie"
       }
     }
@@ -3478,5 +3710,9 @@
     "account" : [ ]
   }, {
     "account-cookie" : [ ]
-  }, { } ]
+  }, {
+    "auth-token-header" : [ ]
+  }, {
+    "auth-token-cookie" : [ ]
+  } ]
 }
