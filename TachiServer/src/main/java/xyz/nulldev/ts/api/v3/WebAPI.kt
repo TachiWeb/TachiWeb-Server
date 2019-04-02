@@ -89,6 +89,8 @@ class WebAPI {
                 // TODO All security handlers are currently NO-OP
                 routerFactory.addSecurityHandler("account") { it.next() }
                 routerFactory.addSecurityHandler("account-cookie") { it.next() }
+                routerFactory.addSecurityHandler("auth-token-cookie") { it.next() }
+                routerFactory.addSecurityHandler("auth-token-header") { it.next() }
 
                 // Start http server
                 vertx.createHttpServer(HttpServerOptions().apply {
