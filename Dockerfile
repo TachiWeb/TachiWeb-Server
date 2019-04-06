@@ -12,7 +12,8 @@ npm \
 yarn \
 curl \
 zip \
-maven
+maven \
+git
 WORKDIR /src
 ADD . .
 RUN ./scripts/build.sh
