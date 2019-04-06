@@ -9,7 +9,10 @@ bsdtar \
 jq \
 rsync \
 npm \
-yarn
+yarn \
+curl \
+zip \
+maven
 WORKDIR /src
 ADD . .
 RUN ./scripts/build.sh
