@@ -138,6 +138,13 @@ public class JsonSharedPreferences implements SharedPreferences {
             PrefType type = PrefType.fromObject(value);
             if (type == PrefType.Float) {
                 value = value.toString();
+            } else if (type == PrefType.StringSet) {
+                JSONArray arrayObj = new JSONArray();
+                Set<String> casted = (Set<String>) value;
+                for (String item : casted) {
+                    arrayObj.put(item);
+                }
+                value = arrayObj;
             }
             //Put the preference's type and value into a JSON object
             entryObj.put(KEY_TYPE, type.name());
