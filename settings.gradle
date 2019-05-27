@@ -14,7 +14,7 @@ includeBuild('dex2jar') {
 // Android support suite
 include 'AndroidCompat'
 // Core Java patches
-include 'AndroidCompat/JVMPatch'
+include 'AndroidCompat:JVMPatch'
 
 // Original Tachiyomi source code (along with Android -> Server bridge code)
 include 'Tachiyomi-App'
@@ -22,7 +22,7 @@ include 'Tachiyomi-App'
 // Core server code (API handlers)
 include 'TachiServer'
 // Config API
-include 'TachiServer/Config'
+include 'TachiServer:Config'
 
 //JS
 // Web UI

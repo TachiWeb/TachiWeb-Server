@@ -20,7 +20,7 @@ dependencies {
     compile group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1'
 
     // Config API
-    compile project(":TachiServer/Config")
+    compile project(":TachiServer:Config")
 
     // dex2jar
     compile "dex2jar:dex-translator"
@@ -35,7 +35,7 @@ dependencies {
     compile "androidx.annotation:annotation:1.0.0"
 }
 
-def fatJarTask = tasks.getByPath(':AndroidCompat/JVMPatch:fatJar')
+def fatJarTask = tasks.getByPath(':AndroidCompat:JVMPatch:fatJar')
 
 // Copy JVM core patches
 task copyJVMPatches(type: Copy) {

@@ -3,8 +3,8 @@ plugins {
     id "java"
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "4.8.1"
+wrapper {
+    gradleVersion = "5.4.1"
 }
 
 allprojects {
@@ -29,7 +29,7 @@ allprojects {
 ext.javaProjects = [
         project(":AndroidCompat"),
         project(":TachiServer"),
-        project(":TachiServer/Config"),
+        project(":TachiServer:Config"),
         project(":Tachiyomi-App")
 ]
 
@@ -64,7 +64,7 @@ configure(jsProjects) {
 configure([
         project(":AndroidCompat"),
         project(":TachiServer"),
-        project(":TachiServer/Config")
+        project(":TachiServer:Config")
 ]) {
     dependencies {
         // Dependency Injection

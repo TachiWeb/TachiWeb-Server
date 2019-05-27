@@ -17,7 +17,7 @@ dependencies {
     compile project(":tachiwebui")
 
     // Config API
-    compile project(":TachiServer/Config")
+    compile project(":TachiServer:Config")
 
     // Spark Web Framework
     compile "com.sparkjava:spark-core:2.5.5"
@@ -107,6 +107,18 @@ bintray {
     }
 }
 
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    zip64 = true
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude ('META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA')
+    with jar
+}
+
 publishing {
     publications {
         SnapshotPublication(MavenPublication) {
@@ -118,18 +130,6 @@ publishing {
             version "${getGitHash()}-DEV"
         }
     }
-}
-
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Version': version,
-                'Main-Class': mainClassName
-    }
-    zip64 = true
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    exclude ('META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA')
-    with jar
 }
 
 assemble.dependsOn fatJar
