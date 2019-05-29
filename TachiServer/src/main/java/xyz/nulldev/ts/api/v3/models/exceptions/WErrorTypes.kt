@@ -9,6 +9,7 @@ enum class WErrorTypes {
     NO_MANGA,
     NO_COVER,
     NO_SOURCE,
+    NO_CATEGORY,
     MANGA_INFO_UPDATE_FAILED,
     COVER_DOWNLOAD_ERROR,
     UNKNOWN_FLAG_VALUE,

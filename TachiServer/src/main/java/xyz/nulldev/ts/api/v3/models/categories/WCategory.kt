@@ -1,8 +1,8 @@
 package xyz.nulldev.ts.api.v3.models.categories
 
 data class WCategory(
-        val id: Long,
+        val id: Int,
         val manga: List<Long>,
         val name: String,
-        val order: Long
+        val order: Int
 )

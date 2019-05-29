@@ -24,6 +24,9 @@ interface OperationGroup {
     fun notFound(): Nothing = abort(404)
     fun notFound(enumError: WErrorTypes): Nothing = abort(404, enumError)
 
+    fun badRequest(): Nothing = abort(400)
+    fun badRequest(enumError: WErrorTypes): Nothing = abort(400, enumError)
+
     fun internalError(): Nothing = abort(500)
     fun internalError(enumError: WErrorTypes): Nothing = abort(500, enumError)
 
