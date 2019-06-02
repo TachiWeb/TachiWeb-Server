@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version" : "3.2.1"
+    "version" : "3.2.2"
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -432,7 +432,7 @@
         "description" : "The category's `id`.",
         "required" : true,
         "schema" : {
-          "format" : "int64",
+          "format" : "int32",
           "type" : "integer"
         }
       } ]
@@ -1372,7 +1372,21 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response - the specified manga were added/removed from the category."
+            "description" : "Successful response - the specified manga were added/removed from the category, returns a list of the ids of the manga in the category.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "format" : "int64",
+                    "type" : "integer"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "The supplied mutation request contains a manga id that is in both the `add` list and the `remove` list."
           },
           "404" : {
             "description" : "No category with the specified `categoryId` was found or a manga `id` specified in the request body array did not have an associated manga.\n\nNo manga were added/removed from the `category`.\n\nThe exact failure reason is supplied in the response body.",
@@ -1392,7 +1406,7 @@
         "description" : "The category's `id`.",
         "required" : true,
         "schema" : {
-          "format" : "int64",
+          "format" : "int32",
           "type" : "integer"
         }
       } ]
@@ -2176,7 +2190,12 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "auth-token-header" : [ ]
+        }, {
+          "auth-token-cookie" : [ ]
+        } ]
       }
     },
     "/api/v3/preferences/{preferenceKey}" : {
@@ -2441,16 +2460,11 @@
         "summary" : "Create an auth token.",
         "operationId" : "createAuthToken",
         "requestBody" : {
-          "description" : "The name of the device creating the auth token.",
+          "description" : "",
           "content" : {
             "application/json" : {
               "schema" : {
-                "type" : "string"
-              },
-              "examples" : {
-                "Sample request" : {
-                  "value" : "Joe Schmoe's Samsung Galaxy S10"
-                }
+                "$ref" : "#/components/schemas/create-auth-token-request"
               }
             }
           },
@@ -2633,7 +2647,7 @@
             "type" : "string"
           },
           "order" : {
-            "format" : "int64",
+            "format" : "int32",
             "description" : "Categories are sorted ascending by this number.\n\nMust be unique across all categories.\n\nDefaults to the `maximum order of all existing categories + 1`.",
             "type" : "integer"
           }
@@ -2999,7 +3013,7 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "format" : "int64",
+            "format" : "int32",
             "description" : "The id of the category.",
             "type" : "integer"
           },
@@ -3008,7 +3022,7 @@
             "type" : "string"
           },
           "order" : {
-            "format" : "int64",
+            "format" : "int32",
             "description" : "Categories are sorted ascending by this number.\n\nMust be unique across all categories.\n\n",
             "type" : "integer"
           },
@@ -3572,7 +3586,7 @@
       },
       "auth-token" : {
         "description" : "An authentication token.",
-        "required" : [ "id", "deviceName" ],
+        "required" : [ "id", "deviceName", "deviceId", "platform" ],
         "type" : "object",
         "properties" : {
           "id" : {
@@ -3586,12 +3600,22 @@
           "deviceName" : {
             "description" : "The name of the device that generated this auth token.",
             "type" : "string"
+          },
+          "deviceId" : {
+            "description" : "A unique identifier for this device.\n\nCan be opaque, the server will not parse this value.",
+            "type" : "string"
+          },
+          "platform" : {
+            "description" : "The platform of the device that is generating this auth token.",
+            "enum" : [ "ANDROID", "IOS", "WEB", "WINDOWS", "LINUX", "MAC_OS" ]
           }
         },
         "example" : {
+          "deviceId" : "ba050454-c7aa-491a-8bf6-cddef657c03f",
+          "deviceName" : "Joe Schmoe's Samsung Galaxy S10",
           "id" : "0123456789ABCDEFGHJKMNPQRSTVWXYZ",
-          "secret" : "96ca77e9412cc7c5a6bef55133ed4345e03fb3f1a13933a0e5b61804595ff61b8dba7d15418d26b897aecc54d02b99c039f985749a929f0d84cef82fe5696c15",
-          "deviceName" : "Joe Schmoe's Samsung Galaxy S10"
+          "platform" : "ANDROID",
+          "secret" : "96ca77e9412cc7c5a6bef55133ed4345e03fb3f1a13933a0e5b61804595ff61b8dba7d15418d26b897aecc54d02b99c039f985749a929f0d84cef82fe5696c15"
         }
       },
       "sync-request" : {
@@ -3677,6 +3701,30 @@
             "title" : "Kumo Desu ga, Nani ka?",
             "cover" : "https://mangadex.org/images/manga/17709.jpg?1547694253"
           } ]
+        }
+      },
+      "create-auth-token-request" : {
+        "description" : "A request to create an authentication token.",
+        "required" : [ "deviceId", "deviceName", "platform" ],
+        "type" : "object",
+        "properties" : {
+          "deviceId" : {
+            "description" : "A unique identifier for this device.\n\nCan be opaque, the server will not parse this value.",
+            "type" : "string"
+          },
+          "deviceName" : {
+            "description" : "The name of the device that generated this auth token.",
+            "type" : "string"
+          },
+          "platform" : {
+            "description" : "The platform of the device that is generating this auth token.",
+            "enum" : [ "ANDROID", "IOS", "WEB", "WINDOWS", "LINUX", "MAC_OS" ]
+          }
+        },
+        "example" : {
+          "deviceId" : "ba050454-c7aa-491a-8bf6-cddef657c03f",
+          "deviceName" : "Joe Schmoe's Samsung Galaxy S10",
+          "platform" : "ANDROID"
         }
       }
     },
