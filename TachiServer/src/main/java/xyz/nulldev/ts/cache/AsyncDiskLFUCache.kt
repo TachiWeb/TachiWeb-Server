@@ -20,6 +20,8 @@ private const val TMP_FILE_EXT = "tmp"
 /**
  * Fast, completely asynchronous disk LFU cache implementation
  *
+ * TODO VertX integration
+ *
  * @author nulldev
  */
 class AsyncDiskLFUCache(val folder: File,

@@ -277,11 +277,14 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
 
                 val coverResponseLength = coverResponse.getHeader(HttpHeaders.CONTENT_LENGTH)
                 val coverResponseLengthLong = coverResponseLength?.toLongOrNull()
-                        ?: expectedError(500, "Response from $url did not include valid Content-Length ($coverResponseLength)!", COVER_DOWNLOAD_ERROR)
-                rc.response().putHeader(HttpHeaders.CONTENT_LENGTH, coverResponseLength)
+                if (coverResponseLengthLong != null) {
+                    rc.response().putHeader(HttpHeaders.CONTENT_LENGTH, coverResponseLength)
+                } else {
+                    rc.response().isChunked = true
+                }
                 val written = serveCoverResponse(url, coverResponse, combineWriteStreams(rc.response(), asyncFile))
 
-                if (written == coverResponseLengthLong) {
+                if (written == coverResponseLengthLong || (written != 0L && coverResponseLengthLong == null)) {
                     cacheEntry.commit()
                 } else {
                     logger.warn { "Length of cover response body ($written) from $url did not match Content-Length ($coverResponseLength), not caching this cover!" }
