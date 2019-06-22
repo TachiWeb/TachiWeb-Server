@@ -2,6 +2,7 @@
   "openapi" : "3.0.2",
   "info" : {
     "title" : "TachiWeb-Api",
+    "version" : "3.2.3",
     "description" : "**Security:**\n\nAuthentication is currently not supported. Clients should use the *No Security* option until authentication is implemented.",
     "contact" : {
       "url" : "https://github.com/TachiWeb/TachiWeb-Server"
@@ -9,8 +10,7 @@
     "license" : {
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0"
-    },
-    "version" : "3.2.2"
+    }
   },
   "servers" : [ {
     "url" : "{protocol}://{host}:{port}",
@@ -33,12 +33,8 @@
       "summary" : "Path used to manage the list of manga.",
       "description" : "The REST endpoint/path used to list `manga` entities.  This path contains a `GET` operation to perform the list task.",
       "get" : {
-        "summary" : "List all manga",
-        "description" : "Gets a list of all `manga` entities.\n\nThis operation can be slow and return large amounts of data.\nIt is recommended to be used sparingly.",
-        "operationId" : "getMangas",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns an array of `manga` entities.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -48,127 +44,128 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns an array of `manga` entities."
           }
-        }
+        },
+        "operationId" : "getMangas",
+        "summary" : "List all manga",
+        "description" : "Gets a list of all `manga` entities.\n\nThis operation can be slow and return large amounts of data.\nIt is recommended to be used sparingly."
       }
     },
     "/api/v3/manga/{mangaId}" : {
       "summary" : "Path used to get and update a single manga.",
       "description" : "The REST endpoint/path used to get and update single instances of a `manga`.  This path contains `GET` and `PATCH` operations used to perform the get and update tasks respectively.",
       "get" : {
-        "summary" : "Get a manga",
-        "description" : "Gets the details of a single instance of a `manga`.",
-        "operationId" : "getManga",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns a single `manga`.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/manga"
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns a single `manga`."
           },
           "404" : {
             "description" : "The manga could not be found."
           }
-        }
+        },
+        "operationId" : "getManga",
+        "summary" : "Get a manga",
+        "description" : "Gets the details of a single instance of a `manga`."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/cover" : {
       "summary" : "Get the cover/thumbnail of a manga.",
       "get" : {
-        "summary" : "Get a manga's cover/thumbnail.",
-        "operationId" : "getMangaCover",
         "parameters" : [ {
           "name" : "use-placeholder",
-          "in" : "query",
           "description" : "If the manga with the supplied `mangaId` exists but has no cover, supply a placeholder image in place of the `404 Not Found` response.\n\nIf the manga does not exist, a `404 Not Found` response will still be returned.\n\nDefaults to: `false`",
           "schema" : {
             "type" : "boolean"
-          }
+          },
+          "in" : "query"
         } ],
         "responses" : {
           "200" : {
-            "description" : "The manga has a cover and it has been returned.",
             "content" : {
               "image/jpeg" : { },
               "image/png" : { },
               "image/webp" : { }
-            }
+            },
+            "description" : "The manga has a cover and it has been returned."
           },
           "404" : {
-            "description" : "The manga with the supplied `mangaId` does not exist or has no cover.\n\nThe reason for the failure is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_MANGA", "NO_COVER" ]
                 }
               }
-            }
+            },
+            "description" : "The manga with the supplied `mangaId` does not exist or has no cover.\n\nThe reason for the failure is supplied in the response body."
           },
           "500" : {
-            "description" : "An error occured while loading the cover.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "An error occured while loading the cover.\n\nThe exact failure reason is provided in the response body."
           }
-        }
+        },
+        "operationId" : "getMangaCover",
+        "summary" : "Get a manga's cover/thumbnail."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/flags" : {
       "summary" : "Path used to manage a single manga's flags.",
       "description" : "",
       "get" : {
-        "summary" : "Get a manga's flags",
-        "description" : "Gets the details of a single instance of a manga's flags.",
-        "operationId" : "getMangaFlags",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns a single manga's flags.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/manga-flags"
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns a single manga's flags."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           }
-        }
+        },
+        "operationId" : "getMangaFlags",
+        "summary" : "Get a manga's flags",
+        "description" : "Gets the details of a single instance of a manga's flags."
       },
       "put" : {
-        "summary" : "Replace all of a manga's flags",
-        "description" : "Replaces all a manga's flags with the supplied flags.",
-        "operationId" : "setMangaFlags",
         "requestBody" : {
           "description" : "The new flags to replace the existing flags with.",
           "content" : {
@@ -182,38 +179,38 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response. Returns the new manga flags.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/manga-flags"
                 }
               }
-            }
+            },
+            "description" : "Successful response. Returns the new manga flags."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           }
-        }
+        },
+        "operationId" : "setMangaFlags",
+        "summary" : "Replace all of a manga's flags",
+        "description" : "Replaces all a manga's flags with the supplied flags."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/favorite" : {
       "summary" : "Path used to manage a single manga's favorite status.",
       "description" : "",
       "put" : {
-        "summary" : "Set a manga's favorite status.",
-        "description" : "",
-        "operationId" : "setMangaFavorited",
         "requestBody" : {
           "description" : "The new favorite status of the manga.",
           "content" : {
@@ -227,38 +224,38 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe new favorite status of the manga is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "boolean"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe new favorite status of the manga is returned."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           }
-        }
+        },
+        "operationId" : "setMangaFavorited",
+        "summary" : "Set a manga's favorite status.",
+        "description" : ""
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/viewer" : {
       "summary" : "Path used to manage a single manga's viewer.",
       "description" : "",
       "put" : {
-        "summary" : "Set a manga's viewer.",
-        "description" : "",
-        "operationId" : "setMangaViewer",
         "requestBody" : {
           "description" : "The new manga viewer.",
           "content" : {
@@ -272,41 +269,40 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe new viewer of the manga is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/manga-viewer"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe new viewer of the manga is returned."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           }
-        }
+        },
+        "operationId" : "setMangaViewer",
+        "summary" : "Set a manga's viewer.",
+        "description" : ""
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/categories" : {
       "summary" : "Path used to manage the list of categories.",
       "description" : "",
       "get" : {
-        "summary" : "List all categories",
-        "description" : "Gets a list of all `category` entities sorted ascending by the `order` field.",
-        "operationId" : "getCategories",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns an array of `category` entities.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -316,14 +312,15 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns an array of `category` entities."
           }
-        }
+        },
+        "operationId" : "getCategories",
+        "summary" : "List all categories",
+        "description" : "Gets a list of all `category` entities sorted ascending by the `order` field along with the \"default\" category that holds manga not assigned to any category.\n\nThe dummy category\n- Has an ID of `-1`\n- Has an order of `-1`\n- Has a name of `Default`\n\nThe dummy category does not actually exist so it cannot be modified using the other API endpoints."
       },
       "post" : {
-        "summary" : "Create a category",
-        "description" : "Creates a new instance of a `category`.",
-        "operationId" : "createCategory",
         "requestBody" : {
           "description" : "A new `category` to be created.",
           "content" : {
@@ -337,55 +334,55 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe newly created category is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/category"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe newly created category is returned."
           },
           "409" : {
-            "description" : "Category creation failed due to a conflict.\n\nThe exact reason for the failure is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NAME_CONFLICT", "ORDER_CONFLICT" ]
                 }
               }
-            }
+            },
+            "description" : "Category creation failed due to a conflict.\n\nThe exact reason for the failure is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "createCategory",
+        "summary" : "Create a category",
+        "description" : "Creates a new instance of a `category`."
       }
     },
     "/api/v3/categories/{categoryId}" : {
       "summary" : "Path used to manage a single category.",
       "description" : "The REST endpoint/path used to get, update, and delete single instances of an `category`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
       "get" : {
-        "summary" : "Get a category",
-        "description" : "Gets the details of a single instance of a `category`.",
-        "operationId" : "getCategory",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns a single `category`.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/category"
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns a single `category`."
           },
           "404" : {
             "description" : "No category with the supplied `id` could be found."
           }
-        }
+        },
+        "operationId" : "getCategory",
+        "summary" : "Get a category",
+        "description" : "Gets the details of a single instance of a `category`."
       },
       "put" : {
-        "summary" : "Update a category",
-        "description" : "Updates an existing `category`.",
-        "operationId" : "editCategory",
         "requestBody" : {
           "description" : "Updated `category` information.",
           "content" : {
@@ -399,24 +396,24 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe updated category is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/category"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe updated category is returned."
           },
           "404" : {
             "description" : "No category with the supplied `id` could be found."
           }
-        }
+        },
+        "operationId" : "editCategory",
+        "summary" : "Update a category",
+        "description" : "Updates an existing `category`."
       },
       "delete" : {
-        "summary" : "Delete a category",
-        "description" : "Deletes an existing `category`.",
-        "operationId" : "deleteCategory",
         "responses" : {
           "204" : {
             "description" : "Successful response."
@@ -424,37 +421,36 @@
           "404" : {
             "description" : "No category with the supplied `id` could be found."
           }
-        }
+        },
+        "operationId" : "deleteCategory",
+        "summary" : "Delete a category",
+        "description" : "Deletes an existing `category`."
       },
       "parameters" : [ {
         "name" : "categoryId",
-        "in" : "path",
         "description" : "The category's `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int32",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/chapters" : {
       "summary" : "Get a list of all chapter associated with this manga.",
       "get" : {
-        "summary" : "Get a list of all chapter associated with this manga sorted by the manga's flags.",
-        "description" : "",
-        "operationId" : "getMangaChapters",
         "parameters" : [ {
           "name" : "apply-filters",
-          "in" : "query",
           "description" : "Whether or not to apply the filters specified in the manga flags.\n\nDefaults to: `false`",
-          "required" : false,
           "schema" : {
             "type" : "boolean"
-          }
+          },
+          "in" : "query",
+          "required" : false
         } ],
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -464,78 +460,78 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           }
-        }
+        },
+        "operationId" : "getMangaChapters",
+        "summary" : "Get a list of all chapter associated with this manga sorted by the manga's flags.",
+        "description" : ""
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/update" : {
       "summary" : "Update a manga's info.",
       "description" : "Does not update a manga's chapters.",
       "post" : {
-        "summary" : "Update a manga's metadata/info.",
-        "description" : "It is recommended for UIs to call this when the initialized field of the manga is `false`.\n\nCalling this will update the initialized field of the manga to `true` if the request succeeds.",
-        "operationId" : "updateMangaInfo",
         "responses" : {
           "200" : {
-            "description" : "Metadata/info update successful.\n\nThe new manga metadata is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/manga"
                 }
               }
-            }
+            },
+            "description" : "Metadata/info update successful.\n\nThe new manga metadata is returned."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           },
           "500" : {
-            "description" : "The metadata/info update failed.\n\nThe exact reason is supplied in the responsed body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "The metadata/info update failed.\n\nThe exact reason is supplied in the responsed body."
           }
-        }
+        },
+        "operationId" : "updateMangaInfo",
+        "summary" : "Update a manga's metadata/info.",
+        "description" : "It is recommended for UIs to call this when the initialized field of the manga is `false`.\n\nCalling this will update the initialized field of the manga to `true` if the request succeeds."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/chapters/update" : {
       "summary" : "Update a manga's chapters.",
       "description" : "Does not update a manga's info.",
       "post" : {
-        "summary" : "Update a manga's chapters.",
-        "description" : "It is recommended for UIs to call this when the user transitions from the catalogue screen to the manga screen.",
-        "operationId" : "updateMangaChapters",
         "responses" : {
           "200" : {
-            "description" : "Manga chapters update successful.\n\nThe new chapter list will be returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -545,43 +541,43 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Manga chapters update successful.\n\nThe new chapter list will be returned."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           },
           "500" : {
-            "description" : "The manga chapter update failed.\n\nThe exact reason is supplied in the responsed body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "The manga chapter update failed.\n\nThe exact reason is supplied in the responsed body."
           }
-        }
+        },
+        "operationId" : "updateMangaChapters",
+        "summary" : "Update a manga's chapters.",
+        "description" : "It is recommended for UIs to call this when the user transitions from the catalogue screen to the manga screen."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/chapters" : {
       "summary" : "Path used to manage chapters.",
       "get" : {
-        "summary" : "List all chapters across all manga.",
-        "description" : "This operation can be slow and return large amounts of data.\nIt is recommended to be used sparingly.",
-        "operationId" : "getChapters",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -591,52 +587,52 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           }
-        }
+        },
+        "operationId" : "getChapters",
+        "summary" : "List all chapters across all manga.",
+        "description" : "This operation can be slow and return large amounts of data.\nIt is recommended to be used sparingly."
       }
     },
     "/api/v3/chapters/{chapterId}" : {
       "summary" : "Path used to manage a single chapter.",
       "get" : {
-        "summary" : "Get a single chapter by it's id.",
-        "operationId" : "getChapter",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/chapter"
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           }
-        }
+        },
+        "operationId" : "getChapter",
+        "summary" : "Get a single chapter by it's id."
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/chapters/{chapterId}/page-count" : {
       "summary" : "Manage a chapter's page count.",
       "post" : {
-        "summary" : "Get a chapter's page count.",
-        "description" : "This is POST request for technical reasons.",
-        "operationId" : "getChapterPageCount",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -644,59 +640,60 @@
                   "type" : "integer"
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           },
           "500" : {
-            "description" : "Failed to calculate the number of pages in the chapter.\n\nThe exact reason is supplied in the responsed body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "Failed to calculate the number of pages in the chapter.\n\nThe exact reason is supplied in the responsed body."
           }
-        }
+        },
+        "operationId" : "getChapterPageCount",
+        "summary" : "Get a chapter's page count.",
+        "description" : "This is POST request for technical reasons."
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/chapters/{chapterId}/reading-status" : {
       "summary" : "Updates the time this chapter was last read",
       "get" : {
-        "summary" : "Get the reading status of a chapter.",
-        "operationId" : "getChapterReadingStatus",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/chapter-reading-status"
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           }
-        }
+        },
+        "operationId" : "getChapterReadingStatus",
+        "summary" : "Get the reading status of a chapter."
       },
       "put" : {
-        "summary" : "Replace the reading status of a chapter.",
-        "description" : "Will also update the tracking information associated with this manga.",
-        "operationId" : "setChapterReadingStatus",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -709,163 +706,164 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe new reading status of the chapter is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/chapter-reading-status"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe new reading status of the chapter is returned."
           },
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           }
-        }
+        },
+        "operationId" : "setChapterReadingStatus",
+        "summary" : "Replace the reading status of a chapter.",
+        "description" : "Will also update the tracking information associated with this manga."
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/chapters/{chapterId}/download" : {
       "summary" : "Path used to manage the download associated with this chapter",
       "get" : {
-        "summary" : "Get the download associated with this chapter.",
-        "operationId" : "getChapterDownload",
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/download"
                 }
               }
-            }
+            },
+            "description" : "Success response."
           },
           "404" : {
-            "description" : "No chapter exists with the supplied `chapterId` or this chapter is not associated with a download.\n\nThe specific error is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_CHAPTER", "NO_DOWNLOAD" ]
                 }
               }
-            }
+            },
+            "description" : "No chapter exists with the supplied `chapterId` or this chapter is not associated with a download.\n\nThe specific error is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "getChapterDownload",
+        "summary" : "Get the download associated with this chapter."
       },
       "post" : {
-        "summary" : "Begin downloading a chapter",
-        "operationId" : "beginChapterDownload",
         "responses" : {
           "200" : {
-            "description" : "Success response.\n\nThe newly created download is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/download"
                 }
               }
-            }
+            },
+            "description" : "Success response.\n\nThe newly created download is returned."
           },
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           },
           "409" : {
-            "description" : "Failed to begin downloading this chapter as this chapter is already associated with a download.\n\nThe associated download is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/download"
                 }
               }
-            }
+            },
+            "description" : "Failed to begin downloading this chapter as this chapter is already associated with a download.\n\nThe associated download is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "beginChapterDownload",
+        "summary" : "Begin downloading a chapter"
       },
       "delete" : {
-        "summary" : "Delete the download associated with this chapter.",
-        "description" : "Note that only fully downloaded downloads can be deleted.",
-        "operationId" : "deleteChapterDownload",
         "responses" : {
           "204" : {
             "description" : "The download was successfully deleted."
           },
           "404" : {
-            "description" : "No chapter exists with the supplied `chapterId` or this chapter is not associated with a download.\n\nThe specific error is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_CHAPTER", "NO_DOWNLOAD" ]
                 }
               }
-            }
+            },
+            "description" : "No chapter exists with the supplied `chapterId` or this chapter is not associated with a download.\n\nThe specific error is supplied in the response body."
           },
           "423" : {
             "description" : "Could not delete the download as the status of the download is not: `DOWNLOADED`."
           }
-        }
+        },
+        "operationId" : "deleteChapterDownload",
+        "summary" : "Delete the download associated with this chapter.",
+        "description" : "Note that only fully downloaded downloads can be deleted."
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/downloader" : {
       "summary" : "Path to manage the chapter downloader.",
       "get" : {
-        "summary" : "Gets the chapter downloader.",
-        "description" : "",
-        "operationId" : "getDownloader",
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/downloader"
                 }
               }
-            }
+            },
+            "description" : "Success response."
           }
-        }
+        },
+        "operationId" : "getDownloader",
+        "summary" : "Gets the chapter downloader.",
+        "description" : ""
       }
     },
     "/api/v3/downloader/paused" : {
       "summary" : "Path to manage the pause state of the chapter downloader.",
       "get" : {
-        "summary" : "Gets whether or not the downloader is paused.",
-        "operationId" : "isDownloaderPaused",
         "responses" : {
           "200" : {
-            "description" : "Success response, returns whether or not the downloader is paused.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "boolean"
                 }
               }
-            }
+            },
+            "description" : "Success response, returns whether or not the downloader is paused."
           }
-        }
+        },
+        "operationId" : "isDownloaderPaused",
+        "summary" : "Gets whether or not the downloader is paused."
       },
       "put" : {
-        "summary" : "Updates the pause state of the downloader.",
-        "operationId" : "setDownloaderPaused",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -878,103 +876,102 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Success response. The new pause state of the downloader is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "boolean"
                 }
               }
-            }
+            },
+            "description" : "Success response. The new pause state of the downloader is returned."
           }
-        }
+        },
+        "operationId" : "setDownloaderPaused",
+        "summary" : "Updates the pause state of the downloader."
       }
     },
     "/api/v3/downloader/clear" : {
       "summary" : "Path used to clear the downloader's queue.",
       "post" : {
-        "summary" : "Clear the downloader's queue.",
-        "operationId" : "clearDownloader",
         "responses" : {
           "200" : {
-            "description" : "Success response, the new downloader is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/downloader"
                 }
               }
-            }
+            },
+            "description" : "Success response, the new downloader is returned."
           }
-        }
+        },
+        "operationId" : "clearDownloader",
+        "summary" : "Clear the downloader's queue."
       }
     },
     "/api/v3/chapters/{chapterId}/page/{pageIndex}/image" : {
       "summary" : "Manage the image associated with a chapter page.",
       "get" : {
-        "summary" : "Get the image associated with a chapter page.",
-        "description" : "Note that the page image may be animated.",
-        "operationId" : "getChapterPageImage",
         "responses" : {
           "200" : {
-            "description" : "Success response. The page's image is returned.",
             "content" : {
               "image/jpeg" : { },
               "image/png" : { },
               "image/webp" : { },
               "image/gif" : { }
-            }
+            },
+            "description" : "Success response. The page's image is returned."
           },
           "404" : {
-            "description" : "No chapter with the specified `chapterId` was found or no page was found at the supplied `pageIndex`.\n\nThe exact failure reason is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_CHAPTER", "NO_PAGE" ]
                 }
               }
-            }
+            },
+            "description" : "No chapter with the specified `chapterId` was found or no page was found at the supplied `pageIndex`.\n\nThe exact failure reason is supplied in the response body."
           },
           "500" : {
-            "description" : "The server failed to fetch the page's image.\n\nThe exact failure reason is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "The server failed to fetch the page's image.\n\nThe exact failure reason is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "getChapterPageImage",
+        "summary" : "Get the image associated with a chapter page.",
+        "description" : "Note that the page image may be animated."
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       }, {
         "name" : "pageIndex",
-        "in" : "path",
         "description" : "The index of the page (0-indexed).",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/tasks" : {
       "summary" : "List all uncompleted tasks",
       "get" : {
-        "summary" : "Get a list of all uncompleted tasks.",
-        "operationId" : "getTasks",
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -984,52 +981,51 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Success response."
           }
-        }
+        },
+        "operationId" : "getTasks",
+        "summary" : "Get a list of all uncompleted tasks."
       }
     },
     "/api/v3/tasks/{taskUuid}" : {
       "summary" : "Path used to manage a single task.",
       "get" : {
-        "summary" : "Get a task.",
-        "operationId" : "getTask",
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/task"
                 }
               }
-            }
+            },
+            "description" : "Success response."
           },
           "404" : {
             "description" : "No task exists with the supplied `taskUuid`."
           }
-        }
+        },
+        "operationId" : "getTask",
+        "summary" : "Get a task."
       },
       "parameters" : [ {
         "name" : "taskUuid",
-        "in" : "path",
         "description" : "The UUID of the task.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/sources" : {
       "summary" : "Path used to manage the list of sources.",
       "description" : "",
       "get" : {
-        "summary" : "List all sources.",
-        "description" : "Gets a list of all `source` entities.",
-        "operationId" : "getSources",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns an array of `source` entities.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1039,50 +1035,51 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns an array of `source` entities."
           }
-        }
+        },
+        "operationId" : "getSources",
+        "summary" : "List all sources.",
+        "description" : "Gets a list of all `source` entities."
       }
     },
     "/api/v3/sources/{sourceId}" : {
       "summary" : "Path used to manage a single source.",
       "description" : "",
       "get" : {
-        "summary" : "Get a source",
-        "description" : "Gets the details of a single instance of a `source`.",
-        "operationId" : "getSource",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns a single `source`.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/source"
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns a single `source`."
           },
           "404" : {
             "description" : "No source exists with the provided `id`."
           }
-        }
+        },
+        "operationId" : "getSource",
+        "summary" : "Get a source",
+        "description" : "Gets the details of a single instance of a `source`."
       },
       "parameters" : [ {
         "name" : "sourceId",
-        "in" : "path",
         "description" : "The `id` of the source.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/sources/{sourceId}/login" : {
       "summary" : "Path used to login to a source.",
       "post" : {
-        "summary" : "Login to a source.",
-        "description" : "",
-        "operationId" : "loginToSource",
         "requestBody" : {
           "description" : "The login credentials.",
           "content" : {
@@ -1099,14 +1096,14 @@
             "description" : "The login succeeded."
           },
           "400" : {
-            "description" : "The source does not require authentication or the user is already logged in.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "AUTH_UNSUPPORTED", "ALREADY_LOGGED_IN" ]
                 }
               }
-            }
+            },
+            "description" : "The source does not require authentication or the user is already logged in.\n\nThe exact failure reason is provided in the response body."
           },
           "401" : {
             "description" : "The login failed (usually this means the credentials are invalid)."
@@ -1114,54 +1111,55 @@
           "404" : {
             "description" : "No source exists with the provided `id`."
           }
-        }
+        },
+        "operationId" : "loginToSource",
+        "summary" : "Login to a source.",
+        "description" : ""
       },
       "parameters" : [ {
         "name" : "sourceId",
-        "in" : "path",
         "description" : "The `id` of the source.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/sources/{sourceId}/filters" : {
       "summary" : "Manage the filters for a source",
       "get" : {
-        "summary" : "Get the filters for a source.",
-        "operationId" : "getSourceFilters",
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/catalogue-filters"
                 }
               }
-            }
+            },
+            "description" : "Success response."
           },
           "404" : {
             "description" : "No source exists with the provided `id`."
           }
-        }
+        },
+        "operationId" : "getSourceFilters",
+        "summary" : "Get the filters for a source."
       },
       "parameters" : [ {
         "name" : "sourceId",
-        "in" : "path",
         "description" : "The `id` of the source.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/sources/{sourceId}/catalogue" : {
       "summary" : "Manage a catalogue page.",
       "post" : {
-        "summary" : "Request a catalogue page.",
-        "operationId" : "getSourceCatalogue",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1174,45 +1172,45 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/catalogue-page"
                 }
               }
-            }
+            },
+            "description" : "Success response."
           },
           "404" : {
             "description" : "No source exists with the provided `id`."
           },
           "500" : {
-            "description" : "Failed to get catalogue page.\n\nThe exact failure reason is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "Failed to get catalogue page.\n\nThe exact failure reason is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "getSourceCatalogue",
+        "summary" : "Request a catalogue page."
       },
       "parameters" : [ {
         "name" : "sourceId",
-        "in" : "path",
         "description" : "The `id` of the source.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/sources/{sourceId}/latest-updates" : {
       "summary" : "Manage a latest-updates catalogue page.",
       "post" : {
-        "summary" : "Request a latest-updates catalogue page.",
-        "operationId" : "getSourceLatestUpdates",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1225,50 +1223,48 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/catalogue-page"
                 }
               }
-            }
+            },
+            "description" : "Success response."
           },
           "404" : {
             "description" : "No source exists with the provided `id`."
           },
           "500" : {
-            "description" : "Failed to get latest-updates catalogue page.\n\nThe exact failure reason is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "Failed to get latest-updates catalogue page.\n\nThe exact failure reason is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "getSourceLatestUpdates",
+        "summary" : "Request a latest-updates catalogue page."
       },
       "parameters" : [ {
         "name" : "sourceId",
-        "in" : "path",
         "description" : "The `id` of the source.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/preferences" : {
       "summary" : "Path used to manage the list of preferences.",
       "description" : "",
       "get" : {
-        "summary" : "List all preferences",
-        "description" : "Gets a list of all `preference` entities.",
-        "operationId" : "getPreferences",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns an array of `preference` entities.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1278,44 +1274,44 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns an array of `preference` entities."
           }
-        }
+        },
+        "operationId" : "getPreferences",
+        "summary" : "List all preferences",
+        "description" : "Gets a list of all `preference` entities."
       }
     },
     "/api/v3/preferences/schema" : {
       "summary" : "Get the preference schema (used to render preferences).",
       "get" : {
-        "summary" : "Get the preference schema.",
-        "operationId" : "getPreferencesSchema",
         "responses" : {
           "200" : {
-            "description" : "Success response.",
             "content" : {
               "application/json" : { }
-            }
+            },
+            "description" : "Success response."
           }
-        }
+        },
+        "operationId" : "getPreferencesSchema",
+        "summary" : "Get the preference schema."
       }
     },
     "/api/v3/manga/recently-read" : {
       "get" : {
-        "summary" : "List recently read manga",
-        "description" : "Hardcoded to return a maximum of 25 entries. Includes the chapter that was last read in each manga.",
-        "operationId" : "getRecentlyReadManga",
         "parameters" : [ {
           "name" : "range-size-ms",
-          "in" : "query",
           "description" : "How far back to look (in milliseconds) while finding the recently read manga.\n\nRecommended: `2592000000` ms = 1 month",
-          "required" : true,
           "schema" : {
             "format" : "int64",
             "type" : "integer"
-          }
+          },
+          "in" : "query",
+          "required" : true
         } ],
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns an array of `recently-read` entities sorted by most to least recent.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1325,16 +1321,18 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns an array of `recently-read` entities sorted by most to least recent."
           }
-        }
+        },
+        "operationId" : "getRecentlyReadManga",
+        "summary" : "List recently read manga",
+        "description" : "Hardcoded to return a maximum of 25 entries. Includes the chapter that was last read in each manga."
       }
     },
     "/api/v3/chapters/{chapterId}/reading-status/last-read" : {
       "summary" : "Manage information on when this chapter was last read",
       "delete" : {
-        "summary" : "Deletes the information on when this chapter was last read",
-        "operationId" : "deleteChapterLastRead",
         "responses" : {
           "200" : {
             "description" : "Success response."
@@ -1342,24 +1340,24 @@
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           }
-        }
+        },
+        "operationId" : "deleteChapterLastRead",
+        "summary" : "Deletes the information on when this chapter was last read"
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/categories/{categoryId}/manga" : {
       "summary" : "Path to manage a category's manga.",
       "patch" : {
-        "summary" : "Add/remove manga from a category.",
-        "operationId" : "editCategoryManga",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1372,7 +1370,6 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response - the specified manga were added/removed from the category, returns a list of the ids of the manga in the category.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1383,59 +1380,59 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - the specified manga were added/removed from the category, returns a list of the ids of the manga in the category."
           },
           "400" : {
             "description" : "The supplied mutation request contains a manga id that is in both the `add` list and the `remove` list."
           },
           "404" : {
-            "description" : "No category with the specified `categoryId` was found or a manga `id` specified in the request body array did not have an associated manga.\n\nNo manga were added/removed from the `category`.\n\nThe exact failure reason is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_CATEGORY", "NO_MANGA" ]
                 }
               }
-            }
+            },
+            "description" : "No category with the specified `categoryId` was found or a manga `id` specified in the request body array did not have an associated manga.\n\nNo manga were added/removed from the `category`.\n\nThe exact failure reason is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "editCategoryManga",
+        "summary" : "Add/remove manga from a category."
       },
       "parameters" : [ {
         "name" : "categoryId",
-        "in" : "path",
         "description" : "The category's `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int32",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/extensions/{extensionPackage}" : {
       "summary" : "Path to manage a single extension",
       "get" : {
-        "summary" : "Get information about a specific extension",
-        "operationId" : "getExtension",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/extension"
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No extension exists with the specified `extensionPackage`."
           }
-        }
+        },
+        "operationId" : "getExtension",
+        "summary" : "Get information about a specific extension"
       },
       "delete" : {
-        "summary" : "Delete an extension.",
-        "description" : "Extensions that are present in the central repository will not be deleted. Instead, their `status`' will be changed to `AVAILABLE`.",
-        "operationId" : "deleteExtension",
         "responses" : {
           "200" : {
             "description" : "The extension was successfully deleted."
@@ -1443,34 +1440,34 @@
           "404" : {
             "description" : "No extension exists with the specified `extensionPackage`."
           }
-        }
+        },
+        "operationId" : "deleteExtension",
+        "summary" : "Delete an extension.",
+        "description" : "Extensions that are present in the central repository will not be deleted. Instead, their `status`' will be changed to `AVAILABLE`."
       },
       "parameters" : [ {
         "name" : "extensionPackage",
-        "in" : "path",
         "description" : "The `pkgName` of the extension.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/extensions/{extensionPackage}/install" : {
       "description" : "",
       "post" : {
-        "summary" : "Installs or updates an extension from the central repository.",
-        "description" : "The extension must either have a `status` of `AVAILABLE` or it's `hasUpdate` field is `true`.",
-        "operationId" : "installExtension",
         "responses" : {
           "200" : {
-            "description" : "The extension was successfully installed/updated.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/extension"
                 }
               }
-            }
+            },
+            "description" : "The extension was successfully installed/updated."
           },
           "400" : {
             "description" : "The extension's status is not `AVAILABLE` and it's `hasUpdate` field is `false`."
@@ -1479,32 +1476,32 @@
             "description" : "No extension exists with the specified `extensionPackage`."
           },
           "500" : {
-            "description" : "The extension could not be installed/updated.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "The extension could not be installed/updated.\n\nThe exact failure reason is provided in the response body."
           }
-        }
+        },
+        "operationId" : "installExtension",
+        "summary" : "Installs or updates an extension from the central repository.",
+        "description" : "The extension must either have a `status` of `AVAILABLE` or it's `hasUpdate` field is `true`."
       },
       "parameters" : [ {
         "name" : "extensionPackage",
-        "in" : "path",
         "description" : "The `pkgName` of the extension.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/extensions/trust" : {
       "post" : {
-        "summary" : "Trust a signature hash.",
-        "description" : "Multiple extensions may have the same signature hash.\n\nTrusting a signature hash will also cause future extensions that have the same signature hash to be trusted.",
-        "operationId" : "trustExtensionSignatureHash",
         "requestBody" : {
           "description" : "The signature hash.",
           "content" : {
@@ -1523,44 +1520,43 @@
           "400" : {
             "description" : "The provided signature hash is invalid."
           }
-        }
+        },
+        "operationId" : "trustExtensionSignatureHash",
+        "summary" : "Trust a signature hash.",
+        "description" : "Multiple extensions may have the same signature hash.\n\nTrusting a signature hash will also cause future extensions that have the same signature hash to be trusted."
       }
     },
     "/api/v3/extensions/{extensionPackage}/icon" : {
       "get" : {
-        "summary" : "Get the icon of an extension.",
-        "operationId" : "getExtensionIcon",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "image/png" : { },
               "image/webp" : { }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No extension exists with the specified `extensionPackage`."
           }
-        }
+        },
+        "operationId" : "getExtensionIcon",
+        "summary" : "Get the icon of an extension."
       },
       "parameters" : [ {
         "name" : "extensionPackage",
-        "in" : "path",
         "description" : "The `pkgName` of the extension.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/extensions/reload-available" : {
       "post" : {
-        "summary" : "Fetch available extension list from central repository.",
-        "description" : "Also checks for extension updates.",
-        "operationId" : "reloadAvailableExtensions",
         "responses" : {
           "200" : {
-            "description" : "Successful response. The new extension list is returned (including extensions of any `status`).",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1570,18 +1566,19 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response. The new extension list is returned (including extensions of any `status`)."
           }
-        }
+        },
+        "operationId" : "reloadAvailableExtensions",
+        "summary" : "Fetch available extension list from central repository.",
+        "description" : "Also checks for extension updates."
       }
     },
     "/api/v3/tracking/services" : {
       "get" : {
-        "summary" : "List all tracking services.",
-        "operationId" : "getTrackingServices",
         "responses" : {
           "200" : {
-            "description" : "Returns a list of all tracking services.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1591,46 +1588,46 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Returns a list of all tracking services."
           }
-        }
+        },
+        "operationId" : "getTrackingServices",
+        "summary" : "List all tracking services."
       }
     },
     "/api/v3/tracking/services/{trackingServiceId}" : {
       "get" : {
-        "summary" : "Get information about a single tracking service.",
-        "operationId" : "getTrackingService",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/tracking-service"
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           },
           "404" : {
             "description" : "No tracking service with the supplied `trackingServiceId` could be found."
           }
-        }
+        },
+        "operationId" : "getTrackingService",
+        "summary" : "Get information about a single tracking service."
       },
       "parameters" : [ {
         "name" : "trackingServiceId",
-        "in" : "path",
         "description" : "The `id` of the tracking service.",
-        "required" : true,
         "schema" : {
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/tracking/services/{trackingServiceId}/logout" : {
       "post" : {
-        "summary" : "Logout of a tracking service.",
-        "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`).",
-        "operationId" : "logoutOfTrackingService",
         "responses" : {
           "200" : {
             "description" : "Successfully logged out of the tracking service."
@@ -1641,23 +1638,23 @@
           "404" : {
             "description" : "No tracking service with the supplied `trackingServiceId` could be found."
           }
-        }
+        },
+        "operationId" : "logoutOfTrackingService",
+        "summary" : "Logout of a tracking service.",
+        "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`)."
       },
       "parameters" : [ {
         "name" : "trackingServiceId",
-        "in" : "path",
         "description" : "The `id` of the tracking service.",
-        "required" : true,
         "schema" : {
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/tracking/services/{trackingServiceId}/login" : {
       "post" : {
-        "summary" : "Logout of a tracking service.",
-        "description" : "Can only be performed if the user is logged out of the tracking service (`loggedIn` field of the tracking service is `false`) and the tracking service is not an OAuth based service.",
-        "operationId" : "loginToTrackingService",
         "requestBody" : {
           "description" : "The login credentials.",
           "content" : {
@@ -1674,35 +1671,35 @@
             "description" : "Successfully logged into the tracking service."
           },
           "400" : {
-            "description" : "The user is already logged into the specified tracking service (`loggedIn` field of the tracking service is `true`) or the tracking service is an OAuth based service.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "OAUTH_ONLY", "ALREADY_LOGGED_IN" ]
                 }
               }
-            }
+            },
+            "description" : "The user is already logged into the specified tracking service (`loggedIn` field of the tracking service is `true`) or the tracking service is an OAuth based service.\n\nThe exact failure reason is provided in the response body."
           },
           "404" : {
             "description" : "No tracking service with the supplied `trackingServiceId` could be found."
           }
-        }
+        },
+        "operationId" : "loginToTrackingService",
+        "summary" : "Logout of a tracking service.",
+        "description" : "Can only be performed if the user is logged out of the tracking service (`loggedIn` field of the tracking service is `false`) and the tracking service is not an OAuth based service."
       },
       "parameters" : [ {
         "name" : "trackingServiceId",
-        "in" : "path",
         "description" : "The `id` of the tracking service.",
-        "required" : true,
         "schema" : {
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/handle-url" : {
       "post" : {
-        "summary" : "Handle an application URL",
-        "description" : "This endpoint is used to handle `tachiyomi://` URLs.\n\nClients should intercept all URLs that have the `tachiyomi` scheme and POST these URLs to the server via this endpoint.",
-        "operationId" : "handleUrl",
         "requestBody" : {
           "description" : "The entire URL (including the scheme, path and query parameters).",
           "content" : {
@@ -1716,26 +1713,26 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Indicates that the URL has been processed.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/url-handle-result"
                 }
               }
-            }
+            },
+            "description" : "Indicates that the URL has been processed."
           },
           "400" : {
             "description" : "Indicates that the provided URL is not valid."
           }
-        }
+        },
+        "operationId" : "handleUrl",
+        "summary" : "Handle an application URL",
+        "description" : "This endpoint is used to handle `tachiyomi://` URLs.\n\nClients should intercept all URLs that have the `tachiyomi` scheme and POST these URLs to the server via this endpoint."
       }
     },
     "/api/v3/tracking/services/{trackingServiceId}/search" : {
       "post" : {
-        "summary" : "Search for manga in a tracking service",
-        "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`).",
-        "operationId" : "searchTrackingService",
         "requestBody" : {
           "description" : "The search query. Should usually be the title of the manga to search for.",
           "content" : {
@@ -1749,7 +1746,6 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response - search results are returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1759,7 +1755,8 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response - search results are returned."
           },
           "400" : {
             "description" : "The user is not logged into the specified tracking service (`loggedIn` field of the tracking service is `false`)."
@@ -1768,34 +1765,34 @@
             "description" : "No tracking service with the supplied `trackingServiceId` could be found."
           },
           "500" : {
-            "description" : "The search failed.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "The search failed.\n\nThe exact failure reason is provided in the response body."
           }
-        }
+        },
+        "operationId" : "searchTrackingService",
+        "summary" : "Search for manga in a tracking service",
+        "description" : "Can only be performed if the user is logged into the tracking service (`loggedIn` field of the tracking service is `true`)."
       },
       "parameters" : [ {
         "name" : "trackingServiceId",
-        "in" : "path",
         "description" : "The `id` of the tracking service.",
-        "required" : true,
         "schema" : {
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/tracks" : {
       "get" : {
-        "summary" : "List all tracking information associated with this manga.",
-        "operationId" : "getMangaTracks",
         "responses" : {
           "200" : {
-            "description" : "Returns a list of all tracking information associated with this manga.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1805,16 +1802,17 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Returns a list of all tracking information associated with this manga."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           }
-        }
+        },
+        "operationId" : "getMangaTracks",
+        "summary" : "List all tracking information associated with this manga."
       },
       "post" : {
-        "summary" : "Bind a manga to tracking information",
-        "operationId" : "bindMangaTrack",
         "requestBody" : {
           "description" : "A tracking search result.",
           "content" : {
@@ -1828,71 +1826,71 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Tracking information was bound successfully. The new tracking information is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/track"
                 }
               }
-            }
+            },
+            "description" : "Tracking information was bound successfully. The new tracking information is returned."
           },
           "404" : {
             "description" : "No manga with the supplied `mangaId` exists."
           },
           "500" : {
-            "description" : "An error occurred while binding the tracking information.\n\nThe exact failure reason is provided in the repsonse body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "An error occurred while binding the tracking information.\n\nThe exact failure reason is provided in the repsonse body."
           }
-        }
+        },
+        "operationId" : "bindMangaTrack",
+        "summary" : "Bind a manga to tracking information"
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/tracks/{trackingServiceId}" : {
       "get" : {
-        "summary" : "Get tracking information on the specified tracking service associated with this manga.",
-        "operationId" : "getMangaTrack",
         "responses" : {
           "200" : {
-            "description" : "Returns tracking information on the specified tracking service associated with this manga.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/track"
                 }
               }
-            }
+            },
+            "description" : "Returns tracking information on the specified tracking service associated with this manga."
           },
           "404" : {
-            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_MANGA", "NO_TRACKING_SERVICE", "NO_TRACK" ]
                 }
               }
-            }
+            },
+            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body."
           }
-        }
+        },
+        "operationId" : "getMangaTrack",
+        "summary" : "Get tracking information on the specified tracking service associated with this manga."
       },
       "put" : {
-        "summary" : "Change the tracking information manually.",
-        "operationId" : "editMangaTrack",
         "requestBody" : {
           "description" : "The new tracking information. It will overwrite the old tracking information.",
           "content" : {
@@ -1906,201 +1904,200 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Tracking information changed successfully on the specified service, the updated tracking information is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/track"
                 }
               }
-            }
+            },
+            "description" : "Tracking information changed successfully on the specified service, the updated tracking information is returned."
           },
           "404" : {
-            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_MANGA", "NO_TRACKING_SERVICE", "NO_TRACK" ]
                 }
               }
-            }
+            },
+            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body."
           },
           "500" : {
-            "description" : "An error occurred while changing the tracking information.\n\nThe exact failure reason is provided in the repsonse body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "An error occurred while changing the tracking information.\n\nThe exact failure reason is provided in the repsonse body."
           }
-        }
+        },
+        "operationId" : "editMangaTrack",
+        "summary" : "Change the tracking information manually."
       },
       "delete" : {
-        "summary" : "Unbind a manga from it's tracking information.",
-        "operationId" : "unbindMangaTrack",
         "responses" : {
           "200" : {
             "description" : "Manga successfully unbound from it's tracking information on the specified tracking service."
           },
           "404" : {
-            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_MANGA", "NO_TRACKING_SERVICE", "NO_TRACK" ]
                 }
               }
-            }
+            },
+            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body."
           }
-        }
+        },
+        "operationId" : "unbindMangaTrack",
+        "summary" : "Unbind a manga from it's tracking information."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       }, {
         "name" : "trackingServiceId",
-        "in" : "path",
         "description" : "The `id` of the tracking service.",
-        "required" : true,
         "schema" : {
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/manga/{mangaId}/tracks/{trackingServiceId}/update" : {
       "post" : {
-        "summary" : "Re-fetch tracking information from the specified tracking service associated with this manga.",
-        "operationId" : "updateMangaTrack",
         "responses" : {
           "200" : {
-            "description" : "Tracking information refreshed successfully, the new information is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/track"
                 }
               }
-            }
+            },
+            "description" : "Tracking information refreshed successfully, the new information is returned."
           },
           "404" : {
-            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "NO_MANGA", "NO_TRACKING_SERVICE", "NO_TRACK" ]
                 }
               }
-            }
+            },
+            "description" : "No manga with the supplied `mangaId` exists, no tracking service is associated with the specified `trackingServiceId` or no track associated with the tracking service with the specified `trackingServiceId` is bound to this manga.\n\nThe exact failure reason is provided in the response body."
           },
           "500" : {
-            "description" : "An error occurred while updating the tracking information.\n\nThe exact failure reason is provided in the repsonse body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "An error occurred while updating the tracking information.\n\nThe exact failure reason is provided in the repsonse body."
           }
-        }
+        },
+        "operationId" : "updateMangaTrack",
+        "summary" : "Re-fetch tracking information from the specified tracking service associated with this manga."
       },
       "parameters" : [ {
         "name" : "mangaId",
-        "in" : "path",
         "description" : "The `manga`'s `id`.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       }, {
         "name" : "trackingServiceId",
-        "in" : "path",
         "description" : "The `id` of the tracking service.",
-        "required" : true,
         "schema" : {
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/server/stop" : {
       "post" : {
-        "summary" : "Stop/shutdown the server.",
-        "operationId" : "stopServer",
         "responses" : {
           "200" : {
             "description" : "Successful response, indicates that the server shutdown process has started."
           }
-        }
+        },
+        "operationId" : "stopServer",
+        "summary" : "Stop/shutdown the server."
       }
     },
     "/api/v3" : {
       "summary" : "The API root.",
       "get" : {
-        "summary" : "Returns the OpenAPI specification for this API",
-        "operationId" : "getApiSpec",
         "responses" : {
           "200" : {
-            "description" : "An OpenAPI specification in JSON format.",
             "content" : {
               "application/json" : { }
-            }
+            },
+            "description" : "An OpenAPI specification in JSON format."
           }
         },
-        "security" : [ { } ]
+        "security" : [ { } ],
+        "operationId" : "getApiSpec",
+        "summary" : "Returns the OpenAPI specification for this API"
       }
     },
     "/api/v3/sources/{sourceId}/logout" : {
       "summary" : "Path used to logout of a source.",
       "post" : {
-        "summary" : "Logout of a source",
-        "description" : "",
-        "operationId" : "logoutOfSource",
         "responses" : {
           "204" : {
             "description" : "The logout succeeded."
           },
           "400" : {
-            "description" : "The source does not require authentication or the user is not logged in.\n\nThe exact failure reason is provided in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "enum" : [ "AUTH_UNSUPPORTED", "NOT_LOGGED_IN" ]
                 }
               }
-            }
+            },
+            "description" : "The source does not require authentication or the user is not logged in.\n\nThe exact failure reason is provided in the response body."
           },
           "404" : {
             "description" : "No source exists with the provided `id`."
           }
-        }
+        },
+        "operationId" : "logoutOfSource",
+        "summary" : "Logout of a source",
+        "description" : ""
       },
       "parameters" : [ {
         "name" : "sourceId",
-        "in" : "path",
         "description" : "The `id` of the source.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/backups/backup" : {
       "summary" : "Create a backup",
       "post" : {
-        "summary" : "Create a backup",
-        "operationId" : "backupAll",
         "responses" : {
           "200" : {
-            "description" : "The backup was created successfully.",
             "content" : {
               "application/octet-stream" : {
                 "schema" : {
@@ -2108,16 +2105,17 @@
                   "type" : "string"
                 }
               }
-            }
+            },
+            "description" : "The backup was created successfully."
           }
-        }
+        },
+        "operationId" : "backupAll",
+        "summary" : "Create a backup"
       }
     },
     "/api/v3/backups/restore" : {
       "summary" : "Restore a backup.",
       "post" : {
-        "summary" : "Restore a backup.",
-        "operationId" : "restoreAll",
         "requestBody" : {
           "content" : {
             "application/octet-stream" : {
@@ -2131,7 +2129,6 @@
         },
         "responses" : {
           "202" : {
-            "description" : "Restore started. The UUID of the task where the restore is running in is supplied in the response body.\n\nThe data field of the task will be of the `restore-task-data` datatype once the restore is completed.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2139,16 +2136,17 @@
                   "type" : "string"
                 }
               }
-            }
+            },
+            "description" : "Restore started. The UUID of the task where the restore is running in is supplied in the response body.\n\nThe data field of the task will be of the `restore-task-data` datatype once the restore is completed."
           }
-        }
+        },
+        "operationId" : "restoreAll",
+        "summary" : "Restore a backup."
       }
     },
     "/api/v3/sync" : {
       "summary" : "Sync endpoint",
       "post" : {
-        "summary" : "Sync endpoint.",
-        "operationId" : "sync",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -2161,76 +2159,74 @@
         },
         "responses" : {
           "200" : {
-            "description" : "The sync completed successfully.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/sync-response"
                 }
               }
-            }
+            },
+            "description" : "The sync completed successfully."
           },
           "426" : {
-            "description" : "The client's sync specification version does not match the server's sync specification version.\n\nThe server's sync specification version is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "integer"
                 }
               }
-            }
+            },
+            "description" : "The client's sync specification version does not match the server's sync specification version.\n\nThe server's sync specification version is returned."
           },
           "500" : {
-            "description" : "An error occured during the syncing process and the sync was not performed.\n\nThe exact failure reason is provided in the repsonse body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "An error occured during the syncing process and the sync was not performed.\n\nThe exact failure reason is provided in the repsonse body."
           }
         },
         "security" : [ {
           "auth-token-header" : [ ]
         }, {
           "auth-token-cookie" : [ ]
-        } ]
+        } ],
+        "operationId" : "sync",
+        "summary" : "Sync endpoint."
       }
     },
     "/api/v3/preferences/{preferenceKey}" : {
       "summary" : "Path used to manage a single preference.",
       "description" : "",
       "get" : {
-        "summary" : "Get a preference",
-        "description" : "Gets the details of a single instance of a `preference`.",
-        "operationId" : "getPreference",
         "responses" : {
           "200" : {
-            "description" : "Successful response - returns a single `preference`.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/preference"
                 }
               }
-            }
+            },
+            "description" : "Successful response - returns a single `preference`."
           },
           "404" : {
             "description" : "No preference exists with the supplied `preferenceKey`."
           }
-        }
+        },
+        "operationId" : "getPreference",
+        "summary" : "Get a preference",
+        "description" : "Gets the details of a single instance of a `preference`."
       },
       "put" : {
-        "summary" : "Update a preference",
-        "description" : "Updates an existing `preference`.",
-        "operationId" : "setPreference",
         "requestBody" : {
           "description" : "Updated `preference` value",
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/mutate-preference-request",
                 "anyOf" : [ {
                   "type" : "string"
                 }, {
@@ -2244,7 +2240,8 @@
                   "items" : {
                     "type" : "string"
                   }
-                } ]
+                } ],
+                "$ref" : "#/components/schemas/mutate-preference-request"
               }
             }
           },
@@ -2257,27 +2254,26 @@
           "404" : {
             "description" : "No preference exists with the supplied `preferenceKey`."
           }
-        }
+        },
+        "operationId" : "setPreference",
+        "summary" : "Update a preference",
+        "description" : "Updates an existing `preference`."
       },
       "parameters" : [ {
         "name" : "preferenceKey",
-        "in" : "path",
         "description" : "The key of the preference.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/extensions" : {
       "summary" : "Path to manage extensions.",
       "get" : {
-        "summary" : "List all extensions.",
-        "description" : "Includes all extensions, regardless of their `status`.",
-        "operationId" : "getExtensions",
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2287,13 +2283,15 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           }
-        }
+        },
+        "operationId" : "getExtensions",
+        "summary" : "List all extensions.",
+        "description" : "Includes all extensions, regardless of their `status`."
       },
       "post" : {
-        "summary" : "Imports an extension from an APK file.",
-        "operationId" : "createExtensionFromAPK",
         "requestBody" : {
           "description" : "The extension APK.",
           "content" : {
@@ -2308,60 +2306,59 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response. The extension was successfully imported.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/extension"
                 }
               }
-            }
+            },
+            "description" : "Successful response. The extension was successfully imported."
           },
           "400" : {
-            "description" : "The request body did not contain a valid extension or the extension could not be imported.\n\nThe exact failure reason is supplied in the response body.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/error"
                 }
               }
-            }
+            },
+            "description" : "The request body did not contain a valid extension or the extension could not be imported.\n\nThe exact failure reason is supplied in the response body."
           }
-        }
+        },
+        "operationId" : "createExtensionFromAPK",
+        "summary" : "Imports an extension from an APK file."
       }
     },
     "/api/v3/manga/library" : {
       "get" : {
-        "summary" : "Get all favorited manga along with some extra information about each manga.",
-        "operationId" : "getLibraryMangas",
         "parameters" : [ {
           "name" : "include-total-downloaded",
-          "in" : "query",
           "description" : "Set to `true` to include the `totalDownloaded` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
-          "required" : false,
           "schema" : {
             "type" : "boolean"
-          }
+          },
+          "in" : "query",
+          "required" : false
         }, {
           "name" : "include-last-read-index",
-          "in" : "query",
           "description" : "Set to `true` to include the `lastReadIndex` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
-          "required" : false,
           "schema" : {
             "type" : "boolean"
-          }
+          },
+          "in" : "query",
+          "required" : false
         }, {
           "name" : "include-total-chapters-index",
-          "in" : "query",
           "description" : "Set to `true` to include the `totalChaptersIndex` field in the response. Defaults to `false`.\n\n**This will incur a performance penalty.**",
-          "required" : false,
           "schema" : {
             "type" : "boolean"
-          }
+          },
+          "in" : "query",
+          "required" : false
         } ],
         "responses" : {
           "200" : {
-            "description" : "Successful response.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2371,18 +2368,18 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response."
           }
-        }
+        },
+        "operationId" : "getLibraryMangas",
+        "summary" : "Get all favorited manga along with some extra information about each manga."
       }
     },
     "/api/v3/chapters/{chapterId}/bookmark" : {
       "summary" : "Path used to manage a single chapter's bookmarked status.",
       "description" : "",
       "put" : {
-        "summary" : "Set a chapter's bookmarked status.",
-        "description" : "",
-        "operationId" : "setChapterBookmarked",
         "requestBody" : {
           "description" : "The new bookmarked status of the chapter.",
           "content" : {
@@ -2396,35 +2393,36 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe new bookmarked status of the chapter is returned.",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "boolean"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe new bookmarked status of the chapter is returned."
           },
           "404" : {
             "description" : "No chapter exists with the supplied `chapterId`."
           }
-        }
+        },
+        "operationId" : "setChapterBookmarked",
+        "summary" : "Set a chapter's bookmarked status.",
+        "description" : ""
       },
       "parameters" : [ {
         "name" : "chapterId",
-        "in" : "path",
         "description" : "The chapter id.",
-        "required" : true,
         "schema" : {
           "format" : "int64",
           "type" : "integer"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     },
     "/api/v3/auth/validate" : {
       "get" : {
-        "summary" : "Validate that the client is authenticated",
-        "operationId" : "getAuthValid",
         "responses" : {
           "200" : {
             "description" : "Successful response - the client's authentication is valid."
@@ -2432,17 +2430,16 @@
           "401" : {
             "description" : "The client's authentication is invalid."
           }
-        }
+        },
+        "operationId" : "getAuthValid",
+        "summary" : "Validate that the client is authenticated"
       }
     },
     "/api/v3/auth/tokens" : {
       "summary" : "Endpoint for managing auth tokens",
       "get" : {
-        "summary" : "List all auth tokens created by this user.",
-        "operationId" : "getAuthTokens",
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe auth tokens are returned (without their secrets).",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2452,13 +2449,14 @@
                   }
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe auth tokens are returned (without their secrets)."
           }
-        }
+        },
+        "operationId" : "getAuthTokens",
+        "summary" : "List all auth tokens created by this user."
       },
       "post" : {
-        "summary" : "Create an auth token.",
-        "operationId" : "createAuthToken",
         "requestBody" : {
           "description" : "",
           "content" : {
@@ -2472,23 +2470,23 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Successful response.\n\nThe new authentication token is returned (including the secret).",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/auth-token"
                 }
               }
-            }
+            },
+            "description" : "Successful response.\n\nThe new authentication token is returned (including the secret)."
           }
-        }
+        },
+        "operationId" : "createAuthToken",
+        "summary" : "Create an auth token."
       }
     },
     "/api/v3/auth/tokens/{tokenId}" : {
       "summary" : "Endpoint used to manage a single auth token.",
       "delete" : {
-        "summary" : "Delete the auth token.",
-        "operationId" : "deleteAuthToken",
         "responses" : {
           "200" : {
             "description" : "Successful response - the token was successfully deleted."
@@ -2496,16 +2494,18 @@
           "404" : {
             "description" : "No auth token exists with the specified identifier."
           }
-        }
+        },
+        "operationId" : "deleteAuthToken",
+        "summary" : "Delete the auth token."
       },
       "parameters" : [ {
         "name" : "tokenId",
-        "in" : "path",
         "description" : "The auth token's identifier.",
-        "required" : true,
         "schema" : {
           "type" : "string"
-        }
+        },
+        "in" : "path",
+        "required" : true
       } ]
     }
   },
@@ -3536,7 +3536,6 @@
         "type" : "object",
         "properties" : {
           "value" : {
-            "description" : "The new value of the preference.",
             "anyOf" : [ {
               "type" : "string"
             }, {
@@ -3550,7 +3549,8 @@
               "items" : {
                 "type" : "string"
               }
-            } ]
+            } ],
+            "description" : "The new value of the preference."
           }
         }
       },
@@ -3730,9 +3730,9 @@
     },
     "securitySchemes" : {
       "account" : {
+        "scheme" : "basic",
         "type" : "http",
-        "description" : "Username/password authentication using HTTP BASIC.",
-        "scheme" : "basic"
+        "description" : "Username/password authentication using HTTP BASIC."
       },
       "account-cookie" : {
         "type" : "apiKey",
