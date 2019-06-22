@@ -43,4 +43,7 @@ dependencies {
 
     // YAML
     compile "org.yaml:snakeyaml:1.18"
+
+    // HTMLUnit for Cloudflare
+    compile 'net.sourceforge.htmlunit:htmlunit:2.35.0'
 }

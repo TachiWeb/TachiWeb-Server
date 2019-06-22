@@ -87,6 +87,7 @@ excludeFile "data.sync" "LibrarySyncManager.kt"
 excludeFile "extension.util" "ExtensionInstallReceiver.kt"
 excludeFile "extension.util" "ExtensionInstaller.kt"
 excludeFile "extension.util" "ExtensionInstallActivity.kt"
+excludeFile "network" "CloudflareInterceptor.kt"
 
 echo "Cleaning up..."
 popd

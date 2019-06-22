@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import okhttp3.HttpUrl
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.metadata.TikaCoreProperties
 import org.apache.tika.mime.MimeTypes
@@ -255,6 +256,14 @@ class MangaOperations(private val vertx: Vertx) : OperationGroup {
                 source.headers.toMultimap().forEach { t, u ->
                     request.putHeader(t, u)
                 }
+                val cookieHeader = withContext(Dispatchers.IO) {
+                    // loadForRequest can hit the disk
+                    source.client.cookieJar()
+                            .loadForRequest(HttpUrl.parse(url))
+                            .map { it.toString() }
+                            .joinToString("; ")
+                }
+                request.putHeader("Cookie", cookieHeader)
             }
             request.setFollowRedirects(true)
 
