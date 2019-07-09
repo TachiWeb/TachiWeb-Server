@@ -53,7 +53,7 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
         validateMutationRequest(existingCategories, request)
 
         val newCategory = Category.create(request.name).apply {
-            order = request.order ?: existingCategories.maxBy { it.order }?.order ?: 1
+            order = request.order ?: ((existingCategories.maxBy { it.order }?.order ?: 0) + 1)
         }
         newCategory.id = db.insertCategory(newCategory).await().insertedId()!!.toInt()
 
