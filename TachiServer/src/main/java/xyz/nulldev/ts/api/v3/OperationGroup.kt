@@ -19,7 +19,7 @@ interface OperationGroup {
 
     fun abort(responseCode: Int, enumError: WErrorTypes): Nothing = throw WException(responseCode, enumError)
 
-    fun abort(responseCode: Int): Nothing = throw WException(responseCode)
+    fun abort(responseCode: Int, content: String? = null): Nothing = throw WException(responseCode, content)
 
     fun notFound(): Nothing = abort(404)
     fun notFound(enumError: WErrorTypes): Nothing = abort(404, enumError)

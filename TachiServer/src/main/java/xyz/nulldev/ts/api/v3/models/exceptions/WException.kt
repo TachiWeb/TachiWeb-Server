@@ -4,7 +4,12 @@ import com.google.common.base.Throwables
 import xyz.nulldev.ts.api.v3.models.WError
 
 class WException(val data: DataType) : Exception() {
-    constructor(responseCode: Int) : this(responseCode, null)
+    constructor(responseCode: Int, content: String? = null) : this(
+            DataType.GeneralError(
+                    responseCode,
+                    content
+            )
+    )
 
     constructor(responseCode: Int, enumError: WErrorTypes?) : this(
             DataType.GeneralError(

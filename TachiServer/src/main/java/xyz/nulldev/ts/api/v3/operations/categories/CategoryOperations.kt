@@ -5,10 +5,9 @@ import eu.kanade.tachiyomi.data.database.models.Category
 import eu.kanade.tachiyomi.data.database.models.MangaCategory
 import io.vertx.core.Vertx
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
+import org.eclipse.jetty.http.HttpStatus
 import xyz.nulldev.ts.api.v3.OperationGroup
-import xyz.nulldev.ts.api.v3.models.categories.WCategory
-import xyz.nulldev.ts.api.v3.models.categories.WMutateCategoryMangaRequest
-import xyz.nulldev.ts.api.v3.models.categories.WMutateCategoryRequest
+import xyz.nulldev.ts.api.v3.models.categories.*
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes
 import xyz.nulldev.ts.api.v3.models.exceptions.WErrorTypes.*
 import xyz.nulldev.ts.api.v3.op
@@ -24,6 +23,7 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
     override fun register(routerFactory: OpenAPI3RouterFactory) {
         routerFactory.op(::getCategories.name, ::getCategories)
         routerFactory.op(::createCategory.name, ::createCategory)
+        routerFactory.op(::editCategories.name, ::editCategories)
         routerFactory.opWithParams(::getCategory.name, CATEGORY_ID_PARAM, ::getCategory)
         routerFactory.opWithParams(::editCategory.name, CATEGORY_ID_PARAM, ::editCategory)
         routerFactory.opWithParams(::deleteCategory.name, CATEGORY_ID_PARAM, ::deleteCategory)
@@ -48,11 +48,38 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
         ) + realCategories
     }
 
+    suspend fun editCategories(requests: List<WBatchMutateCategoryRequest>): List<WCategory> {
+        val dbCategories = db.getCategories().await()
+
+        val resultingCategories = requests.map { request ->
+            (dbCategories.find { it.id == request.id }
+                    ?: abort(HttpStatus.NOT_FOUND_404, request.id.toString())).apply {
+                request.name?.let { name = it }
+                request.order?.let { order = it }
+            }
+        }
+
+        validateCategoryList(dbCategories)
+
+        db.insertCategories(resultingCategories).await()
+
+        return resultingCategories.map { it.asWeb() }
+    }
+
     suspend fun createCategory(request: WMutateCategoryRequest): WCategory {
         val existingCategories = db.getCategories().await()
-        validateMutationRequest(existingCategories, request)
+        validateMutationRequest(existingCategories, -1, request)
 
-        val newCategory = Category.create(request.name).apply {
+        val categoryName = request.name ?: run {
+            var currentCategoryIndex = 1
+            var newCategoryName: String
+            do {
+                newCategoryName = "Category ${currentCategoryIndex++}"
+            } while (existingCategories.any { it.name.equals(newCategoryName, true) })
+            newCategoryName
+        }
+
+        val newCategory = Category.create(categoryName).apply {
             order = request.order ?: ((existingCategories.maxBy { it.order }?.order ?: 0) + 1)
         }
         newCategory.id = db.insertCategory(newCategory).await().insertedId()!!.toInt()
@@ -65,14 +92,12 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
     }
 
     suspend fun editCategory(categoryId: Int, request: WMutateCategoryRequest): WCategory {
-        val existingCategoriesWithoutSelf = db.getCategories().await().filter {
-            it.id != categoryId
-        }
-        validateMutationRequest(existingCategoriesWithoutSelf, request)
+        val existingCategories = db.getCategories().await()
+        validateMutationRequest(existingCategories, categoryId, request)
 
         val category = db.getCategory(categoryId).await()?.apply {
-            name = request.name
-            order = request.order ?: existingCategoriesWithoutSelf.maxBy { it.order }?.order ?: 1
+            request.name?.let { name = it }
+            request.order?.let { order = it }
         } ?: notFound()
         db.insertCategory(category).await()
         return category.asWeb()
@@ -105,15 +130,26 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
         return (mangaCategories.map { it.manga_id } - request.remove + request.add).toSet().toTypedArray()
     }
 
-    private suspend fun validateMutationRequest(categoryList: List<Category>, request: WMutateCategoryRequest) {
-        if (categoryList.any { it.name.equals(request.name, true) })
+    private fun validateMutationRequest(categoryList: List<Category>, curId: Int, request: WMutateCategoryRequestBase) {
+        val categoryListExcludingCurrent = categoryList.filter { it.id != curId }
+        if (categoryListExcludingCurrent.any { it.name.equals(request.name, true) })
             abort(409, NAME_CONFLICT)
-        if (request.order != null && categoryList.any { it.order == request.order })
+        if (request.order != null && categoryListExcludingCurrent.any { it.order == request.order })
             abort(409, ORDER_CONFLICT)
     }
 
+    private fun validateCategoryList(categoryList: List<Category>) {
+        val seenCategories = mutableSetOf<String>()
+        val seenOrders = mutableSetOf<Int>()
+        categoryList.forEach {
+            val lowerName = it.nameLower
+            if (lowerName in seenCategories) abort(HttpStatus.CONFLICT_409, NAME_CONFLICT)
+            if (it.order in seenOrders) abort(HttpStatus.CONFLICT_409, ORDER_CONFLICT)
+            seenCategories += lowerName
+            seenOrders += it.order
+        }
+    }
 
-    // TODO Maybe change web category model to use 32bit integers instead of longs?
     suspend fun Category.asWeb() = WCategory(
             id!!,
             db.getMangaCategoriesForCategory(this).await().map {
