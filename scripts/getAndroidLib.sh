@@ -27,7 +27,7 @@ function downloadLib {
     IFS=':' read -r -a splitPkg <<< "$2"
     URL="$(parsePackage "${splitPkg[0]}" "${splitPkg[1]}" "${splitPkg[2]}" "$1")"
     echo "Fetching AAR from: $URL"
-    JARFILE="$2.jar"
+    JARFILE="${2//:/_}.jar"
     curl "$URL" -o "$JARFILE"
     echo "Extracting classes.jar from $JARFILE"
     unzip "$JARFILE" "classes.jar"
