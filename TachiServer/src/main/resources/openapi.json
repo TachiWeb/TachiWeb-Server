@@ -2,7 +2,7 @@
     "openapi": "3.0.2",
     "info": {
         "title": "TachiWeb-Api",
-        "version": "3.2.6",
+        "version": "3.2.7",
         "description": "**Security:**\n\nAuthentication is currently not supported. Clients should use the *No Security* option until authentication is implemented.",
         "contact": {
             "url": "https://github.com/TachiWeb/TachiWeb-Server"
@@ -2697,7 +2697,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/batch-mutate-category-request"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/batch-mutate-category-request"
+                                }
                             }
                         }
                     },
