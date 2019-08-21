@@ -2,7 +2,7 @@
     "openapi": "3.0.2",
     "info": {
         "title": "TachiWeb-Api",
-        "version": "3.2.5",
+        "version": "3.2.6",
         "description": "**Security:**\n\nAuthentication is currently not supported. Clients should use the *No Security* option until authentication is implemented.",
         "contact": {
             "url": "https://github.com/TachiWeb/TachiWeb-Server"
@@ -2694,6 +2694,13 @@
             "put": {
                 "requestBody": {
                     "description": "Updated `category` information.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/batch-mutate-category-request"
+                            }
+                        }
+                    },
                     "required": true
                 },
                 "responses": {
@@ -2703,7 +2710,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/batch-mutate-category-request"
+                                        "$ref": "#/components/schemas/category"
                                     }
                                 }
                             }
@@ -2714,15 +2721,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "format": "int32",
-                                        "type": "integer"
-                                    }
+                                    "format": "int32",
+                                    "type": "integer"
                                 }
                             }
                         },
-                        "description": "No category with the supplied `id` could be found.\n\nIf any of the categories being edited cannot be found in the database by their ids, none of the categories will be edited.\n\nWill return an array of the categories which could not be found in the database by their ids."
+                        "description": "No category with the supplied `id` could be found.\n\nIf any of the categories being edited cannot be found in the database by their ids, none of the categories will be edited.\n\nWill return the id of the first category edit request which could not be found in the database."
                     },
                     "409": {
                         "content": {
