@@ -31,21 +31,9 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
     }
 
     suspend fun getCategories(): List<WCategory> {
-        val favoriteManga = db.getFavoriteMangas().await()
-        val realCategories = db.getCategories().await().map {
+        return db.getCategories().await().map {
             it.asWeb()
         }
-        val noCategoryManga = favoriteManga.filter { manga ->
-            realCategories.none { category -> manga.id in category.manga }
-        }
-        return listOf(
-                WCategory(
-                        -1,
-                        noCategoryManga.map { it.id!! },
-                        DEFAULT_CATEGORY_NAME,
-                        -1
-                )
-        ) + realCategories
     }
 
     suspend fun editCategories(requests: List<WBatchMutateCategoryRequest>): List<WCategory> {
@@ -158,8 +146,4 @@ class CategoryOperations(private val vertx: Vertx) : OperationGroup {
             name,
             order
     )
-
-    companion object {
-        private const val DEFAULT_CATEGORY_NAME = "Default"
-    }
 }
