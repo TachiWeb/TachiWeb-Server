@@ -1744,6 +1744,8 @@ public final class SQLiteDatabase extends SQLiteClosable {
             }
 
             mConfigurationLocked.foreignKeyConstraintsEnabled = enable;
+
+            B_reconfigureConnection();
         }
     }
 
@@ -2026,16 +2028,16 @@ public final class SQLiteDatabase extends SQLiteClosable {
     private void throwIfNotOpenLocked() {
     }
 
-    /**
-     * Used to allow returning sub-classes of {@link Cursor} when calling query.
-     */
-    public interface CursorFactory {
-        /**
-         * See {@link SQLiteCursor#SQLiteCursor(SQLiteCursorDriver, String, SQLiteQuery)}.
-         */
-        public Cursor newCursor(SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery, String editTable,
-                SQLiteQuery query);
+    private synchronized void B_openInner() {
+        try {
+            File newDbFile = new File(getPath());
+            newDbFile.getParentFile().mkdirs();
+            connection = DriverManager.getConnection("jdbc:sqlite:" + newDbFile.getAbsolutePath());
+            B_reconfigureConnection();
+        } catch (java.sql.SQLException e) {
+            //TODO Figure out how to detect corrupt databases
+            throw new SQLiteException("Failed to open database!", e);
+        }
     }
 
     // === BRIDGE CODE START ===
@@ -2054,14 +2056,17 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
-    private synchronized void B_openInner() {
-        try {
-            File newDbFile = new File(getPath());
-            newDbFile.getParentFile().mkdirs();
-            connection = DriverManager.getConnection("jdbc:sqlite:" + newDbFile.getAbsolutePath());
-        } catch (java.sql.SQLException e) {
-            //TODO Figure out how to detect corrupt databases
-            throw new SQLiteException("Failed to open database!", e);
+    private synchronized void B_reconfigureConnection() {
+        if (transactionLock.isLocked())
+            throw new IllegalStateException("Transaction in progress!");
+
+        if (connection != null) {
+            try {
+                connection.createStatement()
+                        .execute("PRAGMA foreign_keys = " + (mConfigurationLocked.foreignKeyConstraintsEnabled ? "ON" : "OFF"));
+            } catch (java.sql.SQLException e) {
+                throw new SQLiteException("Failed to (re)configure connection!", e);
+            }
         }
     }
 
@@ -2167,11 +2172,23 @@ public final class SQLiteDatabase extends SQLiteClosable {
         transactionListener.onBegin();
     }
 
+    /**
+     * Used to allow returning sub-classes of {@link Cursor} when calling query.
+     */
+    public interface CursorFactory {
+        /**
+         * See {@link SQLiteCursor#SQLiteCursor(SQLiteCursorDriver, String, SQLiteQuery)}.
+         */
+        Cursor newCursor(SQLiteDatabase db,
+                         SQLiteCursorDriver masterQuery, String editTable,
+                         SQLiteQuery query);
+    }
+
     Connection getConnection() {
         return connection;
     }
 
-    private class Transaction {
+    private static class Transaction {
         SQLiteTransactionListener listener = NoOpSQLiteTransactionListener.INSTANCE;
         boolean successful = false;
     }
