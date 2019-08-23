@@ -2,7 +2,7 @@
     "openapi": "3.0.2",
     "info": {
         "title": "TachiWeb-Api",
-        "version": "3.2.7",
+        "version": "3.2.8",
         "description": "**Security:**\n\nAuthentication is currently not supported. Clients should use the *No Security* option until authentication is implemented.",
         "contact": {
             "url": "https://github.com/TachiWeb/TachiWeb-Server"
@@ -341,7 +341,7 @@
                 },
                 "operationId": "getCategories",
                 "summary": "List all categories",
-                "description": "Gets a list of all `category` entities sorted ascending by the `order` field along with the \"default\" category that holds manga not assigned to any category.\n\nThe dummy category\n- Has an ID of `-1`\n- Has an order of `-1`\n- Has a name of `Default`\n\nThe dummy category does not actually exist so it cannot be modified using the other API endpoints."
+                "description": "Gets a list of all `category` entities sorted ascending by the `order` field."
             },
             "post": {
                 "requestBody": {
