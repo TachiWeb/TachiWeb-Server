@@ -40,7 +40,7 @@ function downloadLib {
 }
 
 function downloadCentralLib {
-    downloadLib "http://central.maven.org/maven2/" "$1"
+    downloadLib "https://repo1.maven.org/maven2/" "$1"
 }
 
 function downloadJitpackLib {
