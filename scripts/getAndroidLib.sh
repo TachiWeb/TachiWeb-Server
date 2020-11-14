@@ -28,7 +28,14 @@ function downloadLib {
     URL="$(parsePackage "${splitPkg[0]}" "${splitPkg[1]}" "${splitPkg[2]}" "$1")"
     echo "Fetching AAR from: $URL"
     JARFILE="${2//:/_}.jar"
-    curl "$URL" -o "$JARFILE"
+    if [ "$(curl -I $URL | grep HTTP | awk '{print $2}')" = "200" ]
+    then
+        curl "$URL" -o "$JARFILE"
+    else
+        echo "Unable to fetch $URL"
+        exit 1
+    fi
+
     echo "Extracting classes.jar from $JARFILE"
     unzip "$JARFILE" "classes.jar"
     echo "Installing library to library folder..."
@@ -40,7 +47,7 @@ function downloadLib {
 }
 
 function downloadCentralLib {
-    downloadLib "http://central.maven.org/maven2/" "$1"
+    downloadLib "https://repo1.maven.org/maven2/" "$1"
 }
 
 function downloadJitpackLib {
