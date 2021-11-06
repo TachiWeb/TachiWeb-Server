@@ -8,6 +8,14 @@ wrapper {
 }
 
 allprojects {
+    tasks.withType(Test).configureEach {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+        if (!project.hasProperty("createReports")) {
+            reports.html.required = false
+            reports.junitXml.required = false
+        }
+    }
+
     group = "xyz.nulldev.ts"
 
     version = "1.0"
